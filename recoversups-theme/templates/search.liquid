@@ -1,0 +1,518 @@
+{% comment %}
+  Search Results Page - Recoversups
+  Página de resultados de búsqueda con filtros
+{% endcomment %}
+
+<div class="search-page">
+  <div class="container">
+    <!-- Search Header -->
+    <div class="search-header">
+      <div class="search-title-section">
+        <h1 class="search-title">
+          {% if search.performed %}
+            {% if search.results.size > 0 %}
+              {{ search.results.size }} resultado{% unless search.results.size == 1 %}s{% endunless %} para "{{ search.terms | escape }}"
+            {% else %}
+              No se encontraron resultados para "{{ search.terms | escape }}"
+            {% endif %}
+          {% else %}
+            Buscar productos
+          {% endif %}
+        </h1>
+        
+        {% if search.performed and search.results.size > 0 %}
+          <div class="search-suggestions">
+            <p>¿Buscabas algo diferente? Prueba con:</p>
+            <div class="suggestion-tags">
+              <a href="/search?q=proteina" class="suggestion-tag">proteína</a>
+              <a href="/search?q=creatina" class="suggestion-tag">creatina</a>
+              <a href="/search?q=pre-entreno" class="suggestion-tag">pre-entreno</a>
+              <a href="/search?q=bcaa" class="suggestion-tag">bcaa</a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Search Bar -->
+      <div class="search-bar-wrapper">
+        {% render 'search-bar' %}
+      </div>
+    </div>
+
+    {% if search.performed %}
+      {% if search.results.size > 0 %}
+        <div class="search-content">
+          <!-- Search Filters -->
+          <aside class="search-filters">
+            <div class="filters-header">
+              <h3 class="filters-title">Refinar búsqueda</h3>
+              <button class="filters-clear" onclick="clearSearchFilters()">
+                Limpiar filtros
+              </button>
+            </div>
+
+            <!-- Search within results -->
+            <div class="filter-group">
+              <label class="filter-label">Buscar en resultados</label>
+              <div class="search-input-wrapper">
+                <input type="text" 
+                       id="search-within-results" 
+                       class="search-input" 
+                       placeholder="Refinar búsqueda..."
+                       onkeyup="searchWithinResults()">
+              </div>
+            </div>
+
+            <!-- Product Type Filter -->
+            <div class="filter-group">
+              <h4 class="filter-title">Tipo de producto</h4>
+              <div class="filter-options">
+                {% assign product_types = search.results | where: 'object_type', 'product' | map: 'product_type' | uniq | sort %}
+                {% for type in product_types %}
+                  {% if type != blank %}
+                    <label class="filter-checkbox">
+                      <input type="checkbox" 
+                             name="search-type" 
+                             value="{{ type | handle }}"
+                             onchange="filterSearchResults()">
+                      <span class="checkbox-label">{{ type }}</span>
+                      <span class="checkbox-count">({{ search.results | where: 'product_type', type | size }})</span>
+                    </label>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+              <h4 class="filter-title">Rango de precio</h4>
+              <div class="price-range">
+                <div class="price-inputs">
+                  <input type="number" 
+                         id="search-price-min" 
+                         class="price-input" 
+                         placeholder="Min"
+                         onchange="filterSearchByPrice()">
+                  <span class="price-separator">-</span>
+                  <input type="number" 
+                         id="search-price-max" 
+                         class="price-input" 
+                         placeholder="Max"
+                         onchange="filterSearchByPrice()">
+                </div>
+              </div>
+            </div>
+
+            <!-- Brand Filter -->
+            <div class="filter-group">
+              <h4 class="filter-title">Marca</h4>
+              <div class="filter-options">
+                {% assign brands = search.results | where: 'object_type', 'product' | map: 'vendor' | uniq | sort %}
+                {% for brand in brands %}
+                  {% if brand != blank %}
+                    <label class="filter-checkbox">
+                      <input type="checkbox" 
+                             name="search-brand" 
+                             value="{{ brand | handle }}"
+                             onchange="filterSearchResults()">
+                      <span class="checkbox-label">{{ brand }}</span>
+                      <span class="checkbox-count">({{ search.results | where: 'vendor', brand | size }})</span>
+                    </label>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Availability Filter -->
+            <div class="filter-group">
+              <h4 class="filter-title">Disponibilidad</h4>
+              <div class="filter-options">
+                <label class="filter-checkbox">
+                  <input type="checkbox" 
+                         name="search-availability" 
+                         value="available"
+                         onchange="filterSearchResults()">
+                  <span class="checkbox-label">En stock</span>
+                  <span class="checkbox-count">({{ search.results | where: 'available', true | size }})</span>
+                </label>
+                <label class="filter-checkbox">
+                  <input type="checkbox" 
+                         name="search-availability" 
+                         value="unavailable"
+                         onchange="filterSearchResults()">
+                  <span class="checkbox-label">Agotado</span>
+                  <span class="checkbox-count">({{ search.results | where: 'available', false | size }})</span>
+                </label>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Search Results -->
+          <main class="search-results-section">
+            <!-- Results Toolbar -->
+            <div class="results-toolbar">
+              <div class="toolbar-left">
+                <button class="filters-toggle" onclick="toggleSearchFilters()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+                  </svg>
+                  Filtros
+                </button>
+                <span class="results-count">
+                  Mostrando <span id="search-visible-count">{{ search.results.size }}</span> resultados
+                </span>
+              </div>
+
+              <div class="toolbar-right">
+                <div class="sort-dropdown">
+                  <label for="search-sort-select">Ordenar por:</label>
+                  <select id="search-sort-select" onchange="sortSearchResults()">
+                    <option value="relevance">Relevancia</option>
+                    <option value="price-low">Precio: Menor a Mayor</option>
+                    <option value="price-high">Precio: Mayor a Menor</option>
+                    <option value="name-asc">Nombre: A-Z</option>
+                    <option value="name-desc">Nombre: Z-A</option>
+                    <option value="date-new">Más Recientes</option>
+                  </select>
+                </div>
+
+                <div class="view-toggle">
+                  <button class="view-btn view-btn--grid active" onclick="setSearchView('grid')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="14" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                  </button>
+                  <button class="view-btn view-btn--list" onclick="setSearchView('list')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="8" y1="6" x2="21" y2="6"></line>
+                      <line x1="8" y1="12" x2="21" y2="12"></line>
+                      <line x1="8" y1="18" x2="21" y2="18"></line>
+                      <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                      <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                      <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="search-results-grid" id="search-results-grid">
+              {% for item in search.results %}
+                {% case item.object_type %}
+                  {% when 'product' %}
+                    <div class="search-result-item" 
+                         data-price="{{ item.price | money_without_currency }}"
+                         data-name="{{ item.title | downcase }}"
+                         data-type="{{ item.product_type | handle }}"
+                         data-vendor="{{ item.vendor | handle }}"
+                         data-available="{{ item.available }}"
+                         data-date="{{ item.created_at | date: '%Y%m%d' }}">
+                      
+                      {% render 'product-card', product: item %}
+                    </div>
+                  
+                  {% when 'article' %}
+                    <div class="search-result-item search-result-item--article">
+                      <div class="article-card">
+                        <div class="article-card__image">
+                          {% if item.image %}
+                            <a href="{{ item.url }}">
+                              <img src="{{ item.image | img_url: '300x200' }}" 
+                                   alt="{{ item.title }}" 
+                                   loading="lazy">
+                            </a>
+                          {% endif %}
+                        </div>
+                        
+                        <div class="article-card__content">
+                          <span class="article-card__type">Artículo</span>
+                          <h3 class="article-card__title">
+                            <a href="{{ item.url }}">{{ item.title }}</a>
+                          </h3>
+                          <div class="article-card__excerpt">
+                            {{ item.content | strip_html | truncate: 150 }}
+                          </div>
+                          <div class="article-card__meta">
+                            <span class="article-date">{{ item.created_at | date: '%d/%m/%Y' }}</span>
+                            <span class="article-author">{{ item.author }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  {% when 'page' %}
+                    <div class="search-result-item search-result-item--page">
+                      <div class="page-card">
+                        <div class="page-card__content">
+                          <span class="page-card__type">Página</span>
+                          <h3 class="page-card__title">
+                            <a href="{{ item.url }}">{{ item.title }}</a>
+                          </h3>
+                          <div class="page-card__excerpt">
+                            {{ item.content | strip_html | truncate: 200 }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                {% endcase %}
+              {% endfor %}
+            </div>
+
+            <!-- No Results Message -->
+            <div class="search-no-results" id="search-no-results" style="display: none;">
+              <div class="no-results-content">
+                <svg class="no-results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <h3>No se encontraron resultados</h3>
+                <p>Intenta ajustar los filtros o buscar con términos diferentes</p>
+                <button class="btn btn-primary" onclick="clearSearchFilters()">
+                  Limpiar filtros
+                </button>
+              </div>
+            </div>
+          </main>
+        </div>
+      {% else %}
+        <!-- No Search Results -->
+        <div class="search-empty">
+          <div class="search-empty-content">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            
+            <h2>No se encontraron productos para "{{ search.terms | escape }}"</h2>
+            <p>Intenta con términos diferentes o explora nuestras categorías populares</p>
+            
+            <div class="search-suggestions">
+              <h3>Sugerencias de búsqueda:</h3>
+              <div class="suggestion-tags">
+                <a href="/search?q=proteina" class="suggestion-tag">proteína</a>
+                <a href="/search?q=creatina" class="suggestion-tag">creatina</a>
+                <a href="/search?q=pre-entreno" class="suggestion-tag">pre-entreno</a>
+                <a href="/search?q=bcaa" class="suggestion-tag">bcaa</a>
+                <a href="/search?q=vitaminas" class="suggestion-tag">vitaminas</a>
+              </div>
+            </div>
+            
+            <div class="search-actions">
+              <a href="/collections/all" class="btn btn-primary">Ver todos los productos</a>
+              <a href="/collections" class="btn btn-secondary">Explorar categorías</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      <!-- Initial Search State -->
+      <div class="search-initial">
+        <div class="search-initial-content">
+          <svg class="initial-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          
+          <h2>¿Qué estás buscando?</h2>
+          <p>Busca productos, marcas o categorías</p>
+          
+          <div class="popular-searches">
+            <h3>Búsquedas populares:</h3>
+            <div class="popular-tags">
+              <a href="/search?q=proteina" class="popular-tag">proteína</a>
+              <a href="/search?q=creatina" class="popular-tag">creatina</a>
+              <a href="/search?q=pre-entreno" class="popular-tag">pre-entreno</a>
+              <a href="/search?q=bcaa" class="popular-tag">bcaa</a>
+              <a href="/search?q=vitaminas" class="popular-tag">vitaminas</a>
+              <a href="/search?q=quemador" class="popular-tag">quemador</a>
+            </div>
+          </div>
+          
+          <div class="featured-categories">
+            <h3>Categorías destacadas:</h3>
+            <div class="category-grid">
+              {% assign featured_collections = collections | where: 'featured', true | limit: 6 %}
+              {% for collection in featured_collections %}
+                <a href="{{ collection.url }}" class="category-card">
+                  {% if collection.image %}
+                    <img src="{{ collection.image | img_url: '150x150' }}" 
+                         alt="{{ collection.title }}" 
+                         loading="lazy">
+                  {% endif %}
+                  <span>{{ collection.title }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Search JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchResultsGrid = document.getElementById('search-results-grid');
+  const searchNoResults = document.getElementById('search-no-results');
+  const searchVisibleCount = document.getElementById('search-visible-count');
+  const searchFilters = document.querySelector('.search-filters');
+  
+  // Store original search results
+  const originalResults = Array.from(document.querySelectorAll('.search-result-item'));
+  
+  // Search within results
+  window.searchWithinResults = function() {
+    const searchTerm = document.getElementById('search-within-results').value.toLowerCase();
+    
+    originalResults.forEach(item => {
+      const itemName = item.dataset.name || '';
+      const matches = itemName.includes(searchTerm);
+      item.style.display = matches ? 'block' : 'none';
+    });
+    
+    updateSearchResultsCount();
+  };
+  
+  // Filter functions
+  window.filterSearchResults = function() {
+    const selectedTypes = Array.from(document.querySelectorAll('input[name="search-type"]:checked'))
+      .map(cb => cb.value);
+    const selectedBrands = Array.from(document.querySelectorAll('input[name="search-brand"]:checked'))
+      .map(cb => cb.value);
+    const selectedAvailability = Array.from(document.querySelectorAll('input[name="search-availability"]:checked'))
+      .map(cb => cb.value);
+    
+    originalResults.forEach(item => {
+      let matches = true;
+      
+      // Filter by type
+      if (selectedTypes.length > 0) {
+        const itemType = item.dataset.type;
+        matches = matches && selectedTypes.includes(itemType);
+      }
+      
+      // Filter by brand
+      if (selectedBrands.length > 0) {
+        const itemBrand = item.dataset.vendor;
+        matches = matches && selectedBrands.includes(itemBrand);
+      }
+      
+      // Filter by availability
+      if (selectedAvailability.length > 0) {
+        const itemAvailable = item.dataset.available === 'true';
+        matches = matches && (
+          (selectedAvailability.includes('available') && itemAvailable) ||
+          (selectedAvailability.includes('unavailable') && !itemAvailable)
+        );
+      }
+      
+      item.style.display = matches ? 'block' : 'none';
+    });
+    
+    updateSearchResultsCount();
+  };
+  
+  // Filter by price
+  window.filterSearchByPrice = function() {
+    const minPrice = parseFloat(document.getElementById('search-price-min').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('search-price-max').value) || Infinity;
+    
+    originalResults.forEach(item => {
+      const price = parseFloat(item.dataset.price) || 0;
+      const matches = price >= minPrice && price <= maxPrice;
+      item.style.display = matches ? 'block' : 'none';
+    });
+    
+    updateSearchResultsCount();
+  };
+  
+  // Sort results
+  window.sortSearchResults = function() {
+    const sortValue = document.getElementById('search-sort-select').value;
+    const visibleResults = Array.from(document.querySelectorAll('.search-result-item:not([style*="display: none"])'));
+    
+    visibleResults.sort((a, b) => {
+      switch(sortValue) {
+        case 'price-low':
+          return parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0);
+        case 'price-high':
+          return parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0);
+        case 'name-asc':
+          return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+        case 'name-desc':
+          return (b.dataset.name || '').localeCompare(a.dataset.name || '');
+        case 'date-new':
+          return parseInt(b.dataset.date || 0) - parseInt(a.dataset.date || 0);
+        default: // relevance
+          return 0;
+      }
+    });
+    
+    // Reorder in DOM
+    visibleResults.forEach(item => {
+      searchResultsGrid.appendChild(item);
+    });
+  };
+  
+  // View toggle
+  window.setSearchView = function(view) {
+    const gridBtn = document.querySelector('.view-btn--grid');
+    const listBtn = document.querySelector('.view-btn--list');
+    
+    if (view === 'grid') {
+      searchResultsGrid.classList.remove('search-results-grid--list');
+      gridBtn.classList.add('active');
+      listBtn.classList.remove('active');
+    } else {
+      searchResultsGrid.classList.add('search-results-grid--list');
+      listBtn.classList.add('active');
+      gridBtn.classList.remove('active');
+    }
+  };
+  
+  // Toggle filters
+  window.toggleSearchFilters = function() {
+    searchFilters.classList.toggle('search-filters--open');
+  };
+  
+  // Clear filters
+  window.clearSearchFilters = function() {
+    // Clear checkboxes
+    document.querySelectorAll('.search-filters input[type="checkbox"]').forEach(cb => cb.checked = false);
+    
+    // Clear price inputs
+    document.getElementById('search-price-min').value = '';
+    document.getElementById('search-price-max').value = '';
+    
+    // Clear search within results
+    document.getElementById('search-within-results').value = '';
+    
+    // Show all results
+    originalResults.forEach(item => item.style.display = 'block');
+    
+    updateSearchResultsCount();
+  };
+  
+  // Update results count
+  function updateSearchResultsCount() {
+    const visibleResults = document.querySelectorAll('.search-result-item:not([style*="display: none"])');
+    if (searchVisibleCount) {
+      searchVisibleCount.textContent = visibleResults.length;
+    }
+    
+    // Show/hide no results message
+    if (searchNoResults) {
+      if (visibleResults.length === 0) {
+        searchNoResults.style.display = 'block';
+      } else {
+        searchNoResults.style.display = 'none';
+      }
+    }
+  }
+});
+</script>
