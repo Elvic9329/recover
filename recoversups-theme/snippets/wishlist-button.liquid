@@ -1,0 +1,268 @@
+{% comment %}
+  Wishlist Button Component - Recoversups
+  Botón de lista de deseos reutilizable
+{% endcomment %}
+
+<button class="wishlist-btn {% if wishlist_active %}active{% endif %}" 
+        data-product-id="{{ product.id }}"
+        data-variant-id="{{ variant.id | default: product.selected_or_first_available_variant.id }}"
+        onclick="toggleWishlist({{ product.id }}, '{{ product.handle }}', this)"
+        aria-label="{% if wishlist_active %}Quitar de{% else %}Agregar a{% endif %} lista de deseos">
+  
+  <!-- Heart Icon -->
+  <svg class="wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>
+  </svg>
+  
+  <!-- Loading Spinner -->
+  <div class="wishlist-loading" style="display: none;">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- Tooltip -->
+  <div class="wishlist-tooltip">
+    <span class="tooltip-text">
+      {% if wishlist_active %}Quitar de lista de deseos{% else %}Agregar a lista de deseos{% endif %}
+    </span>
+  </div>
+</button>
+
+<style>
+.wishlist-btn {
+  position: relative;
+  background: none;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: #666;
+  
+  &:hover {
+    border-color: #B62921;
+    background: rgba(182, 41, 33, 0.1);
+    color: #B62921;
+    transform: scale(1.05);
+  }
+  
+  &.active {
+    border-color: #B62921;
+    background: #B62921;
+    color: white;
+    
+    .wishlist-icon {
+      fill: currentColor;
+    }
+    
+    &:hover {
+      background: #A01E17;
+      border-color: #A01E17;
+    }
+  }
+  
+  .wishlist-icon {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .wishlist-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: currentColor;
+      animation: spin 1s linear infinite;
+    }
+  }
+  
+  .wishlist-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    
+    .tooltip-text {
+      background: #333;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent;
+        border-top-color: #333;
+      }
+    }
+  }
+  
+  &:hover .wishlist-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Compact version for product cards */
+.wishlist-btn--compact {
+  width: 36px;
+  height: 36px;
+  border-width: 1px;
+  
+  .wishlist-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Large version for product pages */
+.wishlist-btn--large {
+  width: 52px;
+  height: 52px;
+  
+  .wishlist-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+</style>
+
+<script>
+// Wishlist functionality
+window.toggleWishlist = function(productId, productHandle, button) {
+  const isActive = button.classList.contains('active');
+  const icon = button.querySelector('.wishlist-icon');
+  const loading = button.querySelector('.wishlist-loading');
+  const tooltip = button.querySelector('.tooltip-text');
+  
+  // Show loading state
+  icon.style.display = 'none';
+  loading.style.display = 'block';
+  button.disabled = true;
+  
+  // Get current wishlist from localStorage
+  let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  
+  // Simulate API delay
+  setTimeout(() => {
+    if (isActive) {
+      // Remove from wishlist
+      wishlist = wishlist.filter(item => item.id !== productId);
+      button.classList.remove('active');
+      tooltip.textContent = 'Agregar a lista de deseos';
+      showWishlistNotification('Producto removido de la lista de deseos', 'remove');
+    } else {
+      // Add to wishlist
+      const product = {
+        id: productId,
+        handle: productHandle,
+        added_at: new Date().toISOString()
+      };
+      wishlist.push(product);
+      button.classList.add('active');
+      tooltip.textContent = 'Quitar de lista de deseos';
+      showWishlistNotification('Producto agregado a la lista de deseos', 'add');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    
+    // Update wishlist count
+    updateWishlistCount();
+    
+    // Hide loading state
+    loading.style.display = 'none';
+    icon.style.display = 'block';
+    button.disabled = false;
+  }, 500);
+};
+
+function showWishlistNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `wishlist-notification ${type}`;
+  notification.innerHTML = `
+    <div class="notification-content">
+      <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        ${type === 'add' ? 
+          '<path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>' :
+          '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>'
+        }
+      </svg>
+      <span>${message}</span>
+    </div>
+    <button class="notification-close" onclick="this.parentElement.remove()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove();
+    }
+  }, 3000);
+}
+
+function updateWishlistCount() {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  const countElements = document.querySelectorAll('.wishlist-count');
+  
+  countElements.forEach(element => {
+    element.textContent = wishlist.length;
+    element.style.display = wishlist.length > 0 ? 'block' : 'none';
+  });
+}
+
+function initializeWishlist() {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  const wishlistIds = wishlist.map(item => item.id);
+  
+  // Mark active wishlist buttons
+  document.querySelectorAll('.wishlist-btn').forEach(button => {
+    const productId = parseInt(button.dataset.productId);
+    if (wishlistIds.includes(productId)) {
+      button.classList.add('active');
+      const tooltip = button.querySelector('.tooltip-text');
+      if (tooltip) {
+        tooltip.textContent = 'Quitar de lista de deseos';
+      }
+    }
+  });
+  
+  // Update wishlist count
+  updateWishlistCount();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initializeWishlist);
+</script>

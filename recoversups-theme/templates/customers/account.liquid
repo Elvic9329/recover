@@ -1,0 +1,626 @@
+{% comment %}
+  Customer Account Page - Recoversups
+  Página principal de cuenta del cliente
+{% endcomment %}
+
+<div class="account-page">
+  <div class="container">
+    <!-- Account Header -->
+    <div class="account-header">
+      <div class="account-welcome">
+        <h1 class="account-title">Mi Cuenta</h1>
+        <p class="account-subtitle">Hola, {{ customer.first_name }}! Gestiona tu cuenta y pedidos</p>
+      </div>
+      <div class="account-actions">
+        <a href="{{ routes.account_logout_url }}" class="btn btn-outline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9,21H5a2,2 0,0 1,-2 -2V5a2,2 0,0 1,2 -2h4"></path>
+            <polyline points="16,17 21,12 16,7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Cerrar Sesión
+        </a>
+      </div>
+    </div>
+
+    <!-- Account Navigation -->
+    <div class="account-nav">
+      <button class="account-nav-btn active" data-section="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        Dashboard
+      </button>
+      <button class="account-nav-btn" data-section="orders">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16,4h2a2,2 0,0 1,2 2v14a2,2 0,0 1,-2 2H6a2,2 0,0 1,-2 -2V6a2,2 0,0 1,2 -2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        Mis Pedidos
+      </button>
+      <button class="account-nav-btn" data-section="wishlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>
+        </svg>
+        Lista de Deseos
+        <span class="wishlist-count" style="display: none;">0</span>
+      </button>
+      <button class="account-nav-btn" data-section="addresses">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21,10c0,7 -9,13 -9,13s-9,-6 -9,-13a9,9 0,0 1,18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        Direcciones
+      </button>
+      <button class="account-nav-btn" data-section="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20,21v-2a4,4 0,0 0,-4 -4H8a4,4 0,0 0,-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Mi Perfil
+      </button>
+    </div>
+
+    <!-- Account Content -->
+    <div class="account-content">
+      <!-- Dashboard Section -->
+      <div class="account-section active" id="dashboard-section">
+        <div class="dashboard-grid">
+          <!-- Account Stats -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h3>Resumen de Cuenta</h3>
+            </div>
+            <div class="card-content">
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <div class="stat-value">{{ customer.orders_count }}</div>
+                  <div class="stat-label">Pedidos Totales</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{{ customer.total_spent | money }}</div>
+                  <div class="stat-label">Total Gastado</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="wishlist-total">0</div>
+                  <div class="stat-label">En Lista de Deseos</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{{ customer.addresses_count }}</div>
+                  <div class="stat-label">Direcciones</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h3>Pedidos Recientes</h3>
+              <a href="#" class="card-link" onclick="switchSection('orders')">Ver todos</a>
+            </div>
+            <div class="card-content">
+              {% if customer.orders.size > 0 %}
+                <div class="recent-orders">
+                  {% for order in customer.orders limit: 3 %}
+                    <div class="order-item">
+                      <div class="order-info">
+                        <div class="order-number">#{{ order.order_number }}</div>
+                        <div class="order-date">{{ order.created_at | date: '%d/%m/%Y' }}</div>
+                      </div>
+                      <div class="order-status">
+                        <span class="status-badge status-{{ order.financial_status }}">
+                          {{ order.financial_status }}
+                        </span>
+                      </div>
+                      <div class="order-total">{{ order.total_price | money }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1,1h4l2.68,13.39a2,2 0,0 0,2 1.61H19.4a2,2 0,0 0,2 -1.61L23,6H6"></path>
+                  </svg>
+                  <p>Aún no has realizado ningún pedido</p>
+                  <a href="/collections/all" class="btn btn-primary">Empezar a comprar</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h3>Acciones Rápidas</h3>
+            </div>
+            <div class="card-content">
+              <div class="quick-actions">
+                <a href="/collections/all" class="quick-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1,1h4l2.68,13.39a2,2 0,0 0,2 1.61H19.4a2,2 0,0 0,2 -1.61L23,6H6"></path>
+                  </svg>
+                  <span>Seguir Comprando</span>
+                </a>
+                <button class="quick-action" onclick="switchSection('wishlist')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>
+                  </svg>
+                  <span>Ver Lista de Deseos</span>
+                </button>
+                <button class="quick-action" onclick="switchSection('addresses')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21,10c0,7 -9,13 -9,13s-9,-6 -9,-13a9,9 0,0 1,18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Gestionar Direcciones</span>
+                </button>
+                <a href="/pages/contact" class="quick-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21,11.5a8.38,8.38 0,0 1,-.9 3.8,8.5,8.5 0,0 1,-7.6 4.7,8.38,8.38 0,0 1,-3.8 -.9L3,21l1.9,-5.7a8.38,8.38 0,0 1,-.9 -3.8,8.5,8.5 0,0 1,4.7 -7.6,8.38,8.38 0,0 1,3.8 -.9,8.5,8.5 0,0 1,7.6 4.7,8.38,8.38 0,0 1,.9 3.8z"></path>
+                  </svg>
+                  <span>Contactar Soporte</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Section -->
+      <div class="account-section" id="orders-section">
+        <div class="section-header">
+          <h2>Mis Pedidos</h2>
+          <div class="section-filters">
+            <select class="filter-select" onchange="filterOrders(this.value)">
+              <option value="all">Todos los pedidos</option>
+              <option value="pending">Pendientes</option>
+              <option value="paid">Pagados</option>
+              <option value="shipped">Enviados</option>
+              <option value="delivered">Entregados</option>
+            </select>
+          </div>
+        </div>
+
+        {% if customer.orders.size > 0 %}
+          <div class="orders-list">
+            {% for order in customer.orders %}
+              <div class="order-card" data-status="{{ order.financial_status }}">
+                <div class="order-header">
+                  <div class="order-number">Pedido #{{ order.order_number }}</div>
+                  <div class="order-date">{{ order.created_at | date: '%d de %B, %Y' }}</div>
+                </div>
+                
+                <div class="order-details">
+                  <div class="order-items">
+                    {% for line_item in order.line_items limit: 3 %}
+                      <div class="order-item">
+                        <img src="{{ line_item.image | img_url: '60x60' }}" alt="{{ line_item.title }}">
+                        <div class="item-details">
+                          <div class="item-name">{{ line_item.title }}</div>
+                          <div class="item-quantity">Cantidad: {{ line_item.quantity }}</div>
+                        </div>
+                        <div class="item-price">{{ line_item.final_price | money }}</div>
+                      </div>
+                    {% endfor %}
+                    {% if order.line_items.size > 3 %}
+                      <div class="more-items">
+                        +{{ order.line_items.size | minus: 3 }} productos más
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="order-summary">
+                    <div class="order-status">
+                      <span class="status-badge status-{{ order.financial_status }}">
+                        {{ order.financial_status }}
+                      </span>
+                      <span class="fulfillment-badge status-{{ order.fulfillment_status }}">
+                        {{ order.fulfillment_status | default: 'Sin enviar' }}
+                      </span>
+                    </div>
+                    <div class="order-total">
+                      <span class="total-label">Total:</span>
+                      <span class="total-value">{{ order.total_price | money }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="order-actions">
+                  <a href="{{ order.order_status_url }}" class="btn btn-outline">Ver Detalles</a>
+                  {% if order.financial_status == 'paid' %}
+                    <button class="btn btn-secondary" onclick="trackOrder('{{ order.order_number }}')">
+                      Rastrear Pedido
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1,1h4l2.68,13.39a2,2 0,0 0,2 1.61H19.4a2,2 0,0 0,2 -1.61L23,6H6"></path>
+            </svg>
+            <h3>No tienes pedidos aún</h3>
+            <p>Cuando realices tu primera compra, aparecerá aquí</p>
+            <a href="/collections/all" class="btn btn-primary">Empezar a comprar</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Wishlist Section -->
+      <div class="account-section" id="wishlist-section">
+        <div class="section-header">
+          <h2>Lista de Deseos</h2>
+          <div class="section-actions">
+            <button class="btn btn-outline" onclick="clearWishlist()">
+              Limpiar Lista
+            </button>
+          </div>
+        </div>
+
+        <div class="wishlist-content">
+          <div class="wishlist-grid" id="wishlist-grid">
+            <!-- Wishlist items will be populated by JavaScript -->
+          </div>
+          
+          <div class="wishlist-empty" id="wishlist-empty" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>
+            </svg>
+            <h3>Tu lista de deseos está vacía</h3>
+            <p>Agrega productos que te gusten para encontrarlos fácilmente después</p>
+            <a href="/collections/all" class="btn btn-primary">Explorar Productos</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Addresses Section -->
+      <div class="account-section" id="addresses-section">
+        <div class="section-header">
+          <h2>Mis Direcciones</h2>
+          <button class="btn btn-primary" onclick="showAddressForm()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Agregar Dirección
+          </button>
+        </div>
+
+        <div class="addresses-grid">
+          {% if customer.addresses.size > 0 %}
+            {% for address in customer.addresses %}
+              <div class="address-card {% if address == customer.default_address %}default{% endif %}">
+                <div class="address-header">
+                  <h3>{{ address.first_name }} {{ address.last_name }}</h3>
+                  {% if address == customer.default_address %}
+                    <span class="default-badge">Predeterminada</span>
+                  {% endif %}
+                </div>
+                
+                <div class="address-details">
+                  <p>{{ address.address1 }}</p>
+                  {% if address.address2 != blank %}
+                    <p>{{ address.address2 }}</p>
+                  {% endif %}
+                  <p>{{ address.city }}, {{ address.province }} {{ address.zip }}</p>
+                  <p>{{ address.country }}</p>
+                  {% if address.phone != blank %}
+                    <p>Tel: {{ address.phone }}</p>
+                  {% endif %}
+                </div>
+                
+                <div class="address-actions">
+                  <button class="btn btn-outline" onclick="editAddress({{ address.id }})">
+                    Editar
+                  </button>
+                  {% unless address == customer.default_address %}
+                    <button class="btn btn-outline" onclick="setDefaultAddress({{ address.id }})">
+                      Predeterminada
+                    </button>
+                  {% endunless %}
+                  <button class="btn btn-outline btn-delete" onclick="deleteAddress({{ address.id }})">
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21,10c0,7 -9,13 -9,13s-9,-6 -9,-13a9,9 0,0 1,18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <h3>No tienes direcciones guardadas</h3>
+              <p>Agrega una dirección para acelerar tus compras</p>
+              <button class="btn btn-primary" onclick="showAddressForm()">
+                Agregar Primera Dirección
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Profile Section -->
+      <div class="account-section" id="profile-section">
+        <div class="section-header">
+          <h2>Mi Perfil</h2>
+        </div>
+
+        <div class="profile-content">
+          <div class="profile-form-card">
+            {% form 'customer' %}
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="customer-first-name" class="form-label">Nombre</label>
+                  <input type="text" 
+                         id="customer-first-name" 
+                         name="customer[first_name]" 
+                         class="form-input"
+                         value="{{ customer.first_name }}"
+                         required>
+                </div>
+                <div class="form-group">
+                  <label for="customer-last-name" class="form-label">Apellido</label>
+                  <input type="text" 
+                         id="customer-last-name" 
+                         name="customer[last_name]" 
+                         class="form-input"
+                         value="{{ customer.last_name }}"
+                         required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="customer-email" class="form-label">Email</label>
+                <input type="email" 
+                       id="customer-email" 
+                       name="customer[email]" 
+                       class="form-input"
+                       value="{{ customer.email }}"
+                       required>
+              </div>
+
+              <div class="form-group">
+                <label for="customer-phone" class="form-label">Teléfono</label>
+                <input type="tel" 
+                       id="customer-phone" 
+                       name="customer[phone]" 
+                       class="form-input"
+                       value="{{ customer.phone }}"
+                       placeholder="+51 999 999 999">
+              </div>
+
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" 
+                         name="customer[accepts_marketing]" 
+                         class="checkbox-input"
+                         {% if customer.accepts_marketing %}checked{% endif %}>
+                  <span class="checkbox-custom"></span>
+                  Quiero recibir ofertas y novedades por email
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  Actualizar Perfil
+                </button>
+                <a href="{{ routes.account_logout_url }}" class="btn btn-outline">
+                  Cerrar Sesión
+                </a>
+              </div>
+            {% endform %}
+          </div>
+
+          <div class="profile-security-card">
+            <h3>Seguridad</h3>
+            <div class="security-actions">
+              <div class="security-item">
+                <div class="security-info">
+                  <h4>Contraseña</h4>
+                  <p>Última actualización: hace 3 meses</p>
+                </div>
+                <a href="{{ routes.account_recover_url }}" class="btn btn-outline">
+                  Cambiar Contraseña
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  initializeAccount();
+  loadWishlist();
+  updateStats();
+});
+
+function initializeAccount() {
+  // Navigation
+  const navButtons = document.querySelectorAll('.account-nav-btn');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const section = this.dataset.section;
+      switchSection(section);
+    });
+  });
+  
+  // Check URL hash
+  if (window.location.hash) {
+    const section = window.location.hash.substring(1);
+    switchSection(section);
+  }
+}
+
+function switchSection(sectionName) {
+  // Update navigation
+  document.querySelectorAll('.account-nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.section === sectionName);
+  });
+  
+  // Update sections
+  document.querySelectorAll('.account-section').forEach(section => {
+    section.classList.toggle('active', section.id === sectionName + '-section');
+  });
+  
+  // Update URL
+  window.location.hash = sectionName;
+  
+  // Load section-specific content
+  if (sectionName === 'wishlist') {
+    loadWishlist();
+  }
+}
+
+function loadWishlist() {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  const wishlistGrid = document.getElementById('wishlist-grid');
+  const wishlistEmpty = document.getElementById('wishlist-empty');
+  
+  if (wishlist.length === 0) {
+    wishlistGrid.style.display = 'none';
+    wishlistEmpty.style.display = 'block';
+    return;
+  }
+  
+  wishlistGrid.style.display = 'grid';
+  wishlistEmpty.style.display = 'none';
+  
+  // Fetch product data
+  const promises = wishlist.map(item => 
+    fetch(`/products/${item.handle}.js`)
+      .then(response => response.json())
+      .catch(() => null)
+  );
+  
+  Promise.all(promises).then(products => {
+    const validProducts = products.filter(p => p !== null);
+    
+    wishlistGrid.innerHTML = validProducts.map(product => `
+      <div class="wishlist-item">
+        <div class="wishlist-item-image">
+          <a href="/products/${product.handle}">
+            <img src="${product.featured_image}" alt="${product.title}" loading="lazy">
+          </a>
+          <button class="wishlist-remove" onclick="removeFromWishlist(${product.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="wishlist-item-content">
+          <h3><a href="/products/${product.handle}">${product.title}</a></h3>
+          <div class="wishlist-item-price">
+            ${formatMoney(product.price)}
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addToCartFromWishlist(${product.variants[0].id})">
+            Agregar al Carrito
+          </button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function removeFromWishlist(productId) {
+  let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  wishlist = wishlist.filter(item => item.id !== productId);
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  
+  loadWishlist();
+  updateStats();
+  updateWishlistCount();
+}
+
+function clearWishlist() {
+  if (confirm('¿Estás seguro de que quieres limpiar tu lista de deseos?')) {
+    localStorage.removeItem('wishlist');
+    loadWishlist();
+    updateStats();
+    updateWishlistCount();
+  }
+}
+
+function updateStats() {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  const wishlistTotal = document.getElementById('wishlist-total');
+  if (wishlistTotal) {
+    wishlistTotal.textContent = wishlist.length;
+  }
+}
+
+function filterOrders(status) {
+  const orders = document.querySelectorAll('.order-card');
+  orders.forEach(order => {
+    if (status === 'all' || order.dataset.status === status) {
+      order.style.display = 'block';
+    } else {
+      order.style.display = 'none';
+    }
+  });
+}
+
+function trackOrder(orderNumber) {
+  alert(`Función de rastreo para pedido #${orderNumber} - Por implementar`);
+}
+
+function formatMoney(cents) {
+  return `S/ ${(cents / 100).toFixed(2)}`;
+}
+
+// Address functions
+function showAddressForm() {
+  alert('Formulario de dirección - Por implementar');
+}
+
+function editAddress(addressId) {
+  alert(`Editar dirección ${addressId} - Por implementar`);
+}
+
+function setDefaultAddress(addressId) {
+  alert(`Establecer dirección ${addressId} como predeterminada - Por implementar`);
+}
+
+function deleteAddress(addressId) {
+  if (confirm('¿Estás seguro de que quieres eliminar esta dirección?')) {
+    alert(`Eliminar dirección ${addressId} - Por implementar`);
+  }
+}
+
+function addToCartFromWishlist(variantId) {
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: variantId,
+      quantity: 1
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert('Producto agregado al carrito');
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+</script>

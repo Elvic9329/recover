@@ -1,0 +1,528 @@
+{% comment %}
+  Customer Login Page - Recoversups
+  Página de inicio de sesión con diseño moderno
+{% endcomment %}
+
+<div class="auth-page">
+  <div class="container">
+    <div class="auth-container">
+      <!-- Auth Header -->
+      <div class="auth-header">
+        <div class="auth-logo">
+          <a href="{{ routes.root_url }}">
+            <img src="{{ 'logo.svg' | asset_url }}" alt="Recoversups" loading="eager">
+          </a>
+        </div>
+        <h1 class="auth-title">Iniciar Sesión</h1>
+        <p class="auth-subtitle">¡Bienvenido de vuelta! Ingresa a tu cuenta</p>
+      </div>
+
+      <!-- Auth Form -->
+      <div class="auth-form-container">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Iniciar Sesión</button>
+          <button class="auth-tab" data-tab="register">Crear Cuenta</button>
+        </div>
+
+        <!-- Login Form -->
+        <div class="auth-form-panel active" id="login-panel">
+          {% form 'customer_login', novalidate: 'novalidate' %}
+            <div class="form-errors">
+              {% if form.errors %}
+                <div class="error-message">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  </svg>
+                  <div class="error-content">
+                    <h3>Error al iniciar sesión</h3>
+                    <ul>
+                      {% for error in form.errors %}
+                        <li>{{ error }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="customer-email" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4,4h16c1.1,0 2,0.9 2,2v12c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Email
+              </label>
+              <input type="email" 
+                     id="customer-email" 
+                     name="customer[email]" 
+                     class="form-input"
+                     placeholder="tu@email.com"
+                     required
+                     autocomplete="email"
+                     value="{{ form.email }}">
+            </div>
+
+            <div class="form-group">
+              <label for="customer-password" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7,11V7a5,5 0,0 1,10 0v4"></path>
+                </svg>
+                Contraseña
+              </label>
+              <div class="password-input-wrapper">
+                <input type="password" 
+                       id="customer-password" 
+                       name="customer[password]" 
+                       class="form-input password-input"
+                       placeholder="Tu contraseña"
+                       required
+                       autocomplete="current-password">
+                <button type="button" class="password-toggle" onclick="togglePassword('customer-password')">
+                  <svg class="password-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1,12s4,-8 11,-8 11,8 11,8 -4,8 -11,8 -11,-8 -11,-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="password-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <path d="M17.94,17.94A10.07,10.07 0,0 1,12 20c-7,0 -11,-8 -11,-8a18.45,18.45 0,0 1,5.06 -5.94M9.9,4.24A9.12,9.12 0,0 1,12 4c7,0 11,8 11,8a18.5,18.5 0,0 1,-2.16 3.19m-6.72,-1.07a3,3 0,1 1,-4.24 -4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" name="remember" class="checkbox-input">
+                <span class="checkbox-custom"></span>
+                Recordarme
+              </label>
+              <a href="{{ routes.account_recover_url }}" class="forgot-password">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-auth">
+              <span class="btn-text">Iniciar Sesión</span>
+              <div class="btn-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+              </div>
+            </button>
+
+            <!-- Social Login -->
+            <div class="social-auth">
+              <div class="social-divider">
+                <span>o continúa con</span>
+              </div>
+              <div class="social-buttons">
+                <button type="button" class="btn-social btn-google" onclick="loginWithGoogle()">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56,12.25c0,-0.78 -0.07,-1.53 -0.2,-2.25H12v4.26h5.92c-0.26,1.37 -1.04,2.53 -2.21,3.31v2.77h3.57C20.69,18.13 22.56,15.45 22.56,12.25z" fill="#4285F4"/>
+                    <path d="M12,23c2.97,0 5.46,-0.98 7.28,-2.66l-3.57,-2.77c-0.98,0.66 -2.23,1.06 -3.71,1.06 -2.86,0 -5.29,-1.93 -6.16,-4.53H2.18v2.84C3.99,20.53 7.7,23 12,23z" fill="#34A853"/>
+                    <path d="M5.84,14.09c-0.22,-0.66 -0.35,-1.36 -0.35,-2.09s0.13,-1.43 0.35,-2.09V7.07H2.18C1.43,8.55 1,10.22 1,12s0.43,3.45 1.18,4.93L5.84,14.09z" fill="#FBBC05"/>
+                    <path d="M12,5.38c1.62,0 3.06,0.56 4.21,1.64l3.15,-3.15C17.45,2.09 14.97,1 12,1 7.7,1 3.99,3.47 2.18,7.07l3.66,2.84C6.71,7.31 9.14,5.38 12,5.38z" fill="#EA4335"/>
+                  </svg>
+                  Google
+                </button>
+                <button type="button" class="btn-social btn-facebook" onclick="loginWithFacebook()">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24,12.073c0,-6.627 -5.373,-12 -12,-12s-12,5.373 -12,12c0,5.99 4.388,10.954 10.125,11.854v-8.385H7.078v-3.47h3.047V9.43c0,-3.007 1.792,-4.669 4.533,-4.669 1.312,0 2.686,0.235 2.686,0.235v2.953H15.83c-1.491,0 -1.956,0.925 -1.956,1.874v2.25h3.328l-0.532,3.47h-2.796v8.385C19.612,23.027 24,18.062 24,12.073z" fill="#1877F2"/>
+                  </svg>
+                  Facebook
+                </button>
+              </div>
+            </div>
+          {% endform %}
+        </div>
+
+        <!-- Register Form -->
+        <div class="auth-form-panel" id="register-panel">
+          {% form 'create_customer', novalidate: 'novalidate' %}
+            <div class="form-errors">
+              {% if form.errors %}
+                <div class="error-message">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  </svg>
+                  <div class="error-content">
+                    <h3>Error al crear cuenta</h3>
+                    <ul>
+                      {% for error in form.errors %}
+                        <li>{{ error }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="register-first-name" class="form-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20,21v-2a4,4 0,0 0,-4 -4H8a4,4 0,0 0,-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Nombre
+                </label>
+                <input type="text" 
+                       id="register-first-name" 
+                       name="customer[first_name]" 
+                       class="form-input"
+                       placeholder="Tu nombre"
+                       required
+                       autocomplete="given-name"
+                       value="{{ form.first_name }}">
+              </div>
+
+              <div class="form-group">
+                <label for="register-last-name" class="form-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20,21v-2a4,4 0,0 0,-4 -4H8a4,4 0,0 0,-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Apellido
+                </label>
+                <input type="text" 
+                       id="register-last-name" 
+                       name="customer[last_name]" 
+                       class="form-input"
+                       placeholder="Tu apellido"
+                       required
+                       autocomplete="family-name"
+                       value="{{ form.last_name }}">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="register-email" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4,4h16c1.1,0 2,0.9 2,2v12c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Email
+              </label>
+              <input type="email" 
+                     id="register-email" 
+                     name="customer[email]" 
+                     class="form-input"
+                     placeholder="tu@email.com"
+                     required
+                     autocomplete="email"
+                     value="{{ form.email }}">
+            </div>
+
+            <div class="form-group">
+              <label for="register-password" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7,11V7a5,5 0,0 1,10 0v4"></path>
+                </svg>
+                Contraseña
+              </label>
+              <div class="password-input-wrapper">
+                <input type="password" 
+                       id="register-password" 
+                       name="customer[password]" 
+                       class="form-input password-input"
+                       placeholder="Mínimo 8 caracteres"
+                       required
+                       autocomplete="new-password"
+                       minlength="8">
+                <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
+                  <svg class="password-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1,12s4,-8 11,-8 11,8 11,8 -4,8 -11,8 -11,-8 -11,-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="password-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <path d="M17.94,17.94A10.07,10.07 0,0 1,12 20c-7,0 -11,-8 -11,-8a18.45,18.45 0,0 1,5.06 -5.94M9.9,4.24A9.12,9.12 0,0 1,12 4c7,0 11,8 11,8a18.5,18.5 0,0 1,-2.16 3.19m-6.72,-1.07a3,3 0,1 1,-4.24 -4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+              <div class="password-strength" id="password-strength"></div>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" name="marketing" class="checkbox-input">
+                <span class="checkbox-custom"></span>
+                Quiero recibir ofertas y novedades por email
+              </label>
+            </div>
+
+            <div class="form-terms">
+              <label class="checkbox-label">
+                <input type="checkbox" name="terms" class="checkbox-input" required>
+                <span class="checkbox-custom"></span>
+                Acepto los <a href="/pages/terms" target="_blank">términos y condiciones</a> y la <a href="/pages/privacy" target="_blank">política de privacidad</a>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-auth">
+              <span class="btn-text">Crear Cuenta</span>
+              <div class="btn-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+              </div>
+            </button>
+
+            <!-- Social Register -->
+            <div class="social-auth">
+              <div class="social-divider">
+                <span>o regístrate con</span>
+              </div>
+              <div class="social-buttons">
+                <button type="button" class="btn-social btn-google" onclick="registerWithGoogle()">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56,12.25c0,-0.78 -0.07,-1.53 -0.2,-2.25H12v4.26h5.92c-0.26,1.37 -1.04,2.53 -2.21,3.31v2.77h3.57C20.69,18.13 22.56,15.45 22.56,12.25z" fill="#4285F4"/>
+                    <path d="M12,23c2.97,0 5.46,-0.98 7.28,-2.66l-3.57,-2.77c-0.98,0.66 -2.23,1.06 -3.71,1.06 -2.86,0 -5.29,-1.93 -6.16,-4.53H2.18v2.84C3.99,20.53 7.7,23 12,23z" fill="#34A853"/>
+                    <path d="M5.84,14.09c-0.22,-0.66 -0.35,-1.36 -0.35,-2.09s0.13,-1.43 0.35,-2.09V7.07H2.18C1.43,8.55 1,10.22 1,12s0.43,3.45 1.18,4.93L5.84,14.09z" fill="#FBBC05"/>
+                    <path d="M12,5.38c1.62,0 3.06,0.56 4.21,1.64l3.15,-3.15C17.45,2.09 14.97,1 12,1 7.7,1 3.99,3.47 2.18,7.07l3.66,2.84C6.71,7.31 9.14,5.38 12,5.38z" fill="#EA4335"/>
+                  </svg>
+                  Google
+                </button>
+                <button type="button" class="btn-social btn-facebook" onclick="registerWithFacebook()">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24,12.073c0,-6.627 -5.373,-12 -12,-12s-12,5.373 -12,12c0,5.99 4.388,10.954 10.125,11.854v-8.385H7.078v-3.47h3.047V9.43c0,-3.007 1.792,-4.669 4.533,-4.669 1.312,0 2.686,0.235 2.686,0.235v2.953H15.83c-1.491,0 -1.956,0.925 -1.956,1.874v2.25h3.328l-0.532,3.47h-2.796v8.385C19.612,23.027 24,18.062 24,12.073z" fill="#1877F2"/>
+                  </svg>
+                  Facebook
+                </button>
+              </div>
+            </div>
+          {% endform %}
+        </div>
+      </div>
+
+      <!-- Auth Footer -->
+      <div class="auth-footer">
+        <div class="auth-benefits">
+          <h3>¿Por qué crear una cuenta?</h3>
+          <div class="benefits-grid">
+            <div class="benefit-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9,11H15A6,6 0,0 0,9 5V11Z"></path>
+                <path d="M9,11A6,6 0,0 0,15 17V11Z"></path>
+              </svg>
+              <div>
+                <h4>Compras más rápidas</h4>
+                <p>Guarda tus datos y compra en un clic</p>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>
+              </svg>
+              <div>
+                <h4>Lista de deseos</h4>
+                <p>Guarda tus productos favoritos</p>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16,4h2a2,2 0,0 1,2 2v14a2,2 0,0 1,-2 2H6a2,2 0,0 1,-2 -2V6a2,2 0,0 1,2 -2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+              <div>
+                <h4>Historial de pedidos</h4>
+                <p>Revisa tus compras anteriores</p>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21,16V8a2,2 0,0 0,-1 -1.73l-7,-4a2,2 0,0 0,-2 0l-7,4A2,2 0,0 0,3 8v8a2,2 0,0 0,1 1.73l7,4a2,2 0,0 0,2 0l7,-4A2,2 0,0 0,21 16z"></path>
+                <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+              <div>
+                <h4>Ofertas exclusivas</h4>
+                <p>Accede a promociones especiales</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="auth-help">
+          <p>¿Necesitas ayuda? <a href="/pages/contact">Contáctanos</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Auth JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  initializeAuth();
+  
+  // Check if we should show register form
+  if (window.location.hash === '#register') {
+    switchTab('register');
+  }
+});
+
+function initializeAuth() {
+  // Tab switching
+  const tabs = document.querySelectorAll('.auth-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabName = this.dataset.tab;
+      switchTab(tabName);
+    });
+  });
+  
+  // Form submission
+  const forms = document.querySelectorAll('form');
+  forms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+      const submitBtn = this.querySelector('.btn-auth');
+      const btnText = submitBtn.querySelector('.btn-text');
+      const btnLoading = submitBtn.querySelector('.btn-loading');
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline-block';
+      submitBtn.disabled = true;
+      
+      // Note: Loading state will be reset by page reload or by error handling
+    });
+  });
+  
+  // Password strength checker
+  const passwordInput = document.getElementById('register-password');
+  if (passwordInput) {
+    passwordInput.addEventListener('input', function() {
+      checkPasswordStrength(this.value);
+    });
+  }
+}
+
+function switchTab(tabName) {
+  // Update tab buttons
+  const tabs = document.querySelectorAll('.auth-tab');
+  tabs.forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.tab === tabName);
+  });
+  
+  // Update form panels
+  const panels = document.querySelectorAll('.auth-form-panel');
+  panels.forEach(panel => {
+    panel.classList.toggle('active', panel.id === tabName + '-panel');
+  });
+  
+  // Update URL hash
+  window.location.hash = tabName === 'register' ? '#register' : '';
+  
+  // Update title
+  const title = document.querySelector('.auth-title');
+  const subtitle = document.querySelector('.auth-subtitle');
+  
+  if (tabName === 'register') {
+    title.textContent = 'Crear Cuenta';
+    subtitle.textContent = '¡Únete a nuestra comunidad fitness!';
+  } else {
+    title.textContent = 'Iniciar Sesión';
+    subtitle.textContent = '¡Bienvenido de vuelta! Ingresa a tu cuenta';
+  }
+}
+
+function togglePassword(inputId) {
+  const input = document.getElementById(inputId);
+  const toggle = input.nextElementSibling;
+  const showIcon = toggle.querySelector('.password-show');
+  const hideIcon = toggle.querySelector('.password-hide');
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    showIcon.style.display = 'none';
+    hideIcon.style.display = 'block';
+  } else {
+    input.type = 'password';
+    showIcon.style.display = 'block';
+    hideIcon.style.display = 'none';
+  }
+}
+
+function checkPasswordStrength(password) {
+  const strengthIndicator = document.getElementById('password-strength');
+  if (!strengthIndicator) return;
+  
+  let strength = 0;
+  let feedback = [];
+  
+  // Length check
+  if (password.length >= 8) strength++;
+  else feedback.push('Mínimo 8 caracteres');
+  
+  // Uppercase check
+  if (/[A-Z]/.test(password)) strength++;
+  else feedback.push('Una letra mayúscula');
+  
+  // Lowercase check
+  if (/[a-z]/.test(password)) strength++;
+  else feedback.push('Una letra minúscula');
+  
+  // Number check
+  if (/[0-9]/.test(password)) strength++;
+  else feedback.push('Un número');
+  
+  // Special character check
+  if (/[^A-Za-z0-9]/.test(password)) strength++;
+  else feedback.push('Un carácter especial');
+  
+  // Update UI
+  let strengthText = '';
+  let strengthClass = '';
+  
+  if (strength === 0) {
+    strengthText = '';
+    strengthClass = '';
+  } else if (strength <= 2) {
+    strengthText = 'Débil';
+    strengthClass = 'weak';
+  } else if (strength <= 3) {
+    strengthText = 'Regular';
+    strengthClass = 'medium';
+  } else if (strength <= 4) {
+    strengthText = 'Buena';
+    strengthClass = 'good';
+  } else {
+    strengthText = 'Muy fuerte';
+    strengthClass = 'strong';
+  }
+  
+  strengthIndicator.innerHTML = strengthText ? `
+    <div class="strength-indicator ${strengthClass}">
+      <div class="strength-bar">
+        <div class="strength-fill" style="width: ${(strength / 5) * 100}%"></div>
+      </div>
+      <span class="strength-text">${strengthText}</span>
+    </div>
+    ${feedback.length > 0 ? `<div class="strength-feedback">Falta: ${feedback.join(', ')}</div>` : ''}
+  ` : '';
+}
+
+// Social login functions (placeholder)
+function loginWithGoogle() {
+  console.log('Login with Google - to be implemented');
+}
+
+function loginWithFacebook() {
+  console.log('Login with Facebook - to be implemented');
+}
+
+function registerWithGoogle() {
+  console.log('Register with Google - to be implemented');
+}
+
+function registerWithFacebook() {
+  console.log('Register with Facebook - to be implemented');
+}
+</script>
