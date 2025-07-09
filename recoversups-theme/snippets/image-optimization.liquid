@@ -1,0 +1,265 @@
+{% comment %}
+  Image Optimization Snippet - Recoversups
+  Optimización de imágenes con WebP, lazy loading y responsive
+{% endcomment %}
+
+{% comment %}
+  Parámetros:
+  - image: objeto de imagen de Shopify
+  - sizes: string con los tamaños responsive
+  - alt: texto alternativo
+  - loading: "lazy" o "eager"
+  - class: clases CSS adicionales
+  - aspect_ratio: ratio de aspecto (opcional)
+{% endcomment %}
+
+{% assign image_loading = loading | default: 'lazy' %}
+{% assign image_class = class | default: '' %}
+{% assign image_alt = alt | default: image.alt | default: '' %}
+{% assign image_sizes = sizes | default: '(max-width: 768px) 100vw, 50vw' %}
+
+{% if image %}
+  <picture class="image-optimized {{ image_class }}">
+    {% comment %} WebP sources para navegadores compatibles {% endcomment %}
+    {% if sizes contains 'responsive' %}
+      {% comment %} Imágenes responsive con múltiples tamaños {% endcomment %}
+      <source 
+        type="image/webp"
+        srcset="{{ image | img_url: '400x400' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 400w,
+                {{ image | img_url: '600x600' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 600w,
+                {{ image | img_url: '800x800' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 800w,
+                {{ image | img_url: '1200x1200' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 1200w"
+        sizes="{{ image_sizes }}">
+      
+      <source 
+        type="image/jpeg"
+        srcset="{{ image | img_url: '400x400' }} 400w,
+                {{ image | img_url: '600x600' }} 600w,
+                {{ image | img_url: '800x800' }} 800w,
+                {{ image | img_url: '1200x1200' }} 1200w"
+        sizes="{{ image_sizes }}">
+    {% else %}
+      {% comment %} Imagen con tamaño específico {% endcomment %}
+      {% assign webp_url = image | img_url: sizes | replace: '.jpg', '.webp' | replace: '.png', '.webp' %}
+      <source type="image/webp" srcset="{{ webp_url }}">
+      <source type="image/jpeg" srcset="{{ image | img_url: sizes }}">
+    {% endif %}
+    
+    {% comment %} Imagen fallback {% endcomment %}
+    <img 
+      src="{{ image | img_url: sizes | default: '800x800' }}"
+      alt="{{ image_alt }}"
+      loading="{{ image_loading }}"
+      decoding="async"
+      {% if aspect_ratio %}
+        style="aspect-ratio: {{ aspect_ratio }};"
+      {% endif %}
+      class="{{ image_class }}"
+      {% if image.width and image.height %}
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+      {% endif %}
+    >
+  </picture>
+{% else %}
+  {% comment %} Placeholder cuando no hay imagen {% endcomment %}
+  <div class="image-placeholder {{ image_class }}" 
+       {% if aspect_ratio %}style="aspect-ratio: {{ aspect_ratio }};"{% endif %}
+       role="img" 
+       aria-label="{{ image_alt | default: 'Imagen no disponible' }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+      <polyline points="21,15 16,10 5,21"></polyline>
+    </svg>
+  </div>
+{% endif %}
+
+<style>
+.image-optimized {
+  display: block;
+  width: 100%;
+  height: auto;
+  
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
+  
+  &[loading="lazy"] img {
+    opacity: 0;
+    
+    &.loaded {
+      opacity: 1;
+    }
+  }
+}
+
+.image-placeholder {
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  border-radius: 8px;
+  min-height: 200px;
+  
+  svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+  }
+}
+
+/* Optimización para Core Web Vitals */
+.image-optimized img {
+  /* Prevenir layout shift */
+  width: 100%;
+  height: auto;
+  
+  /* Mejorar el rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  
+  /* Optimizar memoria */
+  will-change: transform;
+}
+
+/* Animación de carga */
+.image-optimized.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 480px) {
+  .image-optimized img {
+    image-rendering: auto;
+  }
+}
+</style>
+
+<script>
+// Lazy loading enhancement y WebP detection
+document.addEventListener('DOMContentLoaded', function() {
+  initializeImageOptimization();
+});
+
+function initializeImageOptimization() {
+  // Detectar soporte WebP
+  const supportsWebP = checkWebPSupport();
+  
+  // Configurar Intersection Observer para lazy loading
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          loadImage(img);
+          observer.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px 0px',
+      threshold: 0.01
+    });
+    
+    // Observar todas las imágenes lazy
+    document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+  
+  // Fallback para navegadores sin Intersection Observer
+  else {
+    document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+      });
+    });
+  }
+  
+  // Precargar imágenes críticas
+  preloadCriticalImages();
+}
+
+function checkWebPSupport() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1;
+  canvas.height = 1;
+  return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+}
+
+function loadImage(img) {
+  // Mostrar loading state
+  const picture = img.closest('.image-optimized');
+  if (picture) {
+    picture.classList.add('loading');
+  }
+  
+  // Cargar imagen
+  img.addEventListener('load', () => {
+    img.classList.add('loaded');
+    if (picture) {
+      picture.classList.remove('loading');
+    }
+  });
+  
+  img.addEventListener('error', () => {
+    if (picture) {
+      picture.classList.remove('loading');
+    }
+    // Fallback para errores de imagen
+    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgcnk9IjIiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41IiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIvPgo8cG9seWxpbmUgcG9pbnRzPSIyMSwxNSAxNiwxMCA1LDIxIiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K';
+  });
+}
+
+function preloadCriticalImages() {
+  // Precargar imágenes above-the-fold
+  const criticalImages = document.querySelectorAll('img[loading="eager"]');
+  criticalImages.forEach(img => {
+    if (img.dataset.src) {
+      img.src = img.dataset.src;
+    }
+  });
+}
+
+// Optimización de imágenes en viewport
+function optimizeImagesInViewport() {
+  const images = document.querySelectorAll('.image-optimized img');
+  
+  images.forEach(img => {
+    if (isInViewport(img)) {
+      // Priorizar imágenes en viewport
+      img.loading = 'eager';
+      img.decoding = 'sync';
+    }
+  });
+}
+
+function isInViewport(element) {
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
+
+// Ejecutar optimización en scroll
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(optimizeImagesInViewport, 100);
+});
+</script>

@@ -1,0 +1,85 @@
+{% comment %}
+  Robots.txt - Recoversups
+  Configuración optimizada para SEO
+{% endcomment %}
+User-agent: *
+Allow: /
+
+# Permitir acceso a recursos importantes
+Allow: /collections/
+Allow: /products/
+Allow: /pages/
+Allow: /blogs/
+Allow: /policies/
+
+# Bloquear páginas no indexables
+Disallow: /account/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /search/
+Disallow: /admin/
+Disallow: /password/
+Disallow: /a/
+Disallow: /wpm/
+Disallow: /cdn/
+Disallow: /services/
+Disallow: /tools/
+Disallow: /apps/
+Disallow: /checkouts/
+Disallow: /orders/
+Disallow: /carts/
+Disallow: /thank_you/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*?*
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+
+# Permitir crawlers específicos
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Configuración específica para bots de ecommerce
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
+
+# Bloquear bots problemáticos
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap principal
+Sitemap: {{ shop.url }}/sitemap.xml
+Sitemap: {{ shop.url }}/sitemap_index.xml
+
+# Configuración de crawl-delay para evitar sobrecarga
+Crawl-delay: 1
+
+# Host principal
+Host: {{ shop.url | remove: 'https://' | remove: 'http://' }}

@@ -1,0 +1,528 @@
+{% comment %}
+  Analytics y Tracking - Recoversups
+  Google Analytics 4, Facebook Pixel y tracking optimizado
+{% endcomment %}
+
+<!-- Google Analytics 4 -->
+{% if settings.google_analytics_id != blank %}
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.google_analytics_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    // Configuración base de GA4
+    gtag('config', '{{ settings.google_analytics_id }}', {
+      // Configuración de Enhanced Ecommerce
+      send_page_view: true,
+      anonymize_ip: true,
+      allow_google_signals: true,
+      cookie_expires: 63072000, // 2 años
+      
+      // Configuración de privacy
+      ads_data_redaction: true,
+      url_passthrough: false,
+      
+      // Métricas web vitals
+      custom_map: {
+        'custom_parameter_1': 'page_type',
+        'custom_parameter_2': 'user_type'
+      }
+    });
+    
+    // Configurar Enhanced Ecommerce para Shopify
+    {% if template contains 'product' %}
+      gtag('event', 'view_item', {
+        currency: '{{ shop.currency }}',
+        value: {{ product.price | money_without_currency | replace: ',', '.' }},
+        items: [{
+          item_id: '{{ product.id }}',
+          item_name: '{{ product.title | escape }}',
+          item_category: '{{ product.type | escape }}',
+          item_brand: '{{ product.vendor | escape }}',
+          price: {{ product.price | money_without_currency | replace: ',', '.' }},
+          quantity: 1
+        }]
+      });
+    {% endif %}
+    
+    {% if template contains 'collection' %}
+      gtag('event', 'view_item_list', {
+        item_list_id: '{{ collection.id }}',
+        item_list_name: '{{ collection.title | escape }}',
+        items: [
+          {% for product in collection.products limit: 20 %}
+            {
+              item_id: '{{ product.id }}',
+              item_name: '{{ product.title | escape }}',
+              item_category: '{{ product.type | escape }}',
+              item_brand: '{{ product.vendor | escape }}',
+              price: {{ product.price | money_without_currency | replace: ',', '.' }},
+              index: {{ forloop.index }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ]
+      });
+    {% endif %}
+    
+    {% if template contains 'search' %}
+      gtag('event', 'search', {
+        search_term: '{{ search.terms | escape }}'
+      });
+    {% endif %}
+  </script>
+{% endif %}
+
+<!-- Facebook Pixel -->
+{% if settings.facebook_pixel_id != blank %}
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    fbq('init', '{{ settings.facebook_pixel_id }}');
+    fbq('track', 'PageView');
+    
+    {% if template contains 'product' %}
+      fbq('track', 'ViewContent', {
+        content_type: 'product',
+        content_ids: ['{{ product.id }}'],
+        content_name: '{{ product.title | escape }}',
+        content_category: '{{ product.type | escape }}',
+        value: {{ product.price | money_without_currency | replace: ',', '.' }},
+        currency: '{{ shop.currency }}'
+      });
+    {% endif %}
+    
+    {% if template contains 'collection' %}
+      fbq('track', 'ViewCategory', {
+        content_category: '{{ collection.title | escape }}'
+      });
+    {% endif %}
+    
+    {% if template contains 'search' %}
+      fbq('track', 'Search', {
+        search_string: '{{ search.terms | escape }}'
+      });
+    {% endif %}
+  </script>
+  
+  <noscript>
+    <img height="1" width="1" style="display:none" 
+         src="https://www.facebook.com/tr?id={{ settings.facebook_pixel_id }}&ev=PageView&noscript=1"/>
+  </noscript>
+{% endif %}
+
+<!-- TikTok Pixel -->
+{% if settings.tiktok_pixel_id != blank %}
+  <script>
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+      ttq.load('{{ settings.tiktok_pixel_id }}');
+      ttq.page();
+    }(window, document, 'ttq');
+  </script>
+{% endif %}
+
+<!-- Hotjar -->
+{% if settings.hotjar_id != blank %}
+  <script>
+    (function(h,o,t,j,a,r){
+      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+      h._hjSettings={hjid:{{ settings.hotjar_id }},hjsv:6};
+      a=o.getElementsByTagName('head')[0];
+      r=o.createElement('script');r.async=1;
+      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+      a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
+{% endif %}
+
+<!-- Sistema de eventos personalizado -->
+<script>
+  // Namespace para analytics
+  window.RecoverSupsAnalytics = window.RecoverSupsAnalytics || {};
+  
+  (function(analytics) {
+    'use strict';
+    
+    // Configuración
+    const config = {
+      debug: {{ settings.analytics_debug | default: false }},
+      enableGA: {{ settings.google_analytics_id | size > 0 }},
+      enableFB: {{ settings.facebook_pixel_id | size > 0 }},
+      enableTikTok: {{ settings.tiktok_pixel_id | size > 0 }},
+      currency: '{{ shop.currency }}',
+      customerType: '{{ customer.id | default: "guest" }}' !== 'guest' ? 'registered' : 'guest'
+    };
+    
+    // Utilidades
+    const utils = {
+      debug: function(message, data) {
+        if (config.debug) {
+          console.log('[RecoverSups Analytics]', message, data);
+        }
+      },
+      
+      formatPrice: function(price) {
+        return parseFloat(price.toString().replace(/[^\d.,]/g, '').replace(',', '.'));
+      },
+      
+      sanitizeString: function(str) {
+        return str ? str.toString().replace(/['"]/g, '') : '';
+      }
+    };
+    
+    // Eventos principales
+    const events = {
+      // Agregar al carrito
+      addToCart: function(productData) {
+        const eventData = {
+          item_id: productData.id,
+          item_name: productData.title,
+          item_category: productData.type,
+          item_brand: productData.vendor,
+          price: utils.formatPrice(productData.price),
+          quantity: productData.quantity || 1,
+          currency: config.currency
+        };
+        
+        utils.debug('Add to Cart', eventData);
+        
+        // Google Analytics
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'add_to_cart', {
+            currency: config.currency,
+            value: eventData.price * eventData.quantity,
+            items: [eventData]
+          });
+        }
+        
+        // Facebook Pixel
+        if (config.enableFB && typeof fbq !== 'undefined') {
+          fbq('track', 'AddToCart', {
+            content_type: 'product',
+            content_ids: [eventData.item_id],
+            content_name: eventData.item_name,
+            content_category: eventData.item_category,
+            value: eventData.price * eventData.quantity,
+            currency: config.currency
+          });
+        }
+        
+        // TikTok Pixel
+        if (config.enableTikTok && typeof ttq !== 'undefined') {
+          ttq.track('AddToCart', {
+            content_type: 'product',
+            content_id: eventData.item_id,
+            content_name: eventData.item_name,
+            content_category: eventData.item_category,
+            value: eventData.price * eventData.quantity,
+            currency: config.currency
+          });
+        }
+      },
+      
+      // Remover del carrito
+      removeFromCart: function(productData) {
+        utils.debug('Remove from Cart', productData);
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'remove_from_cart', {
+            currency: config.currency,
+            value: utils.formatPrice(productData.price),
+            items: [{
+              item_id: productData.id,
+              item_name: productData.title,
+              quantity: productData.quantity || 1
+            }]
+          });
+        }
+      },
+      
+      // Iniciar checkout
+      beginCheckout: function(cartData) {
+        utils.debug('Begin Checkout', cartData);
+        
+        const items = cartData.items.map(item => ({
+          item_id: item.id,
+          item_name: item.title,
+          item_category: item.type,
+          item_brand: item.vendor,
+          price: utils.formatPrice(item.price),
+          quantity: item.quantity
+        }));
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'begin_checkout', {
+            currency: config.currency,
+            value: utils.formatPrice(cartData.total),
+            items: items
+          });
+        }
+        
+        if (config.enableFB && typeof fbq !== 'undefined') {
+          fbq('track', 'InitiateCheckout', {
+            content_type: 'product',
+            content_ids: items.map(item => item.item_id),
+            value: utils.formatPrice(cartData.total),
+            currency: config.currency,
+            num_items: items.length
+          });
+        }
+        
+        if (config.enableTikTok && typeof ttq !== 'undefined') {
+          ttq.track('InitiateCheckout', {
+            content_type: 'product',
+            content_ids: items.map(item => item.item_id),
+            value: utils.formatPrice(cartData.total),
+            currency: config.currency
+          });
+        }
+      },
+      
+      // Compra completada
+      purchase: function(orderData) {
+        utils.debug('Purchase', orderData);
+        
+        const items = orderData.items.map(item => ({
+          item_id: item.id,
+          item_name: item.title,
+          item_category: item.type,
+          item_brand: item.vendor,
+          price: utils.formatPrice(item.price),
+          quantity: item.quantity
+        }));
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'purchase', {
+            transaction_id: orderData.orderNumber,
+            value: utils.formatPrice(orderData.total),
+            currency: config.currency,
+            items: items
+          });
+        }
+        
+        if (config.enableFB && typeof fbq !== 'undefined') {
+          fbq('track', 'Purchase', {
+            content_type: 'product',
+            content_ids: items.map(item => item.item_id),
+            value: utils.formatPrice(orderData.total),
+            currency: config.currency,
+            num_items: items.length
+          });
+        }
+        
+        if (config.enableTikTok && typeof ttq !== 'undefined') {
+          ttq.track('CompletePayment', {
+            content_type: 'product',
+            content_ids: items.map(item => item.item_id),
+            value: utils.formatPrice(orderData.total),
+            currency: config.currency
+          });
+        }
+      },
+      
+      // Agregar a lista de deseos
+      addToWishlist: function(productData) {
+        utils.debug('Add to Wishlist', productData);
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'add_to_wishlist', {
+            currency: config.currency,
+            value: utils.formatPrice(productData.price),
+            items: [{
+              item_id: productData.id,
+              item_name: productData.title,
+              item_category: productData.type,
+              item_brand: productData.vendor,
+              price: utils.formatPrice(productData.price)
+            }]
+          });
+        }
+        
+        if (config.enableFB && typeof fbq !== 'undefined') {
+          fbq('track', 'AddToWishlist', {
+            content_type: 'product',
+            content_ids: [productData.id],
+            content_name: productData.title,
+            content_category: productData.type,
+            value: utils.formatPrice(productData.price),
+            currency: config.currency
+          });
+        }
+      },
+      
+      // Registro de usuario
+      signUp: function(userData) {
+        utils.debug('Sign Up', userData);
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'sign_up', {
+            method: userData.method || 'email'
+          });
+        }
+        
+        if (config.enableFB && typeof fbq !== 'undefined') {
+          fbq('track', 'CompleteRegistration', {
+            content_name: 'Account Registration'
+          });
+        }
+        
+        if (config.enableTikTok && typeof ttq !== 'undefined') {
+          ttq.track('CompleteRegistration', {
+            content_name: 'Account Registration'
+          });
+        }
+      },
+      
+      // Suscripción newsletter
+      subscribe: function(email) {
+        utils.debug('Newsletter Subscribe', { email });
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', 'newsletter_signup', {
+            event_category: 'engagement',
+            event_label: 'newsletter'
+          });
+        }
+        
+        if (config.enableFB && typeof fbq !== 'undefined') {
+          fbq('track', 'Subscribe', {
+            content_name: 'Newsletter Subscription'
+          });
+        }
+      },
+      
+      // Evento personalizado
+      custom: function(eventName, eventData) {
+        utils.debug('Custom Event: ' + eventName, eventData);
+        
+        if (config.enableGA && typeof gtag !== 'undefined') {
+          gtag('event', eventName, eventData);
+        }
+      }
+    };
+    
+    // Tracking automático de elementos
+    const autoTrack = {
+      init: function() {
+        this.trackClicks();
+        this.trackForms();
+        this.trackScroll();
+      },
+      
+      trackClicks: function() {
+        document.addEventListener('click', function(e) {
+          const target = e.target.closest('[data-track]');
+          if (target) {
+            const trackData = JSON.parse(target.dataset.track || '{}');
+            events.custom(trackData.event || 'click', trackData.data || {});
+          }
+        });
+      },
+      
+      trackForms: function() {
+        const forms = document.querySelectorAll('form[data-track-submit]');
+        forms.forEach(form => {
+          form.addEventListener('submit', function(e) {
+            const trackData = JSON.parse(this.dataset.trackSubmit || '{}');
+            events.custom(trackData.event || 'form_submit', trackData.data || {});
+          });
+        });
+      },
+      
+      trackScroll: function() {
+        let scrollTracked = false;
+        window.addEventListener('scroll', function() {
+          if (!scrollTracked && window.scrollY > document.documentElement.clientHeight * 0.25) {
+            scrollTracked = true;
+            events.custom('scroll_25', {
+              event_category: 'engagement',
+              event_label: '25% scroll'
+            });
+          }
+        });
+      }
+    };
+    
+    // Exponer API pública
+    analytics.track = events;
+    analytics.utils = utils;
+    analytics.config = config;
+    
+    // Inicializar tracking automático
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', autoTrack.init);
+    } else {
+      autoTrack.init();
+    }
+    
+  })(window.RecoverSupsAnalytics);
+</script>
+
+<!-- Eventos específicos por template -->
+{% if template contains 'customers/order' %}
+  <script>
+    // Tracking de compra completada
+    {% if order %}
+      window.RecoverSupsAnalytics.track.purchase({
+        orderNumber: '{{ order.order_number }}',
+        total: '{{ order.total_price | money_without_currency }}',
+        items: [
+          {% for line_item in order.line_items %}
+            {
+              id: '{{ line_item.product_id }}',
+              title: '{{ line_item.title | escape }}',
+              type: '{{ line_item.product.type | escape }}',
+              vendor: '{{ line_item.vendor | escape }}',
+              price: '{{ line_item.price | money_without_currency }}',
+              quantity: {{ line_item.quantity }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ]
+      });
+    {% endif %}
+  </script>
+{% endif %}
+
+<!-- Performance monitoring -->
+<script>
+  // Core Web Vitals tracking
+  function trackWebVitals() {
+    if ('web-vitals' in window) {
+      const { getCLS, getFID, getFCP, getLCP, getTTFB } = window.webVitals;
+      
+      function sendToAnalytics(metric) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', metric.name, {
+            event_category: 'Web Vitals',
+            event_label: metric.id,
+            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+            non_interaction: true
+          });
+        }
+      }
+      
+      getCLS(sendToAnalytics);
+      getFID(sendToAnalytics);
+      getFCP(sendToAnalytics);
+      getLCP(sendToAnalytics);
+      getTTFB(sendToAnalytics);
+    }
+  }
+  
+  // Cargar web-vitals library
+  if (typeof gtag !== 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js';
+    script.onload = trackWebVitals;
+    document.head.appendChild(script);
+  }
+</script>

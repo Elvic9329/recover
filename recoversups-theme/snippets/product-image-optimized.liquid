@@ -1,0 +1,501 @@
+{% comment %}
+  Product Image Optimization Snippet - Recoversups
+  Optimización específica para imágenes de productos
+{% endcomment %}
+
+{% comment %}
+  Parámetros:
+  - image: imagen del producto
+  - product: objeto producto
+  - sizes: tamaños para responsive
+  - loading: lazy o eager
+  - class: clases CSS
+  - show_gallery: mostrar galería (true/false)
+{% endcomment %}
+
+{% assign image_loading = loading | default: 'lazy' %}
+{% assign image_class = class | default: 'product-image' %}
+{% assign image_sizes = sizes | default: '(max-width: 768px) 100vw, 50vw' %}
+
+{% if image %}
+  <div class="product-image-container {{ image_class }}" 
+       data-product-id="{{ product.id }}"
+       {% if show_gallery %}data-gallery="true"{% endif %}>
+    
+    <!-- Imagen principal optimizada -->
+    <picture class="product-image-optimized">
+      <!-- WebP para navegadores compatibles -->
+      <source 
+        type="image/webp"
+        srcset="{{ image | img_url: '400x400' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 400w,
+                {{ image | img_url: '600x600' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 600w,
+                {{ image | img_url: '800x800' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 800w,
+                {{ image | img_url: '1200x1200' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 1200w"
+        sizes="{{ image_sizes }}">
+      
+      <!-- Fallback JPEG/PNG -->
+      <source 
+        type="image/jpeg"
+        srcset="{{ image | img_url: '400x400' }} 400w,
+                {{ image | img_url: '600x600' }} 600w,
+                {{ image | img_url: '800x800' }} 800w,
+                {{ image | img_url: '1200x1200' }} 1200w"
+        sizes="{{ image_sizes }}">
+      
+      <!-- Imagen principal -->
+      <img 
+        src="{{ image | img_url: '800x800' }}"
+        alt="{{ image.alt | default: product.title | escape }}"
+        loading="{{ image_loading }}"
+        decoding="async"
+        width="{{ image.width | default: 800 }}"
+        height="{{ image.height | default: 800 }}"
+        class="product-main-image"
+        data-zoom="{{ image | img_url: '1600x1600' }}"
+        style="aspect-ratio: 1 / 1;">
+    </picture>
+    
+    <!-- Overlay con información del producto -->
+    <div class="product-image-overlay">
+      {% if product.compare_at_price > product.price %}
+        <span class="discount-badge">
+          {% assign discount = product.compare_at_price | minus: product.price %}
+          {% assign discount_percentage = discount | times: 100 | divided_by: product.compare_at_price %}
+          -{{ discount_percentage }}%
+        </span>
+      {% endif %}
+      
+      {% if product.tags contains 'nuevo' %}
+        <span class="new-badge">Nuevo</span>
+      {% endif %}
+      
+      {% if product.available == false %}
+        <span class="sold-out-badge">Agotado</span>
+      {% endif %}
+    </div>
+    
+    <!-- Galería de imágenes si está habilitada -->
+    {% if show_gallery and product.images.size > 1 %}
+      <div class="product-gallery-thumbs">
+        {% for product_image in product.images limit: 5 %}
+          <button class="gallery-thumb {% if forloop.first %}active{% endif %}"
+                  data-image-index="{{ forloop.index0 }}"
+                  data-image-url="{{ product_image | img_url: '800x800' }}"
+                  data-zoom-url="{{ product_image | img_url: '1600x1600' }}"
+                  aria-label="Ver imagen {{ forloop.index }}">
+            <img 
+              src="{{ product_image | img_url: '80x80' }}"
+              alt="{{ product_image.alt | default: product.title | escape }}"
+              loading="lazy"
+              width="80"
+              height="80"
+              style="aspect-ratio: 1 / 1;">
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <!-- Zoom modal -->
+    <div class="image-zoom-modal" id="zoom-modal-{{ product.id }}" style="display: none;">
+      <div class="zoom-overlay" onclick="closeZoomModal({{ product.id }})"></div>
+      <div class="zoom-content">
+        <button class="zoom-close" onclick="closeZoomModal({{ product.id }})" aria-label="Cerrar zoom">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <img class="zoom-image" src="" alt="" loading="lazy">
+      </div>
+    </div>
+  </div>
+{% else %}
+  <!-- Placeholder cuando no hay imagen -->
+  <div class="product-image-placeholder {{ image_class }}" role="img" aria-label="Imagen no disponible">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+      <polyline points="21,15 16,10 5,21"></polyline>
+    </svg>
+    <span>Sin imagen</span>
+  </div>
+{% endif %}
+
+<style>
+.product-image-container {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f8f9fa;
+  aspect-ratio: 1 / 1;
+  
+  &:hover {
+    .product-image-overlay {
+      opacity: 1;
+    }
+    
+    .product-main-image {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.product-image-optimized {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  
+  .product-main-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+.product-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  
+  .discount-badge,
+  .new-badge,
+  .sold-out-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    pointer-events: auto;
+  }
+  
+  .discount-badge {
+    background: #e74c3c;
+    color: white;
+  }
+  
+  .new-badge {
+    background: #27ae60;
+    color: white;
+  }
+  
+  .sold-out-badge {
+    background: #95a5a6;
+    color: white;
+  }
+}
+
+.product-gallery-thumbs {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  
+  .gallery-thumb {
+    width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: none;
+    padding: 0;
+    
+    &:hover,
+    &.active {
+      border-color: #B62921;
+    }
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+.product-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 2px dashed #dee2e6;
+  border-radius: 12px;
+  aspect-ratio: 1 / 1;
+  
+  svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+  
+  span {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.image-zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .zoom-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  .zoom-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    
+    .zoom-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+    
+    .zoom-image {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-gallery-thumbs {
+    display: none;
+  }
+  
+  .product-image-container {
+    border-radius: 8px;
+  }
+}
+
+/* Optimización para Core Web Vitals */
+.product-main-image {
+  /* Prevenir layout shift */
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  
+  /* Optimizar rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  
+  /* Mejorar performance */
+  will-change: transform;
+}
+
+/* Loading state */
+.product-image-optimized.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+</style>
+
+<script>
+// Inicializar optimización de imágenes de productos
+document.addEventListener('DOMContentLoaded', function() {
+  initializeProductImages();
+});
+
+function initializeProductImages() {
+  // Configurar galería de productos
+  const productContainers = document.querySelectorAll('.product-image-container[data-gallery="true"]');
+  
+  productContainers.forEach(container => {
+    const thumbs = container.querySelectorAll('.gallery-thumb');
+    const mainImage = container.querySelector('.product-main-image');
+    
+    thumbs.forEach(thumb => {
+      thumb.addEventListener('click', function() {
+        // Actualizar imagen principal
+        const imageUrl = this.dataset.imageUrl;
+        const zoomUrl = this.dataset.zoomUrl;
+        
+        mainImage.src = imageUrl;
+        mainImage.dataset.zoom = zoomUrl;
+        
+        // Actualizar estado activo
+        thumbs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  });
+  
+  // Configurar zoom de imágenes
+  const productImages = document.querySelectorAll('.product-main-image');
+  
+  productImages.forEach(image => {
+    image.addEventListener('click', function() {
+      const productId = this.closest('.product-image-container').dataset.productId;
+      const zoomUrl = this.dataset.zoom;
+      
+      if (zoomUrl) {
+        showZoomModal(productId, zoomUrl, this.alt);
+      }
+    });
+  });
+  
+  // Precargar imágenes de la galería
+  preloadGalleryImages();
+}
+
+function showZoomModal(productId, imageUrl, altText) {
+  const modal = document.getElementById(`zoom-modal-${productId}`);
+  const zoomImage = modal.querySelector('.zoom-image');
+  
+  zoomImage.src = imageUrl;
+  zoomImage.alt = altText;
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  // Animar entrada
+  modal.style.opacity = '0';
+  setTimeout(() => {
+    modal.style.opacity = '1';
+  }, 10);
+}
+
+function closeZoomModal(productId) {
+  const modal = document.getElementById(`zoom-modal-${productId}`);
+  
+  modal.style.opacity = '0';
+  setTimeout(() => {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }, 300);
+}
+
+function preloadGalleryImages() {
+  const galleryThumbs = document.querySelectorAll('.gallery-thumb');
+  
+  galleryThumbs.forEach(thumb => {
+    const imageUrl = thumb.dataset.imageUrl;
+    const img = new Image();
+    img.src = imageUrl;
+  });
+}
+
+// Optimización de imágenes lazy loading
+function optimizeProductImages() {
+  const productImages = document.querySelectorAll('.product-main-image[loading="lazy"]');
+  
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          const container = img.closest('.product-image-optimized');
+          
+          container.classList.add('loading');
+          
+          img.addEventListener('load', () => {
+            container.classList.remove('loading');
+            img.style.opacity = '1';
+          });
+          
+          imageObserver.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px 0px'
+    });
+    
+    productImages.forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+}
+
+// Ejecutar optimización
+optimizeProductImages();
+
+// Manejo de errores de imagen
+document.addEventListener('error', function(e) {
+  if (e.target.tagName === 'IMG' && e.target.classList.contains('product-main-image')) {
+    const container = e.target.closest('.product-image-container');
+    if (container) {
+      container.innerHTML = `
+        <div class="product-image-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21,15 16,10 5,21"></polyline>
+          </svg>
+          <span>Error al cargar imagen</span>
+        </div>
+      `;
+    }
+  }
+}, true);
+</script>

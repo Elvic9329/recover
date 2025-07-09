@@ -1,0 +1,172 @@
+{% comment %}
+  XML Sitemap - Recoversups
+  Sitemap optimizado para SEO con todas las páginas del sitio
+{% endcomment %}
+{%- liquid
+  assign base_url = shop.url
+  assign current_date = 'now' | date: '%Y-%m-%d'
+  assign high_priority = '1.0'
+  assign medium_priority = '0.8'
+  assign low_priority = '0.6'
+  assign daily_freq = 'daily'
+  assign weekly_freq = 'weekly'
+  assign monthly_freq = 'monthly'
+-%}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+
+  <!-- Página principal -->
+  <url>
+    <loc>{{ base_url }}</loc>
+    <changefreq>{{ daily_freq }}</changefreq>
+    <priority>{{ high_priority }}</priority>
+    <lastmod>{{ current_date }}</lastmod>
+  </url>
+
+  <!-- Páginas principales -->
+  {% for page in pages %}
+    {% unless page.handle contains 'password' or page.handle contains 'gift' %}
+      <url>
+        <loc>{{ base_url }}{{ page.url }}</loc>
+        <changefreq>{{ monthly_freq }}</changefreq>
+        <priority>{{ medium_priority }}</priority>
+        <lastmod>{{ page.updated_at | date: '%Y-%m-%d' }}</lastmod>
+      </url>
+    {% endunless %}
+  {% endfor %}
+
+  <!-- Colecciones -->
+  {% for collection in collections %}
+    {% unless collection.handle == 'all' or collection.handle contains 'hidden' %}
+      <url>
+        <loc>{{ base_url }}{{ collection.url }}</loc>
+        <changefreq>{{ weekly_freq }}</changefreq>
+        <priority>{{ medium_priority }}</priority>
+        <lastmod>{{ collection.updated_at | date: '%Y-%m-%d' }}</lastmod>
+        {% if collection.image %}
+          <image:image>
+            <image:loc>{{ collection.image | img_url: '1200x630' | prepend: 'https:' }}</image:loc>
+            <image:title>{{ collection.title | escape }}</image:title>
+            <image:caption>{{ collection.description | strip_html | escape | truncate: 256 }}</image:caption>
+          </image:image>
+        {% endif %}
+      </url>
+    {% endunless %}
+  {% endfor %}
+
+  <!-- Productos -->
+  {% for product in shop.products %}
+    {% unless product.published == false %}
+      <url>
+        <loc>{{ base_url }}{{ product.url }}</loc>
+        <changefreq>{{ weekly_freq }}</changefreq>
+        <priority>{{ medium_priority }}</priority>
+        <lastmod>{{ product.updated_at | date: '%Y-%m-%d' }}</lastmod>
+        
+        <!-- Imágenes del producto -->
+        {% for image in product.images limit: 5 %}
+          <image:image>
+            <image:loc>{{ image | img_url: '1200x1200' | prepend: 'https:' }}</image:loc>
+            <image:title>{{ product.title | escape }}{% if image.alt != blank %} - {{ image.alt | escape }}{% endif %}</image:title>
+            <image:caption>{{ product.description | strip_html | escape | truncate: 256 }}</image:caption>
+          </image:image>
+        {% endfor %}
+      </url>
+    {% endunless %}
+  {% endfor %}
+
+  <!-- Blog principal -->
+  {% for blog in blogs %}
+    <url>
+      <loc>{{ base_url }}{{ blog.url }}</loc>
+      <changefreq>{{ weekly_freq }}</changefreq>
+      <priority>{{ medium_priority }}</priority>
+      <lastmod>{{ blog.updated_at | date: '%Y-%m-%d' }}</lastmod>
+    </url>
+
+    <!-- Artículos del blog -->
+    {% for article in blog.articles %}
+      <url>
+        <loc>{{ base_url }}{{ article.url }}</loc>
+        <changefreq>{{ monthly_freq }}</changefreq>
+        <priority>{{ low_priority }}</priority>
+        <lastmod>{{ article.updated_at | date: '%Y-%m-%d' }}</lastmod>
+        
+        <!-- Imagen del artículo -->
+        {% if article.image %}
+          <image:image>
+            <image:loc>{{ article.image | img_url: '1200x630' | prepend: 'https:' }}</image:loc>
+            <image:title>{{ article.title | escape }}</image:title>
+            <image:caption>{{ article.excerpt | default: article.content | strip_html | escape | truncate: 256 }}</image:caption>
+          </image:image>
+        {% endif %}
+        
+        <!-- News sitemap para artículos recientes -->
+        {% if article.published_at > 'now' | date: '%s' | minus: 259200 %}
+          <news:news>
+            <news:publication>
+              <news:name>{{ shop.name | escape }}</news:name>
+              <news:language>es</news:language>
+            </news:publication>
+            <news:publication_date>{{ article.published_at | date: '%Y-%m-%d' }}</news:publication_date>
+            <news:title>{{ article.title | escape }}</news:title>
+            <news:keywords>{{ article.tags | join: ', ' | escape }}</news:keywords>
+          </news:news>
+        {% endif %}
+      </url>
+    {% endfor %}
+  {% endfor %}
+
+  <!-- Políticas y páginas legales -->
+  <url>
+    <loc>{{ base_url }}/policies/privacy-policy</loc>
+    <changefreq>{{ monthly_freq }}</changefreq>
+    <priority>{{ low_priority }}</priority>
+    <lastmod>{{ current_date }}</lastmod>
+  </url>
+  
+  <url>
+    <loc>{{ base_url }}/policies/terms-of-service</loc>
+    <changefreq>{{ monthly_freq }}</changefreq>
+    <priority>{{ low_priority }}</priority>
+    <lastmod>{{ current_date }}</lastmod>
+  </url>
+  
+  <url>
+    <loc>{{ base_url }}/policies/shipping-policy</loc>
+    <changefreq>{{ monthly_freq }}</changefreq>
+    <priority>{{ low_priority }}</priority>
+    <lastmod>{{ current_date }}</lastmod>
+  </url>
+  
+  <url>
+    <loc>{{ base_url }}/policies/refund-policy</loc>
+    <changefreq>{{ monthly_freq }}</changefreq>
+    <priority>{{ low_priority }}</priority>
+    <lastmod>{{ current_date }}</lastmod>
+  </url>
+
+  <!-- Páginas de búsqueda (si están indexadas) -->
+  {% comment %}
+  <url>
+    <loc>{{ base_url }}/search</loc>
+    <changefreq>{{ weekly_freq }}</changefreq>
+    <priority>{{ low_priority }}</priority>
+    <lastmod>{{ current_date }}</lastmod>
+  </url>
+  {% endcomment %}
+
+  <!-- Tags de productos populares -->
+  {% assign popular_tags = 'proteina,creatina,aminoacidos,pre-entreno,quemador-grasa,vitaminas,masa-muscular,recuperacion' | split: ',' %}
+  {% for tag in popular_tags %}
+    <url>
+      <loc>{{ base_url }}/collections/all/{{ tag }}</loc>
+      <changefreq>{{ weekly_freq }}</changefreq>
+      <priority>{{ low_priority }}</priority>
+      <lastmod>{{ current_date }}</lastmod>
+    </url>
+  {% endfor %}
+
+</urlset>

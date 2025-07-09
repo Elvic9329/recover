@@ -1,0 +1,42 @@
+{% comment %}
+  Sitemap Index - Recoversups
+  Índice principal de sitemaps para mejor organización
+{% endcomment %}
+{%- liquid
+  assign base_url = shop.url
+  assign current_date = 'now' | date: '%Y-%m-%d'
+-%}
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Sitemap principal -->
+  <sitemap>
+    <loc>{{ base_url }}/sitemap.xml</loc>
+    <lastmod>{{ current_date }}</lastmod>
+  </sitemap>
+
+  <!-- Sitemap de productos -->
+  <sitemap>
+    <loc>{{ base_url }}/sitemap_products.xml</loc>
+    <lastmod>{{ current_date }}</lastmod>
+  </sitemap>
+
+  <!-- Sitemap de colecciones -->
+  <sitemap>
+    <loc>{{ base_url }}/sitemap_collections.xml</loc>
+    <lastmod>{{ current_date }}</lastmod>
+  </sitemap>
+
+  <!-- Sitemap de blog -->
+  <sitemap>
+    <loc>{{ base_url }}/sitemap_blog.xml</loc>
+    <lastmod>{{ current_date }}</lastmod>
+  </sitemap>
+
+  <!-- Sitemap de páginas -->
+  <sitemap>
+    <loc>{{ base_url }}/sitemap_pages.xml</loc>
+    <lastmod>{{ current_date }}</lastmod>
+  </sitemap>
+
+</sitemapindex>

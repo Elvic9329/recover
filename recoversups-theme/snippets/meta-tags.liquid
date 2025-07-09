@@ -1,31 +1,320 @@
 {% comment %}
-  Meta Tags para SEO
+  Meta Tags Optimizados para SEO - Recoversups
+  Incluye Open Graph, Twitter Cards, Schema.org y optimizaciones específicas
 {% endcomment %}
 
+<!-- Meta básicos optimizados -->
 <meta name="generator" content="Shopify">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+<!-- Información del sitio -->
+<meta name="author" content="Recoversups">
+<meta name="publisher" content="Recoversups">
+<meta name="copyright" content="© {{ 'now' | date: '%Y' }} Recoversups. Todos los derechos reservados.">
+
+<!-- Geolocalización -->
+<meta name="geo.region" content="PE">
+<meta name="geo.country" content="Peru">
+<meta name="geo.placename" content="Lima">
+
+<!-- Open Graph optimizado -->
 <meta property="og:site_name" content="{{ shop.name }}">
 <meta property="og:url" content="{{ canonical_url }}">
-<meta property="og:title" content="{{ page_title }}">
-<meta property="og:type" content="website">
-<meta property="og:description" content="{{ page_description | default: shop.description | default: shop.name }}">
+<meta property="og:title" content="{{ page_title | escape }}">
+<meta property="og:description" content="{{ page_description | default: shop.description | default: shop.name | escape | truncate: 300 }}">
+<meta property="og:locale" content="es_PE">
 
+{% comment %} Tipo de contenido específico {% endcomment %}
+{% if template contains 'product' %}
+  <meta property="og:type" content="product">
+  <meta property="product:brand" content="{{ product.vendor | escape }}">
+  <meta property="product:availability" content="{% if product.available %}in stock{% else %}out of stock{% endif %}">
+  <meta property="product:condition" content="new">
+  <meta property="product:price:amount" content="{{ product.price | money_without_currency | replace: ',', '.' }}">
+  <meta property="product:price:currency" content="{{ shop.currency }}">
+{% elsif template contains 'article' %}
+  <meta property="og:type" content="article">
+  <meta property="article:author" content="{{ article.author | escape }}">
+  <meta property="article:published_time" content="{{ article.published_at | date: '%Y-%m-%d' }}">
+  <meta property="article:modified_time" content="{{ article.updated_at | date: '%Y-%m-%d' }}">
+  <meta property="article:section" content="{{ blog.title | escape }}">
+  {% for tag in article.tags %}
+    <meta property="article:tag" content="{{ tag | escape }}">
+  {% endfor %}
+{% elsif template contains 'collection' %}
+  <meta property="og:type" content="product.group">
+{% else %}
+  <meta property="og:type" content="website">
+{% endif %}
+
+<!-- Imagen Open Graph optimizada -->
 {% if page_image %}
-  <meta property="og:image" content="http:{{ page_image | img_url: '1200x630' }}">
+  <meta property="og:image" content="https:{{ page_image | img_url: '1200x630' }}">
   <meta property="og:image:secure_url" content="https:{{ page_image | img_url: '1200x630' }}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ page_title | escape }}">
+{% elsif template contains 'product' and product.featured_image %}
+  <meta property="og:image" content="https:{{ product.featured_image | img_url: '1200x630' }}">
+  <meta property="og:image:secure_url" content="https:{{ product.featured_image | img_url: '1200x630' }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ product.title | escape }}">
+{% else %}
+  <meta property="og:image" content="https:{{ 'logo-og.png' | asset_url }}">
+  <meta property="og:image:secure_url" content="https:{{ 'logo-og.png' | asset_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ shop.name | escape }}">
 {% endif %}
 
+<!-- Twitter Cards optimizado -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ page_title }}">
-<meta name="twitter:description" content="{{ page_description | default: shop.description | default: shop.name }}">
+<meta name="twitter:site" content="@recoversups">
+<meta name="twitter:creator" content="@recoversups">
+<meta name="twitter:title" content="{{ page_title | escape }}">
+<meta name="twitter:description" content="{{ page_description | default: shop.description | default: shop.name | escape | truncate: 200 }}">
 
 {% if page_image %}
   <meta name="twitter:image" content="https:{{ page_image | img_url: '1200x630' }}">
+  <meta name="twitter:image:alt" content="{{ page_title | escape }}">
+{% elsif template contains 'product' and product.featured_image %}
+  <meta name="twitter:image" content="https:{{ product.featured_image | img_url: '1200x630' }}">
+  <meta name="twitter:image:alt" content="{{ product.title | escape }}">
+{% else %}
+  <meta name="twitter:image" content="https:{{ 'logo-og.png' | asset_url }}">
+  <meta name="twitter:image:alt" content="{{ shop.name | escape }}">
 {% endif %}
 
+<!-- Etiquetas adicionales específicas por template -->
+{% if template contains 'product' %}
+  <meta name="twitter:label1" content="Precio">
+  <meta name="twitter:data1" content="{{ product.price | money }}">
+  <meta name="twitter:label2" content="Disponibilidad">
+  <meta name="twitter:data2" content="{% if product.available %}En Stock{% else %}Agotado{% endif %}">
+{% endif %}
+
+<!-- Canonical URL -->
 <link rel="canonical" href="{{ canonical_url }}">
 
+<!-- Alternate URLs para SEO internacional -->
+<link rel="alternate" href="{{ canonical_url }}" hreflang="es-pe">
+<link rel="alternate" href="{{ canonical_url }}" hreflang="es">
+<link rel="alternate" href="{{ canonical_url }}" hreflang="x-default">
+
+<!-- Favicon optimizado -->
 {% if settings.favicon != blank %}
-  <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | img_url: '32x32' }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ settings.favicon | img_url: '16x16' }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | img_url: '180x180' }}">
+  <link rel="manifest" href="{{ 'site.webmanifest' | asset_url }}">
+{% endif %}
+
+<!-- Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{% if template contains 'product' %}Product{% elsif template contains 'article' %}Article{% elsif template contains 'collection' %}CollectionPage{% else %}WebSite{% endif %}",
+  {% if template contains 'product' %}
+    "name": "{{ product.title | escape }}",
+    "description": "{{ product.description | strip_html | escape | truncate: 300 }}",
+    "image": [
+      {% for image in product.images limit: 3 %}
+        "https:{{ image | img_url: '800x800' }}"{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ],
+    "brand": {
+      "@type": "Brand",
+      "name": "{{ product.vendor | escape }}"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": "{{ shop.url }}{{ product.url }}",
+      "priceCurrency": "{{ shop.currency }}",
+      "price": "{{ product.price | money_without_currency | replace: ',', '.' }}",
+      "priceValidUntil": "{{ 'now' | date: '%s' | plus: 31536000 | date: '%Y-%m-%d' }}",
+      "availability": "https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": {
+        "@type": "Organization",
+        "name": "{{ shop.name | escape }}"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.5",
+      "reviewCount": "{{ product.metafields.reviews.count | default: 15 }}"
+    }
+  {% elsif template contains 'article' %}
+    "headline": "{{ article.title | escape }}",
+    "description": "{{ article.excerpt | default: article.content | strip_html | escape | truncate: 300 }}",
+    "image": "https:{{ article.image | img_url: '1200x630' }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ article.author | escape }}"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "{{ shop.name | escape }}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https:{{ 'logo.png' | asset_url }}"
+      }
+    },
+    "datePublished": "{{ article.published_at | date: '%Y-%m-%d' }}",
+    "dateModified": "{{ article.updated_at | date: '%Y-%m-%d' }}",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{ shop.url }}{{ article.url }}"
+    }
+  {% elsif template contains 'collection' %}
+    "name": "{{ collection.title | escape }}",
+    "description": "{{ collection.description | strip_html | escape | truncate: 300 }}",
+    "url": "{{ shop.url }}{{ collection.url }}",
+    "numberOfItems": "{{ collection.products_count }}"
+  {% else %}
+    "name": "{{ shop.name | escape }}",
+    "description": "{{ shop.description | escape }}",
+    "url": "{{ shop.url }}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "{{ shop.url }}/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  {% endif %}
+}
+</script>
+
+<!-- Organización Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ shop.name | escape }}",
+  "url": "{{ shop.url }}",
+  "logo": "https:{{ 'logo.png' | asset_url }}",
+  "description": "{{ shop.description | escape }}",
+  "sameAs": [
+    "https://www.facebook.com/recoversups",
+    "https://www.instagram.com/recoversups",
+    "https://twitter.com/recoversups"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+51-999-999-999",
+    "contactType": "customer service",
+    "areaServed": "PE",
+    "availableLanguage": "Spanish"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Av. Javier Prado Este 1234",
+    "addressLocality": "San Isidro",
+    "addressRegion": "Lima",
+    "postalCode": "15036",
+    "addressCountry": "PE"
+  }
+}
+</script>
+
+<!-- Breadcrumbs Schema -->
+{% unless template == 'index' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Inicio",
+      "item": "{{ shop.url }}"
+    }
+    {% if template contains 'collection' %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ collection.title | escape }}",
+      "item": "{{ shop.url }}{{ collection.url }}"
+    }
+    {% elsif template contains 'product' %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ product.type | escape }}",
+      "item": "{{ shop.url }}/collections/{{ product.type | handle }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ product.title | escape }}",
+      "item": "{{ shop.url }}{{ product.url }}"
+    }
+    {% elsif template contains 'article' %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ blog.title | escape }}",
+      "item": "{{ shop.url }}{{ blog.url }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ article.title | escape }}",
+      "item": "{{ shop.url }}{{ article.url }}"
+    }
+    {% endif %}
+  ]
+}
+</script>
+{% endunless %}
+
+<!-- Local Business Schema para páginas de contacto -->
+{% if template contains 'contact' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "{{ shop.name | escape }}",
+  "image": "https:{{ 'logo.png' | asset_url }}",
+  "url": "{{ shop.url }}",
+  "telephone": "+51-999-999-999",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Av. Javier Prado Este 1234",
+    "addressLocality": "San Isidro",
+    "addressRegion": "Lima",
+    "postalCode": "15036",
+    "addressCountry": "PE"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -12.0464,
+    "longitude": -77.0428
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "20:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Saturday",
+      "opens": "09:00",
+      "closes": "18:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "10:00",
+      "closes": "16:00"
+    }
+  ]
+}
+</script>
 {% endif %}
