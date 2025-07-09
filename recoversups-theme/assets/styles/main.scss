@@ -1,0 +1,45 @@
+// =============================================================================
+// MAIN STYLESHEET - RECOVERSUPS
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// BASE STYLES
+// -----------------------------------------------------------------------------
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/reset';
+@import 'base/typography';
+
+// -----------------------------------------------------------------------------
+// LAYOUT STYLES
+// -----------------------------------------------------------------------------
+@import 'layout/grid';
+@import 'layout/container';
+@import 'layout/responsive';
+
+// -----------------------------------------------------------------------------
+// COMPONENT STYLES
+// -----------------------------------------------------------------------------
+@import 'components/buttons';
+@import 'components/cards';
+@import 'components/forms';
+@import 'components/header';
+@import 'components/footer';
+@import 'components/product-card';
+@import 'components/product-gallery';
+@import 'components/testimonials';
+
+// -----------------------------------------------------------------------------
+// PAGE STYLES
+// -----------------------------------------------------------------------------
+@import 'pages/home';
+@import 'pages/product';
+@import 'pages/collection';
+@import 'pages/cart';
+@import 'pages/blog';
+
+// -----------------------------------------------------------------------------
+// UTILITY STYLES
+// -----------------------------------------------------------------------------
+@import 'utilities/helpers';
+@import 'utilities/animations';

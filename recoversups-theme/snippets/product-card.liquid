@@ -1,0 +1,323 @@
+{% comment %}
+  Product Card Component - Recoversups
+  
+  Parameters:
+  - product: Product object (required)
+  - class: Additional CSS classes (optional)
+  - show_vendor: Show vendor name (optional, default: false)
+  - show_rating: Show rating (optional, default: true)
+  - image_ratio: Image aspect ratio (optional, default: 'auto')
+{% endcomment %}
+
+<div class="product-card {{ class }}">
+  <div class="product-card__image">
+    <a href="{{ product.url }}" class="product-card__image-link">
+      {% if product.featured_image %}
+        <img 
+          src="{{ product.featured_image | img_url: '400x400' }}" 
+          alt="{{ product.featured_image.alt | default: product.title }}"
+          class="product-card__img"
+          loading="lazy"
+          width="400"
+          height="400">
+      {% else %}
+        <div class="product-card__placeholder">
+          <svg class="icon icon-product" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"></path>
+            <path d="M8 21l8-8-6-6"></path>
+          </svg>
+        </div>
+      {% endif %}
+    </a>
+    
+    <!-- Product Badges -->
+    <div class="product-card__badges">
+      {% if product.tags contains 'nuevo' %}
+        <span class="product-badge product-badge--new">NUEVO</span>
+      {% endif %}
+      {% if product.tags contains 'top-ventas' %}
+        <span class="product-badge product-badge--bestseller">TOP VENTAS</span>
+      {% endif %}
+      {% if product.available and product.selected_or_first_available_variant.inventory_quantity <= 5 %}
+        <span class="product-badge product-badge--low-stock">ÚLTIMAS UNIDADES</span>
+      {% endif %}
+      {% if product.compare_at_price > product.price %}
+        {% assign discount_percentage = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+        <span class="product-badge product-badge--discount">-{{ discount_percentage }}%</span>
+      {% endif %}
+    </div>
+
+    <!-- Wishlist Button -->
+    <button class="product-card__wishlist btn-wishlist" 
+            data-product-id="{{ product.id }}"
+            aria-label="Agregar a lista de deseos">
+      <svg class="icon icon-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="product-card__content">
+    {% if show_vendor and product.vendor != blank %}
+      <div class="product-card__vendor">{{ product.vendor }}</div>
+    {% endif %}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}" class="product-card__title-link">
+        {{ product.title }}
+      </a>
+    </h3>
+
+    {% if show_rating != false %}
+      <div class="product-card__rating">
+        {% render 'product-rating', product: product %}
+      </div>
+    {% endif %}
+
+    <div class="product-card__price">
+      {% if product.compare_at_price > product.price %}
+        <span class="product-card__price-compare">{{ product.compare_at_price | money }}</span>
+      {% endif %}
+      <span class="product-card__price-current">{{ product.price | money }}</span>
+    </div>
+
+    {% if product.description != blank %}
+      <p class="product-card__description">
+        {{ product.description | strip_html | truncate: 80 }}
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="product-card__actions">
+    {% if product.available %}
+      <button class="btn btn-primary product-card__add-to-cart" 
+              data-product-id="{{ product.id }}"
+              data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+        <svg class="icon icon-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4.01"></path>
+        </svg>
+        Agregar al Carrito
+      </button>
+    {% else %}
+      <button class="btn btn-secondary" disabled>
+        Agotado
+      </button>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .product-card {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    transition: transform $transition-normal, box-shadow $transition-normal;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .product-card__image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: $background-gray;
+  }
+
+  .product-card__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform $transition-normal;
+  }
+
+  .product-card:hover .product-card__img {
+    transform: scale(1.05);
+  }
+
+  .product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-muted;
+    background: $background-gray;
+  }
+
+  .product-card__placeholder .icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .product-card__badges {
+    position: absolute;
+    top: $spacing-sm;
+    left: $spacing-sm;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  .product-badge {
+    display: inline-block;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    text-transform: uppercase;
+    border-radius: $border-radius-sm;
+    color: white;
+    
+    &--new {
+      background: $success-color;
+    }
+    
+    &--bestseller {
+      background: $warning-color;
+      color: $text-secondary;
+    }
+    
+    &--low-stock {
+      background: $accent-color;
+    }
+    
+    &--discount {
+      background: $primary-color;
+    }
+  }
+
+  .product-card__wishlist {
+    position: absolute;
+    top: $spacing-sm;
+    right: $spacing-sm;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all $transition-normal;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  .product-card:hover .product-card__wishlist {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .product-card__wishlist:hover {
+    background: $primary-color;
+    color: white;
+  }
+
+  .product-card__wishlist .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .product-card__content {
+    padding: $spacing-md;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card__vendor {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    text-transform: uppercase;
+    margin-bottom: $spacing-xs;
+  }
+
+  .product-card__title {
+    margin-bottom: $spacing-sm;
+    flex: 1;
+  }
+
+  .product-card__title-link {
+    color: inherit;
+    text-decoration: none;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    line-height: 1.3;
+    
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .product-card__rating {
+    margin-bottom: $spacing-sm;
+  }
+
+  .product-card__price {
+    margin-bottom: $spacing-sm;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .product-card__price-current {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $primary-color;
+  }
+
+  .product-card__price-compare {
+    font-size: $font-size-sm;
+    color: $text-muted;
+    text-decoration: line-through;
+  }
+
+  .product-card__description {
+    font-size: $font-size-sm;
+    color: $text-muted;
+    line-height: 1.4;
+    margin-bottom: $spacing-sm;
+  }
+
+  .product-card__actions {
+    padding: $spacing-md;
+    border-top: 1px solid $border-color;
+  }
+
+  .product-card__add-to-cart {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+  }
+
+  .product-card__add-to-cart .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .product-card__content {
+      padding: $spacing-sm;
+    }
+    
+    .product-card__actions {
+      padding: $spacing-sm;
+    }
+  }
+</style>

@@ -1,0 +1,331 @@
+{% comment %}
+  Header Section - Recoversups
+{% endcomment %}
+
+<header class="site-header" role="banner">
+  <div class="container">
+    <div class="header-content">
+      <!-- Logo -->
+      <div class="header-logo">
+        <a href="{{ routes.root_url }}" class="logo-link">
+          {% if section.settings.logo != blank %}
+            <img src="{{ section.settings.logo | img_url: '200x' }}" 
+                 alt="{{ shop.name }}" 
+                 class="logo-img"
+                 loading="eager">
+          {% else %}
+            <span class="logo-text">{{ shop.name }}</span>
+          {% endif %}
+        </a>
+      </div>
+
+      <!-- Main Navigation -->
+      <nav class="header-nav" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list">
+          {% for link in linklists.main-menu.links %}
+            <li class="nav-item">
+              <a href="{{ link.url }}" 
+                 class="nav-link {% if link.active %}nav-link--active{% endif %}">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <!-- Search Toggle -->
+        <button class="action-btn search-toggle" aria-label="Abrir búsqueda">
+          <svg class="icon icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+
+        <!-- Account -->
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" 
+           class="action-btn account-link" 
+           aria-label="{% if customer %}Mi cuenta{% else %}Iniciar sesión{% endif %}">
+          <svg class="icon icon-account" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+
+        <!-- Cart -->
+        <a href="{{ routes.cart_url }}" 
+           class="action-btn cart-link" 
+           aria-label="Carrito de compras">
+          <svg class="icon icon-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4.01"></path>
+          </svg>
+          <span class="cart-count">{{ cart.item_count }}</span>
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" aria-label="Abrir menú móvil">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar" role="search">
+      <form action="{{ routes.search_url }}" method="get" class="search-form">
+        <input type="search" 
+               name="q" 
+               placeholder="Buscar productos..." 
+               class="search-input"
+               value="{{ search.terms | escape }}">
+        <button type="submit" class="search-submit" aria-label="Buscar">
+          <svg class="icon icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" role="navigation" aria-label="Menú móvil">
+      <div class="mobile-menu-content">
+        <ul class="mobile-nav-list">
+          {% for link in linklists.main-menu.links %}
+            <li class="mobile-nav-item">
+              <a href="{{ link.url }}" class="mobile-nav-link">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: {{ section.settings.header_bg_color | default: '#1a1a1a' }};
+    color: {{ section.settings.header_text_color | default: '#ffffff' }};
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+  }
+
+  .header-logo .logo-img {
+    max-height: 40px;
+    width: auto;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #B62921;
+  }
+
+  .header-nav {
+    display: flex;
+  }
+
+  .nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+  }
+
+  .nav-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link--active {
+    color: #B62921;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0.5rem;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+
+  .action-btn:hover {
+    color: #B62921;
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #B62921;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 3px;
+    padding: 0.5rem;
+  }
+
+  .hamburger-line {
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    transition: all 0.3s ease;
+  }
+
+  .search-bar {
+    display: none;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .search-bar.is-open {
+    display: block;
+  }
+
+  .search-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: inherit;
+    font-size: 1rem;
+  }
+
+  .search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .search-submit {
+    background: #B62921;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    z-index: 999;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .mobile-menu.is-open {
+    transform: translateY(0);
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 1rem 0;
+  }
+
+  .mobile-nav-link {
+    display: block;
+    padding: 1rem;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-nav {
+      display: none;
+    }
+
+    .mobile-menu-toggle {
+      display: flex;
+    }
+
+    .mobile-menu {
+      display: block;
+    }
+
+    .nav-list {
+      gap: 1rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Color de fondo",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Color de texto",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}

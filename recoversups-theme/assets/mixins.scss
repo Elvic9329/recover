@@ -1,0 +1,78 @@
+// =============================================================================
+// MIXINS - RECOVERSUPS
+// =============================================================================
+
+// RESPONSIVE MIXINS
+@mixin mobile {
+  @media (max-width: #{$mobile}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: #{$tablet}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$desktop}) {
+    @content;
+  }
+}
+
+// BUTTON MIXINS
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm $spacing-md;
+  font-family: $font-family-primary;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: $border-radius;
+  transition: all $transition-normal;
+  cursor: pointer;
+  min-height: 44px;
+
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+@mixin button-variant($bg-color, $text-color) {
+  background-color: $bg-color;
+  color: $text-color;
+
+  &:hover {
+    background-color: darken($bg-color, 10%);
+    transform: translateY(-1px);
+  }
+}
+
+// CONTAINER MIXIN
+@mixin container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+
+  @include tablet {
+    padding: 0 $spacing-sm;
+  }
+}
+
+// CARD MIXIN
+@mixin card {
+  background: $background-light;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  overflow: hidden;
+  transition: transform $transition-normal;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}

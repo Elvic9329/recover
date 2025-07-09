@@ -1,0 +1,566 @@
+{% comment %}
+  Product Categories Section - Recoversups
+  Sección de categorías de productos
+{% endcomment %}
+
+<section class="product-categories">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ section.settings.title | default: 'Categorías de Productos' }}
+      </h2>
+      {% if section.settings.description %}
+        <p class="section-description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+    </div>
+
+    <div class="categories-grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'category' %}
+            <div class="category-card" {{ block.shopify_attributes }}>
+              <a href="{{ block.settings.category_url | default: '#' }}" class="category-card__link">
+                <div class="category-card__image">
+                  {% if block.settings.category_image %}
+                    <img src="{{ block.settings.category_image | img_url: '400x400' }}" 
+                         alt="{{ block.settings.category_image.alt | default: block.settings.category_name }}"
+                         class="category-card__img"
+                         loading="lazy">
+                  {% else %}
+                    <div class="category-card__placeholder">
+                      {% render 'icon', name: 'search', size: 48, class: 'category-placeholder-icon' %}
+                    </div>
+                  {% endif %}
+                  
+                  <div class="category-card__overlay">
+                    <div class="category-card__content">
+                      <h3 class="category-card__title">{{ block.settings.category_name }}</h3>
+                      {% if block.settings.category_description %}
+                        <p class="category-card__description">{{ block.settings.category_description }}</p>
+                      {% endif %}
+                      {% if block.settings.product_count %}
+                        <span class="category-card__count">{{ block.settings.product_count }} productos</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="category-card__cta">
+                      <span class="category-card__button">
+                        Explorar
+                        {% render 'icon', name: 'arrow-right', size: 16 %}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_view_all %}
+      <div class="categories-cta">
+        {% render 'button',
+            text: section.settings.view_all_text | default: 'Ver Todas las Categorías',
+            url: section.settings.view_all_url | default: '/collections',
+            type: 'outline',
+            size: 'large',
+            class: 'categories-view-all' %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .product-categories {
+    padding: {{ section.settings.padding_top | default: 4 }}rem 0 {{ section.settings.padding_bottom | default: 4 }}rem;
+    background: {{ section.settings.background_color | default: '#f8f9fa' }};
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.title_color | default: '#2C3E50' }};
+    margin-bottom: 1rem;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      border-radius: 2px;
+    }
+  }
+
+  .section-description {
+    font-size: $font-size-lg;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+    line-height: 1.6;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .category-card {
+    position: relative;
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all $transition-normal;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+    
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .category-card:nth-child(1) { animation-delay: 0.1s; }
+  .category-card:nth-child(2) { animation-delay: 0.2s; }
+  .category-card:nth-child(3) { animation-delay: 0.3s; }
+  .category-card:nth-child(4) { animation-delay: 0.4s; }
+  .category-card:nth-child(5) { animation-delay: 0.5s; }
+  .category-card:nth-child(6) { animation-delay: 0.6s; }
+
+  .category-card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .category-card__image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    background: $background-gray;
+  }
+
+  .category-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform $transition-slow;
+  }
+
+  .category-card:hover .category-card__img {
+    transform: scale(1.1);
+  }
+
+  .category-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: $text-muted;
+  }
+
+  .category-placeholder-icon {
+    opacity: 0.5;
+  }
+
+  .category-card__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.1) 40%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    color: white;
+    transition: background $transition-normal;
+  }
+
+  .category-card:hover .category-card__overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.3) 40%,
+      rgba(0, 0, 0, 0.9) 100%
+    );
+  }
+
+  .category-card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .category-card__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .category-card__description {
+    font-size: $font-size-sm;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .category-card__count {
+    font-size: $font-size-xs;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: {{ section.settings.accent_color | default: '#F39C12' }};
+  }
+
+  .category-card__cta {
+    margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all $transition-normal;
+  }
+
+  .category-card:hover .category-card__cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .category-card__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: {{ section.settings.accent_color | default: '#B62921' }};
+    color: white;
+    border-radius: 25px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all $transition-normal;
+    border: 2px solid {{ section.settings.accent_color | default: '#B62921' }};
+  }
+
+  .category-card:hover .category-card__button {
+    background: transparent;
+    color: white;
+    border-color: white;
+    transform: translateX(5px);
+  }
+
+  .categories-cta {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .categories-view-all {
+    border-color: {{ section.settings.accent_color | default: '#B62921' }};
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    
+    &:hover {
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      color: white;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .product-categories {
+      padding: 3rem 0;
+    }
+
+    .categories-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .category-card__image {
+      height: 200px;
+    }
+
+    .category-card__overlay {
+      padding: 1.5rem;
+    }
+
+    .section-title {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .product-categories {
+      padding: 2rem 0;
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .category-card__image {
+      height: 180px;
+    }
+
+    .category-card__overlay {
+      padding: 1rem;
+    }
+
+    .section-title {
+      font-size: $font-size-xl;
+    }
+
+    .category-card__title {
+      font-size: $font-size-lg;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .category-card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    
+    .category-card__img,
+    .category-card__overlay,
+    .category-card__cta {
+      transition: none;
+    }
+    
+    .category-card:hover .category-card__img {
+      transform: none;
+    }
+    
+    .category-card:hover .category-card__cta {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Categorías de Productos",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Categorías de Productos"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Explora nuestras diferentes categorías de suplementos deportivos"
+    },
+    {
+      "type": "header",
+      "content": "Botón Ver Todas"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Mostrar botón 'Ver Todas'",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "Texto del botón",
+      "default": "Ver Todas las Categorías"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "URL del botón",
+      "default": "/collections"
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Radio de borde de tarjetas",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#2C3E50"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#B62921"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoría",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category_name",
+          "label": "Nombre de la categoría",
+          "default": "Proteínas"
+        },
+        {
+          "type": "textarea",
+          "id": "category_description",
+          "label": "Descripción",
+          "default": "Suplementos proteicos para desarrollo muscular"
+        },
+        {
+          "type": "image_picker",
+          "id": "category_image",
+          "label": "Imagen de la categoría"
+        },
+        {
+          "type": "url",
+          "id": "category_url",
+          "label": "URL de la categoría"
+        },
+        {
+          "type": "text",
+          "id": "product_count",
+          "label": "Número de productos",
+          "default": "25"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Categorías de Productos",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "category_name": "Proteínas",
+            "category_description": "Suplementos proteicos para desarrollo muscular",
+            "product_count": "25"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_name": "Pre-Entreno",
+            "category_description": "Energía y fuerza para tus entrenamientos",
+            "product_count": "18"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_name": "Vitaminas",
+            "category_description": "Apoyo nutricional completo",
+            "product_count": "32"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_name": "Quemadores",
+            "category_description": "Definición y pérdida de grasa",
+            "product_count": "15"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

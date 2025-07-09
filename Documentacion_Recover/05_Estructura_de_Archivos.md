@@ -287,10 +287,10 @@ module.exports = {
 - **Variables:** `_variables.scss`
 
 ### Archivos JavaScript
-- **Componentes:** `nombre-componente.js`
-- **Páginas:** `nombre-pagina.js`
-- **Utilidades:** `nombre-utilidad.js`
-- **Main:** `main.js`
+- **Componentes:** `nombre-componente.js` (envueltos en IIFEs)
+- **Páginas:** `nombre-pagina.js` (envueltos en IIFEs)
+- **Utilidades:** `nombre-utilidad.js` (envueltos en IIFEs)
+- **Main:** `main.js` (punto de entrada principal)
 
 ### Clases CSS
 - **Componentes:** `.component-name`
@@ -365,6 +365,12 @@ module.exports = {
 2. **Reutilización:** Componentes pequeños y reutilizables
 3. **Mantenibilidad:** Estructura clara y documentada
 4. **Rendimiento:** Lazy loading y optimización de assets
+
+### JavaScript Moderno (Shopify 2025)
+1. **IIFEs:** Envolver código en funciones autoejecutables para evitar conflictos de namespace
+2. **Modularidad:** Separar funcionalidades en archivos específicos
+3. **Optimización:** Minimizar dependencias externas y frameworks
+4. **Carga diferida:** Cargar componentes solo cuando sea necesario
 
 ### Nomenclatura
 1. **Consistencia:** Usar siempre la misma convención

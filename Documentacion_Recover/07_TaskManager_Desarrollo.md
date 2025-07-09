@@ -31,7 +31,7 @@
 - [ ] **T1.2.2** Crear componente Header con navegación
 - [ ] **T1.2.3** Implementar componente Footer
 - [ ] **T1.2.4** Desarrollar sistema de grid responsivo
-- [ ] **T1.2.5** Crear snippets base (product-card, buttons, forms)
+- [ ] **T1.2.5** Crear snippets base (product-card con lazy loading, buttons, forms)
 
 #### Entregables
 - Layout base funcional
@@ -50,7 +50,7 @@
 - [ ] **T2.1.3** Crear sección Product Categories
 - [ ] **T2.1.4** Desarrollar sección Testimonials
 - [ ] **T2.1.5** Implementar sección Newsletter
-- [ ] **T2.1.6** Optimizar carga de imágenes (lazy loading)
+- [ ] **T2.1.6** Optimizar carga de imágenes (lazy loading="lazy" y preload de fuentes)
 
 #### Entregables
 - Página principal completa
@@ -149,9 +149,9 @@
 **Duración:** 3 días
 
 #### Tareas de Optimización
-- [ ] **T4.1.1** Optimizar carga de imágenes (WebP, lazy loading)
-- [ ] **T4.1.2** Minificar CSS y JavaScript
-- [ ] **T4.1.3** Implementar critical CSS
+- [ ] **T4.1.1** Optimizar carga de imágenes (WebP, lazy loading="lazy")
+- [ ] **T4.1.2** Minificar CSS y JavaScript con IIFEs
+- [ ] **T4.1.3** Implementar critical CSS y preload de fuentes
 - [ ] **T4.1.4** Optimizar meta tags y schema markup
 - [ ] **T4.1.5** Configurar Google Analytics y Facebook Pixel
 - [ ] **T4.1.6** Implementar sitemap XML

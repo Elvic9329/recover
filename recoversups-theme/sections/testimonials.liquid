@@ -1,0 +1,615 @@
+{% comment %}
+  Testimonials Section - Recoversups
+  Sección de testimonios de clientes
+{% endcomment %}
+
+<section class="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ section.settings.title | default: 'Lo que dicen nuestros clientes' }}
+      </h2>
+      {% if section.settings.description %}
+        <p class="section-description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class="testimonials-container">
+        <div class="testimonials-grid">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'testimonial' %}
+                <div class="testimonial-card" {{ block.shopify_attributes }}>
+                  <div class="testimonial-card__content">
+                    <div class="testimonial-card__quote">
+                      <svg class="quote-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.5 10c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35l.539-.222.474-.197-.485-1.938-.597.144c-.191.048-.424.104-.689.171-.271.05-.56.187-.882.312-.318.142-.686.238-1.028.466-.344.218-.741.4-1.091.692-.339.301-.748.562-1.05.945-.33.358-.656.734-.909 1.162-.293.408-.492.856-.702 1.299-.19.443-.343.896-.468 1.336-.237.882-.343 1.72-.384 2.437-.034.718-.014 1.315.028 1.747.015.204.043.402.063.539l.025.168.026-.006A4.5 4.5 0 1 0 6.5 10zm11 0c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35l.539-.222.474-.197-.485-1.938-.597.144c-.191.048-.424.104-.689.171-.271.05-.56.187-.882.312-.318.142-.686.238-1.028.466-.344.218-.741.4-1.091.692-.339.301-.748.562-1.05.945-.33.358-.656.734-.909 1.162-.293.408-.492.856-.702 1.299-.19.443-.343.896-.468 1.336-.237.882-.343 1.72-.384 2.437-.034.718-.014 1.315.028 1.747.015.204.043.402.063.539l.025.168.026-.006A4.5 4.5 0 1 0 17.5 10z"/>
+                      </svg>
+                    </div>
+                    
+                    <blockquote class="testimonial-card__text">
+                      {{ block.settings.testimonial_text }}
+                    </blockquote>
+                    
+                    {% if block.settings.show_rating %}
+                      <div class="testimonial-card__rating">
+                        <div class="stars">
+                          {% assign rating = block.settings.rating | default: 5 %}
+                          {% for i in (1..5) %}
+                            {% if i <= rating %}
+                              <svg class="star star--filled" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                            {% else %}
+                              <svg class="star star--empty" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="testimonial-card__author">
+                    <div class="author-info">
+                      {% if block.settings.author_image %}
+                        <div class="author-avatar">
+                          <img src="{{ block.settings.author_image | img_url: '80x80' }}" 
+                               alt="{{ block.settings.author_name }}"
+                               class="author-avatar__img"
+                               loading="lazy">
+                        </div>
+                      {% else %}
+                        <div class="author-avatar author-avatar--placeholder">
+                          <svg class="author-placeholder-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 3L9 7V9C9 10.1 9.9 11 11 11V13.5C11 15.43 9.43 17 7.5 17C5.57 17 4 15.43 4 13.5V11C4 9.9 4.9 9 6 9H7V7C7 5.9 7.9 5 9 5H15C16.1 5 17 5.9 17 7V9H18C19.1 9 20 9.9 20 11V13.5C20 15.43 18.43 17 16.5 17C14.57 17 13 15.43 13 13.5V11C14.1 11 15 10.1 15 9Z"/>
+                          </svg>
+                        </div>
+                      {% endif %}
+                      
+                      <div class="author-details">
+                        <h4 class="author-name">{{ block.settings.author_name }}</h4>
+                        {% if block.settings.author_title %}
+                          <p class="author-title">{{ block.settings.author_title }}</p>
+                        {% endif %}
+                        {% if block.settings.author_location %}
+                          <p class="author-location">{{ block.settings.author_location }}</p>
+                        {% endif %}
+                      </div>
+                    </div>
+                    
+                    {% if block.settings.verified_purchase %}
+                      <div class="verified-badge">
+                        <svg class="verified-icon" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L13.09 6.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L10.91 6.26L12 2Z"/>
+                        </svg>
+                        <span class="verified-text">Compra verificada</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+            {% endcase %}
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="testimonials-empty">
+        <div class="empty-state">
+          <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <h3 class="empty-state-title">No hay testimonios disponibles</h3>
+          <p class="empty-state-description">
+            Agrega testimonios en la configuración de esta sección para mostrar las opiniones de tus clientes.
+          </p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .testimonials {
+    padding: {{ section.settings.padding_top | default: 4 }}rem 0 {{ section.settings.padding_bottom | default: 4 }}rem;
+    background: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.title_color | default: '#2C3E50' }};
+    margin-bottom: 1rem;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      border-radius: 2px;
+    }
+  }
+
+  .section-description {
+    font-size: $font-size-lg;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+    line-height: 1.6;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .testimonial-card {
+    background: {{ section.settings.card_background | default: '#ffffff' }};
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid {{ section.settings.card_border_color | default: '#e9ecef' }};
+    transition: all $transition-normal;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .testimonial-card:nth-child(1) { animation-delay: 0.1s; }
+  .testimonial-card:nth-child(2) { animation-delay: 0.2s; }
+  .testimonial-card:nth-child(3) { animation-delay: 0.3s; }
+  .testimonial-card:nth-child(4) { animation-delay: 0.4s; }
+  .testimonial-card:nth-child(5) { animation-delay: 0.5s; }
+  .testimonial-card:nth-child(6) { animation-delay: 0.6s; }
+
+  .testimonial-card__content {
+    margin-bottom: 1.5rem;
+  }
+
+  .testimonial-card__quote {
+    margin-bottom: 1rem;
+  }
+
+  .quote-icon {
+    width: 24px;
+    height: 24px;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    opacity: 0.7;
+  }
+
+  .testimonial-card__text {
+    font-size: $font-size-base;
+    line-height: 1.6;
+    color: {{ section.settings.text_color | default: '#333333' }};
+    margin-bottom: 1rem;
+    font-style: italic;
+    position: relative;
+  }
+
+  .testimonial-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .star {
+    width: 16px;
+    height: 16px;
+    
+    &--filled {
+      color: #F39C12;
+    }
+    
+    &--empty {
+      color: #e0e0e0;
+    }
+  }
+
+  .testimonial-card__author {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid {{ section.settings.card_border_color | default: '#e9ecef' }};
+    padding-top: 1.5rem;
+  }
+
+  .author-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    
+    &--placeholder {
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+  }
+
+  .author-avatar__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .author-placeholder-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .author-details {
+    min-width: 0;
+  }
+
+  .author-name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: {{ section.settings.text_color | default: '#333333' }};
+    margin-bottom: 0.25rem;
+  }
+
+  .author-title {
+    font-size: $font-size-sm;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    margin-bottom: 0.25rem;
+  }
+
+  .author-location {
+    font-size: $font-size-xs;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+  }
+
+  .verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+  }
+
+  .verified-icon {
+    width: 14px;
+    height: 14px;
+    color: #27AE60;
+  }
+
+  .verified-text {
+    font-size: $font-size-xs;
+    color: #27AE60;
+    font-weight: $font-weight-semibold;
+  }
+
+  .testimonials-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-state-icon {
+    width: 48px;
+    height: 48px;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    margin: 0 auto 1rem;
+  }
+
+  .empty-state-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-secondary;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state-description {
+    color: $text-muted;
+    font-size: $font-size-base;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .testimonials {
+      padding: 3rem 0;
+    }
+
+    .testimonials-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .testimonial-card {
+      padding: 1.5rem;
+    }
+
+    .section-title {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .testimonials {
+      padding: 2rem 0;
+    }
+
+    .testimonial-card {
+      padding: 1rem;
+    }
+
+    .testimonial-card__author {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .verified-badge {
+      align-self: flex-start;
+    }
+
+    .section-title {
+      font-size: $font-size-xl;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .testimonial-card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Testimonios",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Lo que dicen nuestros clientes"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Conoce las experiencias de quienes ya confían en nosotros"
+    },
+    {
+      "type": "header",
+      "content": "Diseño de Tarjetas"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Radio de borde de tarjetas",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#2C3E50"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#B62921"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Color de fondo de tarjetas",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Color de borde de tarjetas",
+      "default": "#e9ecef"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonio",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Texto del testimonio",
+          "default": "Excelente calidad en todos los productos. He notado una gran diferencia en mis entrenamientos desde que uso sus suplementos."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Nombre del cliente",
+          "default": "María González"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "Título/Profesión",
+          "default": "Entrenadora Personal"
+        },
+        {
+          "type": "text",
+          "id": "author_location",
+          "label": "Ubicación",
+          "default": "Lima, Perú"
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Foto del cliente"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_rating",
+          "label": "Mostrar calificación",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Calificación (estrellas)",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified_purchase",
+          "label": "Compra verificada",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonios",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "Excelente calidad en todos los productos. He notado una gran diferencia en mis entrenamientos desde que uso sus suplementos.",
+            "author_name": "María González",
+            "author_title": "Entrenadora Personal",
+            "author_location": "Lima, Perú",
+            "rating": 5,
+            "verified_purchase": true
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "Envío rápido y productos originales. El servicio al cliente es excepcional, siempre responden mis dudas.",
+            "author_name": "Carlos Mendoza",
+            "author_title": "Atleta",
+            "author_location": "Arequipa, Perú",
+            "rating": 5,
+            "verified_purchase": true
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "Los mejores precios del mercado peruano. Llevo comprando aquí más de un año y siempre quedo satisfecho.",
+            "author_name": "Ana Rodríguez",
+            "author_title": "Crossfit Coach",
+            "author_location": "Trujillo, Perú",
+            "rating": 5,
+            "verified_purchase": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,455 @@
+{% comment %}
+  Featured Products Section - Recoversups
+  Sección de productos destacados
+{% endcomment %}
+
+<section class="featured-products">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ section.settings.title | default: 'Productos Destacados' }}
+      </h2>
+      {% if section.settings.description %}
+        <p class="section-description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if section.settings.collection != blank %}
+      {% assign featured_collection = collections[section.settings.collection] %}
+      {% assign products_to_show = section.settings.products_to_show | default: 8 %}
+      
+      {% if featured_collection.products.size > 0 %}
+        <div class="featured-products__grid grid grid--products">
+          {% for product in featured_collection.products limit: products_to_show %}
+            <div class="featured-products__item">
+              {% render 'product-card', 
+                  product: product,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  class: 'featured-product-card' %}
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if section.settings.show_view_all and featured_collection.products.size > products_to_show %}
+          <div class="featured-products__cta">
+            {% render 'button',
+                text: section.settings.view_all_text | default: 'Ver Todos los Productos',
+                url: featured_collection.url,
+                type: 'outline',
+                size: 'large',
+                class: 'featured-products__view-all' %}
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="featured-products__empty">
+          <div class="empty-state">
+            {% render 'icon', name: 'search', size: 48, class: 'empty-state__icon' %}
+            <h3 class="empty-state__title">No hay productos disponibles</h3>
+            <p class="empty-state__description">
+              Agrega productos a la colección "{{ featured_collection.title }}" para mostrarlos aquí.
+            </p>
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="featured-products__placeholder">
+        <div class="placeholder-grid grid grid--products">
+          {% for i in (1..8) %}
+            <div class="placeholder-card">
+              <div class="placeholder-card__image"></div>
+              <div class="placeholder-card__content">
+                <div class="placeholder-line placeholder-line--title"></div>
+                <div class="placeholder-line placeholder-line--price"></div>
+                <div class="placeholder-line placeholder-line--rating"></div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="placeholder-message">
+          <p>Selecciona una colección en la configuración del tema para mostrar productos destacados.</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .featured-products {
+    padding: {{ section.settings.padding_top | default: 4 }}rem 0 {{ section.settings.padding_bottom | default: 4 }}rem;
+    background: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.title_color | default: '#2C3E50' }};
+    margin-bottom: 1rem;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      border-radius: 2px;
+    }
+  }
+
+  .section-description {
+    font-size: $font-size-lg;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+    line-height: 1.6;
+  }
+
+  .featured-products__grid {
+    margin-bottom: 3rem;
+  }
+
+  .featured-products__item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .featured-products__item:nth-child(1) { animation-delay: 0.1s; }
+  .featured-products__item:nth-child(2) { animation-delay: 0.2s; }
+  .featured-products__item:nth-child(3) { animation-delay: 0.3s; }
+  .featured-products__item:nth-child(4) { animation-delay: 0.4s; }
+  .featured-products__item:nth-child(5) { animation-delay: 0.5s; }
+  .featured-products__item:nth-child(6) { animation-delay: 0.6s; }
+  .featured-products__item:nth-child(7) { animation-delay: 0.7s; }
+  .featured-products__item:nth-child(8) { animation-delay: 0.8s; }
+
+  .featured-product-card {
+    height: 100%;
+    transition: transform $transition-normal, box-shadow $transition-normal;
+  }
+
+  .featured-product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+
+  .featured-products__cta {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .featured-products__view-all {
+    border-color: {{ section.settings.accent_color | default: '#B62921' }};
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    
+    &:hover {
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      color: white;
+    }
+  }
+
+  .featured-products__empty {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-state__icon {
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    margin-bottom: 1rem;
+  }
+
+  .empty-state__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-secondary;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state__description {
+    color: $text-muted;
+    font-size: $font-size-base;
+  }
+
+  /* Placeholder Styles */
+  .featured-products__placeholder {
+    opacity: 0.7;
+  }
+
+  .placeholder-grid {
+    margin-bottom: 2rem;
+  }
+
+  .placeholder-card {
+    background: $background-gray;
+    border-radius: $border-radius;
+    overflow: hidden;
+    animation: pulse 2s infinite;
+  }
+
+  .placeholder-card__image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 2s infinite;
+  }
+
+  .placeholder-card__content {
+    padding: 1rem;
+  }
+
+  .placeholder-line {
+    height: 12px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 2s infinite;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    
+    &--title {
+      width: 80%;
+      height: 16px;
+    }
+    
+    &--price {
+      width: 60%;
+      height: 14px;
+    }
+    
+    &--rating {
+      width: 40%;
+      height: 10px;
+    }
+  }
+
+  .placeholder-message {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(182, 41, 33, 0.1);
+    border-radius: $border-radius;
+    color: $text-secondary;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes loading-shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .featured-products {
+      padding: 3rem 0;
+    }
+
+    .section-title {
+      font-size: $font-size-2xl;
+    }
+
+    .section-description {
+      font-size: $font-size-base;
+    }
+
+    .featured-products__grid {
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .featured-products {
+      padding: 2rem 0;
+    }
+
+    .section-header {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: $font-size-xl;
+    }
+
+    .featured-products__grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .featured-products__item {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    
+    .placeholder-card,
+    .placeholder-line,
+    .placeholder-card__image {
+      animation: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Productos Destacados",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Productos Destacados"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Descubre nuestros productos más populares y mejor valorados"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Colección de productos"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Productos a mostrar",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Productos"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Mostrar marca",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Mostrar calificaciones",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Botón Ver Todos"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Mostrar botón 'Ver Todos'",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "Texto del botón",
+      "default": "Ver Todos los Productos"
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#2C3E50"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#B62921"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Productos Destacados"
+    }
+  ]
+}
+{% endschema %}

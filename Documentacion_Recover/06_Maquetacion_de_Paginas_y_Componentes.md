@@ -56,7 +56,9 @@ $spacing-3xl: 4rem;     // 64px
 
 ## Página Principal (index.liquid)
 
-### Estructura HTML
+### Estructura Optimizada para Conversión
+**Orden recomendado implementado para máxima conversión en ecommerce de suplementos:**
+
 ```html
 <!DOCTYPE html>
 <html lang="es">
@@ -64,31 +66,55 @@ $spacing-3xl: 4rem;     // 64px
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recoversups - Suplementos Deportivos al Mejor Precio</title>
+  
+  <!-- Preload fuentes críticas para mejorar FCP -->
+  <link rel="preload" href="{{ 'montserrat-regular.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ 'montserrat-semibold.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ 'montserrat-bold.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
-  <!-- Header -->
+  <!-- 1. Announcement Bar - Ofertas/Envío gratis -->
+  {% section 'announcement-bar' %}
+  
+  <!-- 2. Header - Navegación principal -->
   {% section 'header' %}
   
-  <!-- Hero Banner -->
-  {% section 'hero-banner' %}
+  <!-- 3. Hero Slider - Múltiples slides con ofertas -->
+  {% section 'hero-slider' %}
   
-  <!-- Featured Products -->
+  <!-- 4. Featured Products - Productos destacados -->
   {% section 'featured-products' %}
   
-  <!-- Product Categories -->
+  <!-- 5. Product Categories - Navegación por categorías -->
   {% section 'product-categories' %}
   
-  <!-- Testimonials -->
+  <!-- 6. Brands - Marcas de confianza -->
+  {% section 'brands' %}
+  
+  <!-- 7. Fitness Goals - Objetivos fitness -->
+  {% section 'fitness-goals' %}
+  
+  <!-- 8. Social Proof - Testimonios -->
   {% section 'testimonials' %}
   
-  <!-- Newsletter -->
+  <!-- 9. Newsletter - Captura de leads -->
   {% section 'newsletter' %}
   
-  <!-- Footer -->
+  <!-- 10. Footer - Información adicional -->
   {% section 'footer' %}
 </body>
 </html>
 ```
+
+### Flujo de Conversión Implementado
+
+**AIDA + Funnel de Conversión:**
+- **Atención** → Announcement Bar (ofertas urgentes)
+- **Interés** → Hero Slider (productos/ofertas atractivas)
+- **Deseo** → Featured Products (productos destacados)
+- **Navegación** → Categories + Goals (facilita encontrar productos)
+- **Confianza** → Brands + Testimonials (credibilidad social)
+- **Acción** → Newsletter (captura para remarketing)
 
 ### CSS para Página Principal
 ```scss
@@ -585,7 +611,7 @@ $spacing-3xl: 4rem;     // 64px
 <div class="product-card">
   <div class="product-card__image">
     <a href="{{ product.url }}">
-      <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+      <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}" loading="lazy">
     </a>
     {% if product.tags contains 'nuevo' %}
       <span class="product-badge">NUEVO</span>
@@ -626,7 +652,7 @@ $spacing-3xl: 4rem;     // 64px
     <div class="header-content">
       <div class="header-logo">
         <a href="{{ routes.root_url }}">
-          <img src="{{ 'logo.svg' | asset_url }}" alt="Recoversups">
+          <img src="{{ 'logo.svg' | asset_url }}" alt="Recoversups" loading="eager">
         </a>
       </div>
       

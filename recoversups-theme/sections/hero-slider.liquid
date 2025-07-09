@@ -1,0 +1,615 @@
+{% comment %}
+  Hero Slider Section - Recoversups
+  Slider principal con múltiples ofertas y promociones
+{% endcomment %}
+
+<section class="hero-slider">
+  <div class="slider-container">
+    <div class="slider-wrapper">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'slide' %}
+            <div class="slide" {{ block.shopify_attributes }}>
+              <div class="slide__background">
+                {% if block.settings.slide_image %}
+                  <img src="{{ block.settings.slide_image | img_url: '1920x800' }}" 
+                       alt="{{ block.settings.slide_image.alt | default: block.settings.slide_title }}"
+                       class="slide__bg-image"
+                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                {% endif %}
+                <div class="slide__overlay"></div>
+              </div>
+
+              <div class="container">
+                <div class="slide__content">
+                  {% if block.settings.slide_badge %}
+                    <span class="slide__badge">{{ block.settings.slide_badge }}</span>
+                  {% endif %}
+                  
+                  <h1 class="slide__title">{{ block.settings.slide_title }}</h1>
+                  
+                  {% if block.settings.slide_subtitle %}
+                    <p class="slide__subtitle">{{ block.settings.slide_subtitle }}</p>
+                  {% endif %}
+                  
+                  {% if block.settings.slide_description %}
+                    <p class="slide__description">{{ block.settings.slide_description }}</p>
+                  {% endif %}
+
+                  {% if block.settings.show_price %}
+                    <div class="slide__price">
+                      {% if block.settings.original_price %}
+                        <span class="slide__price-original">{{ block.settings.original_price }}</span>
+                      {% endif %}
+                      <span class="slide__price-current">{{ block.settings.current_price }}</span>
+                      {% if block.settings.discount_percentage %}
+                        <span class="slide__discount">-{{ block.settings.discount_percentage }}%</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+
+                  <div class="slide__actions">
+                    {% if block.settings.primary_button_text %}
+                      <a href="{{ block.settings.primary_button_url }}" class="btn btn--primary btn--large">
+                        {{ block.settings.primary_button_text }}
+                      </a>
+                    {% endif %}
+                    
+                    {% if block.settings.secondary_button_text %}
+                      <a href="{{ block.settings.secondary_button_url }}" class="btn btn--outline btn--large">
+                        {{ block.settings.secondary_button_text }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    {% if section.blocks.size > 1 %}
+      <!-- Navigation Dots -->
+      <div class="slider-dots">
+        {% for block in section.blocks %}
+          <button class="slider-dot" data-slide="{{ forloop.index0 }}" aria-label="Ir a slide {{ forloop.index }}"></button>
+        {% endfor %}
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="slider-nav">
+        <button class="slider-arrow slider-arrow--prev" aria-label="Slide anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15,18 9,12 15,6"></polyline>
+          </svg>
+        </button>
+        <button class="slider-arrow slider-arrow--next" aria-label="Slide siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .hero-slider {
+    position: relative;
+    height: {{ section.settings.slider_height | default: 70 }}vh;
+    min-height: 400px;
+    overflow: hidden;
+  }
+
+  .slider-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .slider-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .slide__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .slide__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .slide__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity | default: 0.5 }});
+    z-index: 2;
+  }
+
+  .slide .container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+  }
+
+  .slide__content {
+    max-width: 600px;
+    text-align: {{ section.settings.text_alignment | default: 'center' }};
+    {% if section.settings.text_alignment == 'center' %}
+      margin: 0 auto;
+    {% endif %}
+  }
+
+  .slide__badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: {{ section.settings.badge_color | default: '#F39C12' }};
+    color: {{ section.settings.badge_text_color | default: '#000' }};
+    border-radius: 20px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  .slide__title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: $font-weight-bold;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .slide__subtitle {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: {{ section.settings.accent_color | default: '#F39C12' }};
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .slide__description {
+    font-size: $font-size-lg;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .slide__price {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    {% if section.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% endif %}
+  }
+
+  .slide__price-original {
+    font-size: $font-size-lg;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: line-through;
+  }
+
+  .slide__price-current {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.accent_color | default: '#F39C12' }};
+  }
+
+  .slide__discount {
+    padding: 0.25rem 0.75rem;
+    background: #E74C3C;
+    color: white;
+    border-radius: 15px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+  }
+
+  .slide__actions {
+    display: flex;
+    gap: 1rem;
+    {% if section.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% endif %}
+    flex-wrap: wrap;
+  }
+
+  .slider-dots {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+  }
+
+  .slider-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &.active {
+      background: {{ section.settings.accent_color | default: '#F39C12' }};
+      transform: scale(1.2);
+    }
+  }
+
+  .slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .slider-arrow {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .hero-slider {
+      height: 60vh;
+      min-height: 350px;
+    }
+    
+    .slide__actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .slider-nav {
+      padding: 0 1rem;
+    }
+    
+    .slider-arrow {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .hero-slider {
+      height: 50vh;
+      min-height: 300px;
+    }
+    
+    .slide__content {
+      padding: 0 1rem;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sliderWrapper = document.querySelector('.slider-wrapper');
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.slider-dot');
+  const prevBtn = document.querySelector('.slider-arrow--prev');
+  const nextBtn = document.querySelector('.slider-arrow--next');
+  
+  if (!sliderWrapper || slides.length <= 1) return;
+  
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+  const autoPlay = {{ section.settings.auto_play | default: true }};
+  const autoPlayDelay = {{ section.settings.auto_play_delay | default: 5000 }};
+  let autoPlayInterval;
+  
+  function goToSlide(index) {
+    currentSlide = index;
+    sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    // Update dots
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentSlide);
+    });
+  }
+  
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    goToSlide(currentSlide);
+  }
+  
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    goToSlide(currentSlide);
+  }
+  
+  function startAutoPlay() {
+    if (autoPlay) {
+      autoPlayInterval = setInterval(nextSlide, autoPlayDelay);
+    }
+  }
+  
+  function stopAutoPlay() {
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+    }
+  }
+  
+  // Event listeners
+  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+  
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => goToSlide(index));
+  });
+  
+  // Pause autoplay on hover
+  sliderWrapper.addEventListener('mouseenter', stopAutoPlay);
+  sliderWrapper.addEventListener('mouseleave', startAutoPlay);
+  
+  // Initialize
+  goToSlide(0);
+  startAutoPlay();
+});
+</script>
+
+{% schema %}
+{
+  "name": "Hero Slider",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Configuración del Slider"
+    },
+    {
+      "type": "range",
+      "id": "slider_height",
+      "label": "Altura del slider (%)",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 70
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_play",
+      "label": "Reproducción automática",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "auto_play_delay",
+      "label": "Velocidad de reproducción (ms)",
+      "min": 2000,
+      "max": 10000,
+      "step": 500,
+      "default": 5000
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alineación del texto",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacidad del overlay",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.5
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Color de insignia",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Color del texto de insignia",
+      "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "text",
+          "id": "slide_badge",
+          "label": "Insignia",
+          "default": "Oferta Especial"
+        },
+        {
+          "type": "text",
+          "id": "slide_title",
+          "label": "Título",
+          "default": "Hasta 50% Off en Proteínas"
+        },
+        {
+          "type": "text",
+          "id": "slide_subtitle",
+          "label": "Subtítulo",
+          "default": "Productos Premium al Mejor Precio"
+        },
+        {
+          "type": "textarea",
+          "id": "slide_description",
+          "label": "Descripción",
+          "default": "Descubre nuestra selección premium de suplementos deportivos con descuentos increíbles"
+        },
+        {
+          "type": "image_picker",
+          "id": "slide_image",
+          "label": "Imagen de fondo"
+        },
+        {
+          "type": "header",
+          "content": "Precio"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "label": "Mostrar precio",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "original_price",
+          "label": "Precio original",
+          "default": "S/ 150"
+        },
+        {
+          "type": "text",
+          "id": "current_price",
+          "label": "Precio actual",
+          "default": "S/ 99"
+        },
+        {
+          "type": "text",
+          "id": "discount_percentage",
+          "label": "Porcentaje de descuento",
+          "default": "34"
+        },
+        {
+          "type": "header",
+          "content": "Botones"
+        },
+        {
+          "type": "text",
+          "id": "primary_button_text",
+          "label": "Texto del botón principal",
+          "default": "Comprar Ahora"
+        },
+        {
+          "type": "url",
+          "id": "primary_button_url",
+          "label": "URL del botón principal"
+        },
+        {
+          "type": "text",
+          "id": "secondary_button_text",
+          "label": "Texto del botón secundario",
+          "default": "Ver Ofertas"
+        },
+        {
+          "type": "url",
+          "id": "secondary_button_url",
+          "label": "URL del botón secundario"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Slider",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "slide_badge": "Oferta Especial",
+            "slide_title": "Hasta 50% Off en Proteínas",
+            "slide_subtitle": "Productos Premium al Mejor Precio",
+            "slide_description": "Descubre nuestra selección premium de suplementos deportivos con descuentos increíbles",
+            "primary_button_text": "Comprar Ahora",
+            "secondary_button_text": "Ver Ofertas"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "slide_badge": "Nuevo",
+            "slide_title": "Pre-Entrenos de Última Generación",
+            "slide_subtitle": "Energía y Rendimiento Máximo",
+            "slide_description": "Potencia tus entrenamientos con los mejores pre-entrenos del mercado",
+            "primary_button_text": "Explorar",
+            "secondary_button_text": "Más Info"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

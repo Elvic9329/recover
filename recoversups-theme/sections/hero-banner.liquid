@@ -1,0 +1,521 @@
+{% comment %}
+  Hero Banner Section - Recoversups
+  Sección principal de la página de inicio
+{% endcomment %}
+
+<section class="hero-banner" role="banner">
+  <div class="hero-banner__background">
+    {% if section.settings.hero_image %}
+      <img src="{{ section.settings.hero_image | img_url: '1920x1080' }}" 
+           alt="{{ section.settings.hero_image.alt | default: 'Hero Banner' }}"
+           class="hero-banner__bg-image"
+           loading="eager">
+    {% endif %}
+    <div class="hero-banner__overlay"></div>
+  </div>
+
+  <div class="container">
+    <div class="hero-banner__content">
+      <div class="hero-banner__text">
+        {% if section.settings.hero_subtitle %}
+          <span class="hero-banner__subtitle">{{ section.settings.hero_subtitle }}</span>
+        {% endif %}
+        
+        <h1 class="hero-banner__title">
+          {{ section.settings.hero_title | default: 'Suplementos Deportivos al Mejor Precio' }}
+        </h1>
+        
+        {% if section.settings.hero_description %}
+          <p class="hero-banner__description">
+            {{ section.settings.hero_description }}
+          </p>
+        {% endif %}
+
+        <div class="hero-banner__actions">
+          {% if section.settings.primary_button_text %}
+            {% render 'button', 
+                text: section.settings.primary_button_text,
+                url: section.settings.primary_button_url,
+                type: 'primary',
+                size: 'large',
+                class: 'hero-banner__cta-primary' %}
+          {% endif %}
+          
+          {% if section.settings.secondary_button_text %}
+            {% render 'button', 
+                text: section.settings.secondary_button_text,
+                url: section.settings.secondary_button_url,
+                type: 'outline',
+                size: 'large',
+                class: 'hero-banner__cta-secondary' %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% if section.settings.show_features %}
+        <div class="hero-banner__features">
+          <div class="hero-features">
+            <div class="hero-feature">
+              {% render 'icon', name: 'truck', size: 24 %}
+              <span class="hero-feature__text">Envío Gratis</span>
+            </div>
+            <div class="hero-feature">
+              {% render 'icon', name: 'shield', size: 24 %}
+              <span class="hero-feature__text">100% Seguro</span>
+            </div>
+            <div class="hero-feature">
+              {% render 'icon', name: 'refresh', size: 24 %}
+              <span class="hero-feature__text">Devoluciones</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_scroll_indicator %}
+      <div class="hero-banner__scroll-indicator">
+        <div class="scroll-indicator">
+          <div class="scroll-indicator__line"></div>
+          <div class="scroll-indicator__dot"></div>
+        </div>
+        <span class="scroll-indicator__text">Scroll</span>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .hero-banner {
+    position: relative;
+    min-height: {{ section.settings.hero_height | default: 70 }}vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, {{ section.settings.gradient_start | default: '#B62921' }} 0%, {{ section.settings.gradient_end | default: '#2C3E50' }} 100%);
+  }
+
+  .hero-banner__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .hero-banner__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-banner__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity | default: 0.4 }});
+    z-index: 2;
+  }
+
+  .hero-banner .container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+  }
+
+  .hero-banner__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: white;
+  }
+
+  .hero-banner__text {
+    max-width: 600px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-banner__subtitle {
+    display: block;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: {{ section.settings.subtitle_color | default: '#F39C12' }};
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  }
+
+  .hero-banner__title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: $font-weight-bold;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
+  }
+
+  .hero-banner__description {
+    font-size: $font-size-lg;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.6s forwards;
+  }
+
+  .hero-banner__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.8s forwards;
+  }
+
+  .hero-banner__cta-primary {
+    background: {{ section.settings.primary_button_color | default: '#F39C12' }};
+    color: {{ section.settings.primary_button_text_color | default: '#000' }};
+    box-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(243, 156, 18, 0.4);
+    }
+  }
+
+  .hero-banner__cta-secondary {
+    border-color: white;
+    color: white;
+    
+    &:hover {
+      background: white;
+      color: $primary-color;
+    }
+  }
+
+  .hero-banner__features {
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 1s forwards;
+  }
+
+  .hero-features {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all $transition-normal;
+  }
+
+  .hero-feature:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .hero-feature__text {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  .hero-banner__scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    opacity: 0;
+    animation: fadeIn 1s ease-out 1.5s forwards;
+  }
+
+  .scroll-indicator {
+    position: relative;
+    width: 2px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .scroll-indicator__line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: white;
+    animation: scroll-indicator 2s ease-in-out infinite;
+  }
+
+  .scroll-indicator__dot {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .scroll-indicator__text {
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Animaciones */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scroll-indicator {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(200%);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .hero-banner {
+      min-height: 60vh;
+      text-align: center;
+    }
+
+    .hero-banner__title {
+      font-size: clamp(1.5rem, 6vw, 2.5rem);
+    }
+
+    .hero-banner__description {
+      font-size: $font-size-base;
+    }
+
+    .hero-banner__actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-features {
+      gap: 1rem;
+    }
+
+    .hero-feature {
+      padding: 0.75rem 1rem;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .hero-banner {
+      min-height: 50vh;
+    }
+
+    .hero-features {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-feature {
+      width: 100%;
+      max-width: 200px;
+      justify-content: center;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-banner__subtitle,
+    .hero-banner__title,
+    .hero-banner__description,
+    .hero-banner__actions,
+    .hero-banner__features,
+    .hero-banner__scroll-indicator {
+      animation: none;
+      opacity: 1;
+    }
+
+    .scroll-indicator__line {
+      animation: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "hero_subtitle",
+      "label": "Subtítulo",
+      "default": "Bienvenido a Recoversups"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Título Principal",
+      "default": "Suplementos Deportivos al Mejor Precio"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_description",
+      "label": "Descripción",
+      "default": "Descubre nuestra selección de suplementos de calidad para alcanzar tus objetivos fitness"
+    },
+    {
+      "type": "header",
+      "content": "Botones"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Texto del botón principal",
+      "default": "Ver Productos"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_url",
+      "label": "URL del botón principal"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Texto del botón secundario",
+      "default": "Conoce Más"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_url",
+      "label": "URL del botón secundario"
+    },
+    {
+      "type": "header",
+      "content": "Imagen de Fondo"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Imagen de fondo"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacidad del overlay",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.4
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "hero_height",
+      "label": "Altura del hero (%)",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 70
+    },
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Color inicial del gradiente",
+      "default": "#B62921"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end",
+      "label": "Color final del gradiente",
+      "default": "#2C3E50"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Color del subtítulo",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_color",
+      "label": "Color del botón principal",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "primary_button_text_color",
+      "label": "Color del texto del botón principal",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Características"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_features",
+      "label": "Mostrar características",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Mostrar indicador de scroll",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

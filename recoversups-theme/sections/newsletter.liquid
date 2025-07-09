@@ -1,0 +1,614 @@
+{% comment %}
+  Newsletter Section - Recoversups
+  Sección de suscripción al newsletter
+{% endcomment %}
+
+<section class="newsletter">
+  <div class="newsletter__background">
+    {% if section.settings.background_image %}
+      <img src="{{ section.settings.background_image | img_url: '1920x800' }}" 
+           alt="Newsletter background"
+           class="newsletter__bg-image"
+           loading="lazy">
+    {% endif %}
+    <div class="newsletter__overlay"></div>
+  </div>
+
+  <div class="container">
+    <div class="newsletter__content">
+      <div class="newsletter__text">
+        {% if section.settings.newsletter_subtitle %}
+          <span class="newsletter__subtitle">{{ section.settings.newsletter_subtitle }}</span>
+        {% endif %}
+        
+        <h2 class="newsletter__title">
+          {{ section.settings.newsletter_title | default: 'Mantente al día con nuestras ofertas' }}
+        </h2>
+        
+        {% if section.settings.newsletter_description %}
+          <p class="newsletter__description">
+            {{ section.settings.newsletter_description }}
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="newsletter__form-container">
+        <form action="{{ routes.root_url }}contact#contact_form" 
+              method="post" 
+              class="newsletter__form"
+              id="newsletter-form">
+          <input type="hidden" name="form_type" value="customer">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          
+          <div class="newsletter__input-group">
+            <div class="newsletter__input-wrapper">
+              <svg class="newsletter__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              <input type="email" 
+                     name="contact[email]" 
+                     placeholder="{{ section.settings.input_placeholder | default: 'Tu email' }}"
+                     class="newsletter__input"
+                     required
+                     aria-label="Email para newsletter">
+            </div>
+            
+            <button type="submit" class="newsletter__submit">
+              <span class="newsletter__submit-text">
+                {{ section.settings.button_text | default: 'Suscribirse' }}
+              </span>
+              <svg class="newsletter__submit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12,5 19,12 12,19"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="newsletter__message" id="newsletter-message" role="alert" aria-live="polite"></div>
+        </form>
+
+        {% if section.settings.show_privacy_note %}
+          <p class="newsletter__privacy">
+            <svg class="newsletter__privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            {{ section.settings.privacy_text | default: 'Respetamos tu privacidad. Puedes darte de baja en cualquier momento.' }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% if section.settings.show_benefits %}
+        <div class="newsletter__benefits">
+          <div class="newsletter__benefit">
+            <svg class="newsletter__benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="newsletter__benefit-text">Ofertas exclusivas</span>
+          </div>
+          
+          <div class="newsletter__benefit">
+            <svg class="newsletter__benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            <span class="newsletter__benefit-text">Novedades primero</span>
+          </div>
+          
+          <div class="newsletter__benefit">
+            <svg class="newsletter__benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span class="newsletter__benefit-text">Consejos fitness</span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .newsletter {
+    position: relative;
+    padding: {{ section.settings.padding_top | default: 5 }}rem 0 {{ section.settings.padding_bottom | default: 5 }}rem;
+    background: {{ section.settings.background_color | default: '#1a1a1a' }};
+    color: {{ section.settings.text_color | default: '#ffffff' }};
+    overflow: hidden;
+  }
+
+  .newsletter__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .newsletter__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .newsletter__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity | default: 0.6 }});
+    z-index: 2;
+  }
+
+  .newsletter .container {
+    position: relative;
+    z-index: 3;
+  }
+
+  .newsletter__content {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .newsletter__subtitle {
+    display: block;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: {{ section.settings.accent_color | default: '#F39C12' }};
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.2s forwards;
+  }
+
+  .newsletter__title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: $font-weight-bold;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.4s forwards;
+  }
+
+  .newsletter__description {
+    font-size: $font-size-lg;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.6s forwards;
+  }
+
+  .newsletter__form-container {
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 0.8s forwards;
+  }
+
+  .newsletter__form {
+    margin-bottom: 1rem;
+  }
+
+  .newsletter__input-group {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 0.25rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all $transition-normal;
+    
+    &:focus-within {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: {{ section.settings.accent_color | default: '#F39C12' }};
+      box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.3);
+    }
+  }
+
+  .newsletter__input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .newsletter__input-icon {
+    position: absolute;
+    left: 1rem;
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+  }
+
+  .newsletter__input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: $font-size-base;
+    border-radius: 25px;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .newsletter__submit {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: {{ section.settings.button_color | default: '#F39C12' }};
+    color: {{ section.settings.button_text_color | default: '#000000' }};
+    border: none;
+    border-radius: 25px;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+    transition: all $transition-normal;
+    white-space: nowrap;
+    
+    &:hover {
+      background: {{ section.settings.button_hover_color | default: '#E67E22' }};
+      transform: translateX(2px);
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .newsletter__submit-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform $transition-normal;
+  }
+
+  .newsletter__submit:hover .newsletter__submit-icon {
+    transform: translateX(2px);
+  }
+
+  .newsletter__message {
+    min-height: 24px;
+    font-size: $font-size-sm;
+    margin-top: 1rem;
+    
+    &.success {
+      color: #27AE60;
+    }
+    
+    &.error {
+      color: #E74C3C;
+    }
+  }
+
+  .newsletter__privacy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: $font-size-sm;
+    opacity: 0.8;
+    margin-top: 1rem;
+  }
+
+  .newsletter__privacy-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .newsletter__benefits {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out 1s forwards;
+  }
+
+  .newsletter__benefit {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  .newsletter__benefit-icon {
+    width: 20px;
+    height: 20px;
+    color: {{ section.settings.accent_color | default: '#F39C12' }};
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .newsletter {
+      padding: 3rem 0;
+    }
+
+    .newsletter__input-group {
+      flex-direction: column;
+      border-radius: 12px;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .newsletter__input-wrapper {
+      order: 1;
+    }
+
+    .newsletter__input {
+      padding: 1rem 1rem 1rem 3rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .newsletter__submit {
+      order: 2;
+      border-radius: 8px;
+      justify-content: center;
+    }
+
+    .newsletter__benefits {
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .newsletter {
+      padding: 2rem 0;
+    }
+
+    .newsletter__benefits {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .newsletter__benefit {
+      justify-content: center;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .newsletter__subtitle,
+    .newsletter__title,
+    .newsletter__description,
+    .newsletter__form-container,
+    .newsletter__benefits {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('newsletter-form');
+    const message = document.getElementById('newsletter-message');
+    const submitButton = form.querySelector('.newsletter__submit');
+    const submitText = submitButton.querySelector('.newsletter__submit-text');
+    
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        submitButton.disabled = true;
+        submitText.textContent = 'Enviando...';
+        message.textContent = '';
+        
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            message.textContent = '¡Gracias por suscribirte! Pronto recibirás nuestras novedades.';
+            message.className = 'newsletter__message success';
+            form.reset();
+          } else {
+            throw new Error('Error en la suscripción');
+          }
+        })
+        .catch(error => {
+          message.textContent = 'Hubo un error. Por favor, intenta nuevamente.';
+          message.className = 'newsletter__message error';
+        })
+        .finally(() => {
+          submitButton.disabled = false;
+          submitText.textContent = '{{ section.settings.button_text | default: "Suscribirse" }}';
+        });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_subtitle",
+      "label": "Subtítulo",
+      "default": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Título principal",
+      "default": "Mantente al día con nuestras ofertas"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_description",
+      "label": "Descripción",
+      "default": "Recibe ofertas exclusivas, novedades y consejos fitness directamente en tu email"
+    },
+    {
+      "type": "header",
+      "content": "Formulario"
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Placeholder del input",
+      "default": "Tu email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Texto del botón",
+      "default": "Suscribirse"
+    },
+    {
+      "type": "header",
+      "content": "Privacidad"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_privacy_note",
+      "label": "Mostrar nota de privacidad",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "privacy_text",
+      "label": "Texto de privacidad",
+      "default": "Respetamos tu privacidad. Puedes darte de baja en cualquier momento."
+    },
+    {
+      "type": "header",
+      "content": "Beneficios"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_benefits",
+      "label": "Mostrar beneficios",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Imagen de Fondo"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Imagen de fondo"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacidad del overlay",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.6
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Color del botón",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color del texto del botón",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Color del botón al hacer hover",
+      "default": "#E67E22"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 5
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

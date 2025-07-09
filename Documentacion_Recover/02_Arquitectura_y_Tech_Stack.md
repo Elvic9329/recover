@@ -143,15 +143,17 @@ $large-desktop: 1440px;
 
 #### 1. Imágenes
 - Formato WebP con fallback
-- Lazy loading implementado
+- Lazy loading implementado (loading="lazy")
 - Responsive images con srcset
 - Compresión automática
+- Preload de recursos críticos
 
 #### 2. JavaScript
 - Módulos ES6 para mejor organización
 - Minificación automática
 - Lazy loading de componentes
 - Event delegation
+- IIFEs para evitar conflictos de namespace (Shopify 2025)
 
 #### 3. CSS
 - Critical CSS inline

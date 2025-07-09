@@ -1,0 +1,684 @@
+{% comment %}
+  Fitness Goals Section - Recoversups
+  Sección de objetivos fitness para navegación intuitiva
+{% endcomment %}
+
+<section class="fitness-goals">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ section.settings.title | default: '¿Cuál es tu objetivo?' }}
+      </h2>
+      {% if section.settings.description %}
+        <p class="section-description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class="goals-grid">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'goal' %}
+              <div class="goal-card" {{ block.shopify_attributes }}>
+                <a href="{{ block.settings.goal_url | default: '#' }}" class="goal-card__link">
+                  <div class="goal-card__icon">
+                    {% if block.settings.goal_image %}
+                      <img src="{{ block.settings.goal_image | img_url: '100x100' }}" 
+                           alt="{{ block.settings.goal_title }}"
+                           class="goal-card__icon-img"
+                           loading="lazy">
+                    {% else %}
+                      <div class="goal-card__icon-placeholder">
+                        <svg class="goal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          {% case block.settings.goal_icon %}
+                            {% when 'muscle' %}
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            {% when 'weight-loss' %}
+                              <circle cx="12" cy="12" r="3"/>
+                              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            {% when 'energy' %}
+                              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            {% when 'endurance' %}
+                              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            {% when 'recovery' %}
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                              <polyline points="22,4 12,14.01 9,11.01"/>
+                            {% when 'health' %}
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            {% else %}
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                              <line x1="12" y1="17" x2="12.01" y2="17"/>
+                          {% endcase %}
+                        </svg>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="goal-card__content">
+                    <h3 class="goal-card__title">{{ block.settings.goal_title }}</h3>
+                    
+                    {% if block.settings.goal_description %}
+                      <p class="goal-card__description">{{ block.settings.goal_description }}</p>
+                    {% endif %}
+                    
+                    {% if block.settings.show_product_count %}
+                      <div class="goal-card__stats">
+                        <span class="goal-card__count">{{ block.settings.product_count | default: 0 }} productos</span>
+                        {% if block.settings.popularity_percentage %}
+                          <span class="goal-card__popularity">{{ block.settings.popularity_percentage }}% lo eligen</span>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="goal-card__arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                      <polyline points="12,5 19,12 12,19"/>
+                    </svg>
+                  </div>
+                </a>
+              </div>
+        {% endcase %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="goals-empty">
+        <div class="empty-state">
+          <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          <h3 class="empty-state__title">No hay objetivos configurados</h3>
+          <p class="empty-state__description">
+            Agrega objetivos fitness para ayudar a tus clientes a navegar por productos según sus metas.
+          </p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .fitness-goals {
+    padding: {{ section.settings.padding_top | default: 4 }}rem 0 {{ section.settings.padding_bottom | default: 4 }}rem;
+    background: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.title_color | default: '#2C3E50' }};
+    margin-bottom: 1rem;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      border-radius: 2px;
+    }
+  }
+
+  .section-description {
+    font-size: $font-size-lg;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+    line-height: 1.6;
+  }
+
+  .goals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .goal-card {
+    background: {{ section.settings.card_background | default: '#ffffff' }};
+    border-radius: {{ section.settings.card_border_radius | default: 16 }}px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid {{ section.settings.card_border_color | default: '#e9ecef' }};
+    transition: all $transition-normal;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+    
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+      border-color: {{ section.settings.accent_color | default: '#B62921' }};
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, {{ section.settings.accent_color | default: '#B62921' }}, {{ section.settings.gradient_color | default: '#F39C12' }});
+      transform: scaleX(0);
+      transition: transform $transition-normal;
+    }
+    
+    &:hover::before {
+      transform: scaleX(1);
+    }
+  }
+
+  .goal-card:nth-child(1) { animation-delay: 0.1s; }
+  .goal-card:nth-child(2) { animation-delay: 0.2s; }
+  .goal-card:nth-child(3) { animation-delay: 0.3s; }
+  .goal-card:nth-child(4) { animation-delay: 0.4s; }
+  .goal-card:nth-child(5) { animation-delay: 0.5s; }
+  .goal-card:nth-child(6) { animation-delay: 0.6s; }
+
+  .goal-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 100%;
+  }
+
+  .goal-card__icon {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, {{ section.settings.icon_bg_start | default: '#F39C12' }}, {{ section.settings.icon_bg_end | default: '#E67E22' }});
+    border-radius: 50%;
+    transition: transform $transition-normal;
+  }
+
+  .goal-card:hover .goal-card__icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  .goal-card__icon-img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .goal-card__icon-placeholder {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .goal-icon {
+    width: 32px;
+    height: 32px;
+    color: white;
+  }
+
+  .goal-card__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .goal-card__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.title_color | default: '#2C3E50' }};
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .goal-card__description {
+    font-size: $font-size-base;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .goal-card__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .goal-card__count {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    padding: 0.25rem 0.75rem;
+    background: rgba(182, 41, 33, 0.1);
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  .goal-card__popularity {
+    font-size: $font-size-xs;
+    color: {{ section.settings.gradient_color | default: '#F39C12' }};
+    font-weight: $font-weight-semibold;
+    padding: 0.25rem 0.75rem;
+    background: rgba(243, 156, 18, 0.1);
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  .goal-card__arrow {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    transition: transform $transition-normal;
+  }
+
+  .goal-card:hover .goal-card__arrow {
+    transform: translateX(5px);
+  }
+
+  .goals-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-state__icon {
+    width: 48px;
+    height: 48px;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    margin: 0 auto 1rem;
+  }
+
+  .empty-state__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-secondary;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state__description {
+    color: $text-muted;
+    font-size: $font-size-base;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .fitness-goals {
+      padding: 3rem 0;
+    }
+
+    .goals-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .goal-card {
+      padding: 1.5rem;
+    }
+
+    .goal-card__link {
+      gap: 1rem;
+    }
+
+    .goal-card__icon {
+      width: 60px;
+      height: 60px;
+    }
+
+    .goal-card__icon-img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .goal-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .section-title {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .fitness-goals {
+      padding: 2rem 0;
+    }
+
+    .goal-card {
+      padding: 1rem;
+    }
+
+    .goal-card__link {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .goal-card__stats {
+      justify-content: center;
+    }
+
+    .goal-card__arrow {
+      transform: rotate(90deg);
+    }
+
+    .goal-card:hover .goal-card__arrow {
+      transform: rotate(90deg) translateX(5px);
+    }
+
+    .section-title {
+      font-size: $font-size-xl;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .goal-card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    
+    .goal-card::before {
+      transform: scaleX(1);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Objetivos Fitness",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "¿Cuál es tu objetivo?"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Encuentra los suplementos perfectos para alcanzar tus metas fitness"
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Radio de borde de tarjetas",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#2C3E50"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#B62921"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color",
+      "label": "Color del gradiente",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Color de fondo de tarjetas",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Color de borde de tarjetas",
+      "default": "#e9ecef"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg_start",
+      "label": "Color inicial del icono",
+      "default": "#F39C12"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg_end",
+      "label": "Color final del icono",
+      "default": "#E67E22"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "goal",
+      "name": "Objetivo",
+      "settings": [
+        {
+          "type": "text",
+          "id": "goal_title",
+          "label": "Título del objetivo",
+          "default": "Ganar Músculo"
+        },
+        {
+          "type": "textarea",
+          "id": "goal_description",
+          "label": "Descripción",
+          "default": "Suplementos para aumentar masa muscular y fuerza"
+        },
+        {
+          "type": "select",
+          "id": "goal_icon",
+          "label": "Icono",
+          "options": [
+            {
+              "value": "muscle",
+              "label": "Músculo"
+            },
+            {
+              "value": "weight-loss",
+              "label": "Pérdida de peso"
+            },
+            {
+              "value": "energy",
+              "label": "Energía"
+            },
+            {
+              "value": "endurance",
+              "label": "Resistencia"
+            },
+            {
+              "value": "recovery",
+              "label": "Recuperación"
+            },
+            {
+              "value": "health",
+              "label": "Salud"
+            }
+          ],
+          "default": "muscle"
+        },
+        {
+          "type": "image_picker",
+          "id": "goal_image",
+          "label": "Imagen del objetivo (opcional)"
+        },
+        {
+          "type": "url",
+          "id": "goal_url",
+          "label": "URL del objetivo"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_count",
+          "label": "Mostrar estadísticas",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "product_count",
+          "label": "Cantidad de productos",
+          "default": "35"
+        },
+        {
+          "type": "text",
+          "id": "popularity_percentage",
+          "label": "Porcentaje de popularidad",
+          "default": "67"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Objetivos Fitness",
+      "blocks": [
+        {
+          "type": "goal",
+          "settings": {
+            "goal_title": "Ganar Músculo",
+            "goal_description": "Suplementos para aumentar masa muscular y fuerza",
+            "goal_icon": "muscle",
+            "product_count": "35",
+            "popularity_percentage": "67"
+          }
+        },
+        {
+          "type": "goal",
+          "settings": {
+            "goal_title": "Perder Peso",
+            "goal_description": "Quemadores de grasa y productos para definición",
+            "goal_icon": "weight-loss",
+            "product_count": "22",
+            "popularity_percentage": "45"
+          }
+        },
+        {
+          "type": "goal",
+          "settings": {
+            "goal_title": "Más Energía",
+            "goal_description": "Pre-entrenos y estimulantes naturales",
+            "goal_icon": "energy",
+            "product_count": "28",
+            "popularity_percentage": "38"
+          }
+        },
+        {
+          "type": "goal",
+          "settings": {
+            "goal_title": "Resistencia",
+            "goal_description": "Productos para deportes de resistencia",
+            "goal_icon": "endurance",
+            "product_count": "18",
+            "popularity_percentage": "25"
+          }
+        },
+        {
+          "type": "goal",
+          "settings": {
+            "goal_title": "Recuperación",
+            "goal_description": "Suplementos para recuperación muscular",
+            "goal_icon": "recovery",
+            "product_count": "15",
+            "popularity_percentage": "32"
+          }
+        },
+        {
+          "type": "goal",
+          "settings": {
+            "goal_title": "Salud General",
+            "goal_description": "Vitaminas y minerales esenciales",
+            "goal_icon": "health",
+            "product_count": "42",
+            "popularity_percentage": "55"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

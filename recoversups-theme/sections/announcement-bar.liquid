@@ -1,0 +1,249 @@
+{% comment %}
+  Announcement Bar Section - Recoversups
+  Barra de anuncios superior
+{% endcomment %}
+
+{% if section.settings.show_announcement %}
+  <div class="announcement-bar" role="region" aria-label="Announcement">
+    <div class="announcement-bar__content">
+      <div class="announcement-bar__text">
+        {% if section.settings.announcement_icon %}
+          <svg class="announcement-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            {% case section.settings.announcement_icon %}
+              {% when 'truck' %}
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16,3 21,8 21,16 16,16"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              {% when 'percent' %}
+                <line x1="19" y1="5" x2="5" y2="19"></line>
+                <circle cx="6.5" cy="6.5" r="2.5"></circle>
+                <circle cx="17.5" cy="17.5" r="2.5"></circle>
+              {% when 'star' %}
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            {% endcase %}
+          </svg>
+        {% endif %}
+        
+        <span class="announcement-bar__message">{{ section.settings.announcement_text }}</span>
+        
+        {% if section.settings.announcement_link %}
+          <a href="{{ section.settings.announcement_link }}" class="announcement-bar__link">
+            {{ section.settings.link_text | default: 'Ver más' }}
+          </a>
+        {% endif %}
+      </div>
+      
+      {% if section.settings.show_close %}
+        <button class="announcement-bar__close" aria-label="Cerrar anuncio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+<style>
+  .announcement-bar {
+    background: {{ section.settings.background_color | default: '#B62921' }};
+    color: {{ section.settings.text_color | default: '#ffffff' }};
+    font-size: {{ section.settings.font_size | default: 14 }}px;
+    padding: {{ section.settings.padding | default: 10 }}px 0;
+    text-align: center;
+    position: relative;
+    z-index: 100;
+  }
+
+  .announcement-bar__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .announcement-bar__text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .announcement-bar__icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .announcement-bar__message {
+    font-weight: 500;
+  }
+
+  .announcement-bar__link {
+    color: inherit;
+    text-decoration: underline;
+    font-weight: 600;
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .announcement-bar__close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .announcement-bar__content {
+      padding: 0 0.5rem;
+    }
+    
+    .announcement-bar__text {
+      font-size: 13px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.querySelector('.announcement-bar__close');
+    const announcementBar = document.querySelector('.announcement-bar');
+    
+    if (closeBtn && announcementBar) {
+      closeBtn.addEventListener('click', function() {
+        announcementBar.style.display = 'none';
+        // Guardar estado en localStorage
+        localStorage.setItem('announcement-bar-closed', 'true');
+      });
+      
+      // Verificar si ya fue cerrado
+      if (localStorage.getItem('announcement-bar-closed') === 'true') {
+        announcementBar.style.display = 'none';
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Barra de Anuncios",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Mostrar barra de anuncios",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Texto del anuncio",
+      "default": "🚚 Envío gratis en compras mayores a S/ 100"
+    },
+    {
+      "type": "select",
+      "id": "announcement_icon",
+      "label": "Icono",
+      "options": [
+        {
+          "value": "",
+          "label": "Sin icono"
+        },
+        {
+          "value": "truck",
+          "label": "Camión"
+        },
+        {
+          "value": "percent",
+          "label": "Descuento"
+        },
+        {
+          "value": "star",
+          "label": "Estrella"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Enlace del anuncio"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Texto del enlace",
+      "default": "Ver más"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close",
+      "label": "Mostrar botón de cerrar",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#B62921"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Tamaño de fuente",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Espaciado",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    }
+  ],
+  "presets": [
+    {
+      "name": "Barra de Anuncios"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,178 @@
+// =============================================================================
+// BASE STYLES - RECOVERSUPS
+// =============================================================================
+
+@import 'variables';
+@import 'mixins';
+
+// RESET
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  font-family: $font-family-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: 1.5;
+  color: $text-secondary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// TYPOGRAPHY
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-primary;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+  margin-bottom: $spacing-md;
+}
+
+h1 { font-size: $font-size-4xl; }
+h2 { font-size: $font-size-3xl; }
+h3 { font-size: $font-size-2xl; }
+h4 { font-size: $font-size-xl; }
+h5 { font-size: $font-size-lg; }
+h6 { font-size: $font-size-base; }
+
+p {
+  margin-bottom: $spacing-md;
+}
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: color $transition-normal;
+
+  &:hover {
+    color: darken($primary-color, 10%);
+  }
+}
+
+// IMAGES
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// BUTTONS
+.btn {
+  @include button-base;
+  
+  &-primary {
+    @include button-variant($warning-color, $text-secondary);
+  }
+  
+  &-secondary {
+    @include button-variant($secondary-color, $text-primary);
+  }
+}
+
+// CONTAINER
+.container {
+  @include container;
+}
+
+// GRID SYSTEM
+.grid {
+  display: grid;
+  gap: $spacing-md;
+  
+  &--1-col { grid-template-columns: 1fr; }
+  &--2-col { grid-template-columns: repeat(2, 1fr); }
+  &--3-col { grid-template-columns: repeat(3, 1fr); }
+  &--4-col { grid-template-columns: repeat(4, 1fr); }
+  &--5-col { grid-template-columns: repeat(5, 1fr); }
+  &--6-col { grid-template-columns: repeat(6, 1fr); }
+  
+  // Responsive grid
+  &--responsive {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  // Product grid
+  &--products {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $spacing-lg;
+  }
+}
+
+// FLEX SYSTEM
+.flex {
+  display: flex;
+  
+  &--row { flex-direction: row; }
+  &--column { flex-direction: column; }
+  &--wrap { flex-wrap: wrap; }
+  &--nowrap { flex-wrap: nowrap; }
+  
+  // Alignment
+  &--center { align-items: center; }
+  &--start { align-items: flex-start; }
+  &--end { align-items: flex-end; }
+  &--stretch { align-items: stretch; }
+  
+  // Justify
+  &--justify-center { justify-content: center; }
+  &--justify-start { justify-content: flex-start; }
+  &--justify-end { justify-content: flex-end; }
+  &--justify-between { justify-content: space-between; }
+  &--justify-around { justify-content: space-around; }
+  
+  // Gap
+  &--gap-sm { gap: $spacing-sm; }
+  &--gap-md { gap: $spacing-md; }
+  &--gap-lg { gap: $spacing-lg; }
+  &--gap-xl { gap: $spacing-xl; }
+}
+
+// RESPONSIVE UTILITIES
+@media (max-width: $tablet) {
+  .grid {
+    &--2-col { grid-template-columns: 1fr; }
+    &--3-col { grid-template-columns: repeat(2, 1fr); }
+    &--4-col { grid-template-columns: repeat(2, 1fr); }
+    &--5-col { grid-template-columns: repeat(2, 1fr); }
+    &--6-col { grid-template-columns: repeat(2, 1fr); }
+  }
+}
+
+@media (max-width: $mobile) {
+  .grid {
+    &--3-col { grid-template-columns: 1fr; }
+    &--4-col { grid-template-columns: 1fr; }
+    &--5-col { grid-template-columns: 1fr; }
+    &--6-col { grid-template-columns: 1fr; }
+  }
+  
+  .flex {
+    &--mobile-column { flex-direction: column; }
+    &--mobile-center { align-items: center; }
+  }
+}
+
+// UTILITY CLASSES
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

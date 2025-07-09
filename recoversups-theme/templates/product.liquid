@@ -1,0 +1,350 @@
+{% comment %}
+  Página de Producto - Recoversups
+  Template basado en la referencia visual del TaskManager
+  Layout 60/40 con fondo oscuro y funcionalidad completa
+{% endcomment %}
+
+<div class="product-page">
+  <div class="container">
+    <div class="product-layout">
+      <!-- Columna Izquierda: Galería de Imágenes (60%) -->
+      <div class="product-gallery">
+        <div class="gallery-container">
+          <div class="product-gallery__thumbnails">
+            {% for image in product.images %}
+              <button class="thumbnail {% if forloop.first %}active{% endif %}" 
+                      data-image="{{ image | img_url: '800x800' }}"
+                      data-index="{{ forloop.index0 }}">
+                <img src="{{ image | img_url: '100x100' }}" 
+                     alt="{{ image.alt | default: product.title }}"
+                     loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+              </button>
+            {% endfor %}
+          </div>
+          
+          <div class="product-gallery__main">
+            <div class="main-image">
+              <img id="main-product-image" 
+                   src="{{ product.featured_image | img_url: '800x800' }}" 
+                   alt="{{ product.title }}"
+                   loading="eager">
+              
+              {% if product.images.size > 1 %}
+                <button class="nav-arrow nav-arrow--prev" aria-label="Imagen anterior">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                  </svg>
+                </button>
+                <button class="nav-arrow nav-arrow--next" aria-label="Imagen siguiente">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </button>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="product-gallery__info">
+            <p class="size-reference">Altura: 180 cm (5'11") | Usando talla M</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Columna Derecha: Información y Compra (40%) -->
+      <div class="product-info">
+        <!-- Etiquetas Promocionales -->
+        <div class="product-badges">
+          {% if product.tags contains 'top-ventas' %}
+            <span class="badge badge--top-sales">TOP VENTAS</span>
+          {% endif %}
+          {% if product.available and product.selected_or_first_available_variant.inventory_quantity <= 5 %}
+            <span class="badge badge--low-stock">ÚLTIMAS UNIDADES</span>
+          {% endif %}
+          {% if product.tags contains 'nuevo' %}
+            <span class="badge badge--new">NUEVO</span>
+          {% endif %}
+        </div>
+        
+        <!-- Nombre y Precio -->
+        <div class="product-header">
+          <h1 class="product-title">{{ product.title | upcase }}</h1>
+          <div class="product-price">
+            <span class="price-current">{{ product.price | money }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="price-compare">{{ product.compare_at_price | money }}</span>
+              <span class="price-discount">
+                -{{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price }}%
+              </span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Reviews y Rating -->
+        <div class="product-rating">
+          <div class="rating-stars">
+            {% assign rating = product.metafields.reviews.rating.value | default: 4.5 %}
+            {% for i in (1..5) %}
+              {% if i <= rating %}
+                <span class="star star--filled">★</span>
+              {% elsif i <= rating + 0.5 %}
+                <span class="star star--half">★</span>
+              {% else %}
+                <span class="star star--empty">★</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <span class="rating-count">({{ product.metafields.reviews.count.value | default: 247 }} valoraciones)</span>
+        </div>
+        
+        <!-- Descripción Corta -->
+        <div class="product-description">
+          <p>{{ product.description | strip_html | truncate: 150 }}</p>
+        </div>
+        
+        <!-- Formulario de Compra -->
+        <form class="product-form" action="/cart/add" method="post" enctype="multipart/form-data">
+          <!-- Selector de Color -->
+          {% unless product.has_only_default_variant %}
+            {% for option in product.options_with_values %}
+              <div class="variant-selector">
+                <label class="variant-label">SELECCIONA {{ option.name | upcase }}</label>
+                
+                {% if option.name == 'Color' %}
+                  <div class="color-swatches">
+                    {% for value in option.values %}
+                      <input type="radio" 
+                             name="options[{{ option.name }}]" 
+                             value="{{ value }}" 
+                             id="color-{{ value | handle }}"
+                             {% if forloop.first %}checked{% endif %}>
+                      <label for="color-{{ value | handle }}" 
+                             class="color-swatch" 
+                             style="background-color: {{ value | handle }}"
+                             title="{{ value }}"></label>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="size-buttons">
+                    {% for value in option.values %}
+                      <input type="radio" 
+                             name="options[{{ option.name }}]" 
+                             value="{{ value }}" 
+                             id="size-{{ value | handle }}"
+                             {% if forloop.first %}checked{% endif %}>
+                      <label for="size-{{ value | handle }}" class="size-button">{{ value }}</label>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endunless %}
+          
+          <!-- Quantity Selector -->
+          <div class="quantity-selector">
+            <label class="variant-label">CANTIDAD</label>
+            <div class="quantity-controls">
+              <button type="button" class="quantity-btn quantity-btn--minus">-</button>
+              <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+              <button type="button" class="quantity-btn quantity-btn--plus">+</button>
+            </div>
+          </div>
+          
+          <!-- Botones de Acción -->
+          <div class="product-actions">
+            <button type="submit" class="btn btn-primary btn-add-to-cart">
+              <span class="btn-text">AGREGAR AL CARRITO</span>
+              <div class="btn-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+              </div>
+            </button>
+            
+            <div class="shop-pay-button">
+              {{ form | payment_button }}
+            </div>
+          </div>
+        </form>
+        
+        <!-- Información de Pago -->
+        <div class="payment-info">
+          <p class="installments">
+            <span class="installments-icon">💳</span>
+            Paga en 3 cuotas sin interés de {{ product.price | divided_by: 3 | money }}
+          </p>
+        </div>
+        
+        <!-- Estimador de Entrega -->
+        <div class="delivery-estimator">
+          <h3 class="estimator-title">Estimación de Entrega</h3>
+          <div class="delivery-steps">
+            <div class="step step--completed">
+              <div class="step-icon">📦</div>
+              <div class="step-label">PEDIDO</div>
+            </div>
+            <div class="step step--arrow">→</div>
+            <div class="step">
+              <div class="step-icon">🔄</div>
+              <div class="step-label">PREPARACIÓN</div>
+            </div>
+            <div class="step step--arrow">→</div>
+            <div class="step">
+              <div class="step-icon">🚚</div>
+              <div class="step-label">ENTREGADO</div>
+            </div>
+          </div>
+          <p class="delivery-time">Entrega estimada: 2-3 días hábiles en Lima</p>
+        </div>
+        
+        <!-- Mensaje de Urgencia -->
+        <div class="urgency-message">
+          <div class="urgency-icon">⏰</div>
+          <div class="urgency-text">
+            <p>Haz tu pedido en las próximas <strong class="urgency-timer">12:30:45</strong></p>
+            <p>para recibir tu producto <strong>mañana</strong></p>
+          </div>
+        </div>
+        
+        <!-- Iconos de Confianza -->
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <div class="badge-icon">🚚</div>
+            <div class="badge-text">ENVÍO GRATUITO</div>
+            <div class="badge-subtext">Compras > S/100</div>
+          </div>
+          <div class="trust-badge">
+            <div class="badge-icon">↩️</div>
+            <div class="badge-text">10 DÍAS DEVOLUCIÓN</div>
+            <div class="badge-subtext">Sin preguntas</div>
+          </div>
+          <div class="trust-badge">
+            <div class="badge-icon">🔒</div>
+            <div class="badge-text">PAGO SEGURO</div>
+            <div class="badge-subtext">SSL Certificado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts para funcionalidad -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Gallery functionality
+  const thumbnails = document.querySelectorAll('.thumbnail');
+  const mainImage = document.getElementById('main-product-image');
+  const prevBtn = document.querySelector('.nav-arrow--prev');
+  const nextBtn = document.querySelector('.nav-arrow--next');
+  let currentImageIndex = 0;
+  
+  // Thumbnail click handler
+  thumbnails.forEach((thumbnail, index) => {
+    thumbnail.addEventListener('click', function() {
+      const imageUrl = this.dataset.image;
+      mainImage.src = imageUrl;
+      currentImageIndex = index;
+      
+      // Update active thumbnail
+      thumbnails.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  
+  // Navigation arrows
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function() {
+      currentImageIndex = currentImageIndex > 0 ? currentImageIndex - 1 : thumbnails.length - 1;
+      thumbnails[currentImageIndex].click();
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      currentImageIndex = currentImageIndex < thumbnails.length - 1 ? currentImageIndex + 1 : 0;
+      thumbnails[currentImageIndex].click();
+    });
+  }
+  
+  // Quantity controls
+  const quantityInput = document.querySelector('.quantity-input');
+  const minusBtn = document.querySelector('.quantity-btn--minus');
+  const plusBtn = document.querySelector('.quantity-btn--plus');
+  
+  if (minusBtn) {
+    minusBtn.addEventListener('click', function() {
+      const currentValue = parseInt(quantityInput.value);
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+      }
+    });
+  }
+  
+  if (plusBtn) {
+    plusBtn.addEventListener('click', function() {
+      const currentValue = parseInt(quantityInput.value);
+      quantityInput.value = currentValue + 1;
+    });
+  }
+  
+  // Form submission
+  const productForm = document.querySelector('.product-form');
+  const addToCartBtn = document.querySelector('.btn-add-to-cart');
+  const btnText = document.querySelector('.btn-text');
+  const btnLoading = document.querySelector('.btn-loading');
+  
+  if (productForm) {
+    productForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline-block';
+      addToCartBtn.disabled = true;
+      
+      const formData = new FormData(this);
+      
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Success - redirect to cart or show success message
+        window.location.href = '/cart';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Show error message
+        alert('Error al agregar al carrito. Por favor, intenta nuevamente.');
+      })
+      .finally(() => {
+        // Reset button state
+        btnText.style.display = 'inline-block';
+        btnLoading.style.display = 'none';
+        addToCartBtn.disabled = false;
+      });
+    });
+  }
+  
+  // Countdown timer
+  function updateCountdown() {
+    const timer = document.querySelector('.urgency-timer');
+    if (!timer) return;
+    
+    const now = new Date();
+    const endTime = new Date(now.getTime() + 12 * 60 * 60 * 1000); // 12 hours from now
+    const timeLeft = endTime - now;
+    
+    if (timeLeft > 0) {
+      const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+      
+      timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+  }
+  
+  // Update countdown every second
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+});
+</script>

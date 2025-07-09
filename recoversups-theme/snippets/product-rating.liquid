@@ -1,0 +1,106 @@
+{% comment %}
+  Product Rating Component - Recoversups
+  
+  Parameters:
+  - product: Product object (required)
+  - show_count: Show review count (optional, default: true)
+  - size: Size of stars (optional, default: 'normal')
+{% endcomment %}
+
+{% assign rating = product.metafields.reviews.rating.value | default: 0 %}
+{% assign review_count = product.metafields.reviews.count.value | default: 0 %}
+
+<div class="product-rating product-rating--{{ size | default: 'normal' }}">
+  <div class="product-rating__stars" 
+       role="img" 
+       aria-label="{{ rating }} de 5 estrellas">
+    {% for i in (1..5) %}
+      {% if i <= rating %}
+        <svg class="star star--filled" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      {% elsif i == rating | plus: 1 and rating contains '.' %}
+        <svg class="star star--half" viewBox="0 0 24 24" fill="currentColor">
+          <defs>
+            <linearGradient id="half-{{ product.id }}-{{ i }}">
+              <stop offset="50%" stop-color="#F39C12"/>
+              <stop offset="50%" stop-color="#e0e0e0"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                fill="url(#half-{{ product.id }}-{{ i }})"/>
+        </svg>
+      {% else %}
+        <svg class="star star--empty" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if show_count != false and review_count > 0 %}
+    <span class="product-rating__count">
+      ({{ review_count }} {% if review_count == 1 %}reseña{% else %}reseñas{% endif %})
+    </span>
+  {% endif %}
+</div>
+
+<style>
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  .product-rating__stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .star {
+    width: 16px;
+    height: 16px;
+    transition: transform $transition-fast;
+  }
+
+  .star--filled {
+    color: #F39C12;
+  }
+
+  .star--empty {
+    color: #e0e0e0;
+  }
+
+  .star--half {
+    color: #F39C12;
+  }
+
+  .product-rating__count {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+
+  /* Size variants */
+  .product-rating--small .star {
+    width: 12px;
+    height: 12px;
+  }
+
+  .product-rating--small .product-rating__count {
+    font-size: $font-size-xs;
+  }
+
+  .product-rating--large .star {
+    width: 20px;
+    height: 20px;
+  }
+
+  .product-rating--large .product-rating__count {
+    font-size: $font-size-base;
+  }
+
+  /* Interactive hover effect */
+  .product-rating:hover .star {
+    transform: scale(1.1);
+  }
+</style>

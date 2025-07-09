@@ -1,0 +1,568 @@
+{% comment %}
+  Brands Section - Recoversups
+  Sección de marcas de confianza
+{% endcomment %}
+
+<section class="brands">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ section.settings.title | default: 'Marcas de Confianza' }}
+      </h2>
+      {% if section.settings.description %}
+        <p class="section-description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class="brands-grid">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'brand' %}
+              <div class="brand-card" {{ block.shopify_attributes }}>
+                {% if block.settings.brand_url %}
+                  <a href="{{ block.settings.brand_url }}" class="brand-card__link">
+                {% endif %}
+                
+                <div class="brand-card__content">
+                  {% if block.settings.brand_logo %}
+                    <div class="brand-card__logo">
+                      <img src="{{ block.settings.brand_logo | img_url: '200x100' }}" 
+                           alt="{{ block.settings.brand_name }}"
+                           class="brand-card__logo-img"
+                           loading="lazy">
+                    </div>
+                  {% else %}
+                    <div class="brand-card__logo brand-card__logo--placeholder">
+                      <span class="brand-card__name">{{ block.settings.brand_name }}</span>
+                    </div>
+                  {% endif %}
+                  
+                  {% if block.settings.show_product_count %}
+                    <div class="brand-card__info">
+                      <span class="brand-card__count">{{ block.settings.product_count | default: 0 }} productos</span>
+                    </div>
+                  {% endif %}
+                </div>
+                
+                {% if block.settings.brand_url %}
+                  </a>
+                {% endif %}
+              </div>
+        {% endcase %}
+        {% endfor %}
+      </div>
+
+      {% if section.settings.show_view_all %}
+        <div class="brands-cta">
+          <a href="{{ section.settings.view_all_url | default: '/collections' }}" class="btn btn--outline btn--large">
+            {{ section.settings.view_all_text | default: 'Ver Todas las Marcas' }}
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="brands-empty">
+        <div class="empty-state">
+          <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"></path>
+            <path d="M8 21l8-8-6-6"></path>
+          </svg>
+          <h3 class="empty-state__title">No hay marcas configuradas</h3>
+          <p class="empty-state__description">
+            Agrega marcas en la configuración de esta sección para mostrar logos de confianza.
+          </p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .brands {
+    padding: {{ section.settings.padding_top | default: 4 }}rem 0 {{ section.settings.padding_bottom | default: 4 }}rem;
+    background: {{ section.settings.background_color | default: '#f8f9fa' }};
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.title_color | default: '#2C3E50' }};
+    margin-bottom: 1rem;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: {{ section.settings.accent_color | default: '#B62921' }};
+      border-radius: 2px;
+    }
+  }
+
+  .section-description {
+    font-size: $font-size-lg;
+    color: {{ section.settings.description_color | default: '#6c757d' }};
+    line-height: 1.6;
+  }
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .brand-card {
+    background: {{ section.settings.card_background | default: '#ffffff' }};
+    border-radius: {{ section.settings.card_border_radius | default: 8 }}px;
+    padding: 2rem;
+    text-align: center;
+    transition: all $transition-normal;
+    border: 1px solid {{ section.settings.card_border_color | default: '#e9ecef' }};
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-color: {{ section.settings.accent_color | default: '#B62921' }};
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    &:hover::before {
+      left: 100%;
+    }
+  }
+
+  .brand-card:nth-child(1) { animation-delay: 0.1s; }
+  .brand-card:nth-child(2) { animation-delay: 0.2s; }
+  .brand-card:nth-child(3) { animation-delay: 0.3s; }
+  .brand-card:nth-child(4) { animation-delay: 0.4s; }
+  .brand-card:nth-child(5) { animation-delay: 0.5s; }
+  .brand-card:nth-child(6) { animation-delay: 0.6s; }
+  .brand-card:nth-child(7) { animation-delay: 0.7s; }
+  .brand-card:nth-child(8) { animation-delay: 0.8s; }
+
+  .brand-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+  }
+
+  .brand-card__content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand-card__logo {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    
+    &--placeholder {
+      background: {{ section.settings.placeholder_background | default: '#f8f9fa' }};
+      border-radius: 4px;
+      border: 2px dashed {{ section.settings.placeholder_border | default: '#dee2e6' }};
+    }
+  }
+
+  .brand-card__logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(100%);
+    transition: filter $transition-normal;
+  }
+
+  .brand-card:hover .brand-card__logo-img {
+    filter: grayscale(0%);
+  }
+
+  .brand-card__name {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: {{ section.settings.placeholder_text_color | default: '#6c757d' }};
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .brand-card__info {
+    margin-top: auto;
+  }
+
+  .brand-card__count {
+    font-size: $font-size-sm;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    font-weight: $font-weight-semibold;
+    padding: 0.25rem 0.75rem;
+    background: rgba(182, 41, 33, 0.1);
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  .brands-cta {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .brands-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-state__icon {
+    width: 48px;
+    height: 48px;
+    color: {{ section.settings.accent_color | default: '#B62921' }};
+    margin: 0 auto 1rem;
+  }
+
+  .empty-state__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-secondary;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state__description {
+    color: $text-muted;
+    font-size: $font-size-base;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: $tablet) {
+    .brands {
+      padding: 3rem 0;
+    }
+
+    .brands-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .brand-card {
+      padding: 1.5rem;
+    }
+
+    .brand-card__logo {
+      height: 60px;
+    }
+
+    .section-title {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    .brands {
+      padding: 2rem 0;
+    }
+
+    .brands-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .brand-card {
+      padding: 1rem;
+    }
+
+    .brand-card__logo {
+      height: 50px;
+    }
+
+    .section-title {
+      font-size: $font-size-xl;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .brand-card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    
+    .brand-card::before {
+      display: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Marcas",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Marcas de Confianza"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Trabajamos con las mejores marcas de suplementos deportivos del mundo"
+    },
+    {
+      "type": "header",
+      "content": "Botón Ver Todas"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Mostrar botón 'Ver Todas'",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "Texto del botón",
+      "default": "Ver Todas las Marcas"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "URL del botón",
+      "default": "/collections"
+    },
+    {
+      "type": "header",
+      "content": "Diseño"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Radio de borde de tarjetas",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color del título",
+      "default": "#2C3E50"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color de la descripción",
+      "default": "#6c757d"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#B62921"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Color de fondo de tarjetas",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Color de borde de tarjetas",
+      "default": "#e9ecef"
+    },
+    {
+      "type": "color",
+      "id": "placeholder_background",
+      "label": "Color de fondo de placeholder",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "placeholder_border",
+      "label": "Color de borde de placeholder",
+      "default": "#dee2e6"
+    },
+    {
+      "type": "color",
+      "id": "placeholder_text_color",
+      "label": "Color de texto de placeholder",
+      "default": "#6c757d"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaciado superior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaciado inferior",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Marca",
+      "settings": [
+        {
+          "type": "text",
+          "id": "brand_name",
+          "label": "Nombre de la marca",
+          "default": "Optimum Nutrition"
+        },
+        {
+          "type": "image_picker",
+          "id": "brand_logo",
+          "label": "Logo de la marca"
+        },
+        {
+          "type": "url",
+          "id": "brand_url",
+          "label": "URL de la marca"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_count",
+          "label": "Mostrar cantidad de productos",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "product_count",
+          "label": "Cantidad de productos",
+          "default": "25"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marcas",
+      "blocks": [
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Optimum Nutrition",
+            "product_count": "25"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "BSN",
+            "product_count": "18"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Dymatize",
+            "product_count": "22"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "MuscleTech",
+            "product_count": "15"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Cellucor",
+            "product_count": "20"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Universal Nutrition",
+            "product_count": "12"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

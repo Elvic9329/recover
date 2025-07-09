@@ -1,0 +1,219 @@
+{% comment %}
+  Button Component - Recoversups
+  
+  Parameters:
+  - text: Button text (required)
+  - url: Button URL (optional)
+  - type: Button type - 'primary', 'secondary', 'outline', 'ghost' (optional, default: 'primary')
+  - size: Button size - 'small', 'normal', 'large' (optional, default: 'normal')
+  - icon: Icon name (optional)
+  - icon_position: Icon position - 'left', 'right' (optional, default: 'left')
+  - class: Additional CSS classes (optional)
+  - attributes: Additional HTML attributes (optional)
+  - disabled: Disabled state (optional, default: false)
+{% endcomment %}
+
+{% assign button_type = type | default: 'primary' %}
+{% assign button_size = size | default: 'normal' %}
+{% assign icon_pos = icon_position | default: 'left' %}
+
+{% if url %}
+  <a href="{{ url }}" 
+     class="btn btn--{{ button_type }} btn--{{ button_size }} {{ class }}"
+     {% if attributes %}{{ attributes }}{% endif %}>
+    {% if icon and icon_pos == 'left' %}
+      {% render 'icon', name: icon %}
+    {% endif %}
+    <span class="btn__text">{{ text }}</span>
+    {% if icon and icon_pos == 'right' %}
+      {% render 'icon', name: icon %}
+    {% endif %}
+  </a>
+{% else %}
+  <button type="button" 
+          class="btn btn--{{ button_type }} btn--{{ button_size }} {{ class }}"
+          {% if disabled %}disabled{% endif %}
+          {% if attributes %}{{ attributes }}{% endif %}>
+    {% if icon and icon_pos == 'left' %}
+      {% render 'icon', name: icon %}
+    {% endif %}
+    <span class="btn__text">{{ text }}</span>
+    {% if icon and icon_pos == 'right' %}
+      {% render 'icon', name: icon %}
+    {% endif %}
+  </button>
+{% endif %}
+
+<style>
+  .btn {
+    @include button-base;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    text-decoration: none;
+    transition: all $transition-normal;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    &:hover::before {
+      left: 100%;
+    }
+  }
+
+  .btn__text {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Button Types */
+  .btn--primary {
+    @include button-variant($warning-color, $text-secondary);
+  }
+
+  .btn--secondary {
+    @include button-variant($secondary-color, $text-primary);
+  }
+
+  .btn--outline {
+    background: transparent;
+    color: $primary-color;
+    border: 2px solid $primary-color;
+    
+    &:hover {
+      background: $primary-color;
+      color: white;
+    }
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: $primary-color;
+    border: 2px solid transparent;
+    
+    &:hover {
+      background: rgba($primary-color, 0.1);
+      border-color: $primary-color;
+    }
+  }
+
+  .btn--danger {
+    @include button-variant($accent-color, white);
+  }
+
+  .btn--success {
+    @include button-variant($success-color, white);
+  }
+
+  /* Button Sizes */
+  .btn--small {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+    min-height: 36px;
+  }
+
+  .btn--normal {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-base;
+    min-height: 44px;
+  }
+
+  .btn--large {
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-size-lg;
+    min-height: 52px;
+  }
+
+  /* Button States */
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .btn:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  /* Loading State */
+  .btn--loading {
+    pointer-events: none;
+    
+    .btn__text {
+      opacity: 0;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: btn-spin 1s linear infinite;
+    }
+  }
+
+  @keyframes btn-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Icon Buttons */
+  .btn--icon-only {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    
+    .btn__text {
+      display: none;
+    }
+  }
+
+  .btn--icon-only.btn--small {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn--icon-only.btn--large {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Full Width Button */
+  .btn--full-width {
+    width: 100%;
+  }
+
+  /* Responsive */
+  @media (max-width: $mobile) {
+    .btn {
+      min-height: 48px; /* Larger touch targets on mobile */
+    }
+    
+    .btn--small {
+      min-height: 40px;
+    }
+    
+    .btn--large {
+      min-height: 56px;
+    }
+  }
+</style>
