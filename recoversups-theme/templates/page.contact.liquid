@@ -1,0 +1,769 @@
+{% comment %}
+  Contact Page - Recoversups
+  Página de contacto con información y formulario
+{% endcomment %}
+
+<div class="page-content contact-page">
+  <div class="container">
+    <!-- Contact Header -->
+    <div class="contact-header">
+      <h1 class="contact-title">{{ page.title }}</h1>
+      <p class="contact-subtitle">¿Tienes alguna pregunta o necesitas ayuda? Estamos aquí para ayudarte</p>
+    </div>
+
+    <!-- Contact Content -->
+    <div class="contact-content">
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21,10c0,7 -9,13 -9,13s-9,-6 -9,-13a9,9 0,0 1,18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h3>Dirección</h3>
+            <p>Av. Javier Prado Este 1234<br>San Isidro, Lima 15036<br>Perú</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22,16.92v3a2,2,0,0,1-2.18,2,19.79,19.79,0,0,1-8.63-3.07,19.5,19.5,0,0,1-6-6,19.79,19.79,0,0,1-3.07-8.67A2,2,0,0,1,4.11,2h3a2,2,0,0,1,2,1.72,12.84,12.84,0,0,0,.7,2.81,2,2,0,0,1-.45,2.11L8.09,9.91a16,16,0,0,0,6,6l1.27-1.27a2,2,0,0,1,2.11-.45,12.84,12.84,0,0,0,2.81.7A2,2,0,0,1,22,16.92Z"></path>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h3>Teléfono</h3>
+            <p><a href="tel:+51999999999">+51 999 999 999</a><br>
+            <a href="tel:+5114567890">+51 1 456 7890</a></p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4,4h16c1.1,0 2,0.9 2,2v12c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h3>Email</h3>
+            <p><a href="mailto:info@recoversups.com">info@recoversups.com</a><br>
+            <a href="mailto:ventas@recoversups.com">ventas@recoversups.com</a></p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12,6 12,12 16,14"></polyline>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h3>Horario de Atención</h3>
+            <p>Lunes a Viernes: 8:00 AM - 8:00 PM<br>
+            Sábados: 9:00 AM - 6:00 PM<br>
+            Domingos: 10:00 AM - 4:00 PM</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form-container">
+        <h2>Envíanos un mensaje</h2>
+        <p>Completa el formulario y te responderemos lo antes posible</p>
+        
+        {% form 'contact', class: 'contact-form' %}
+          {% if form.posted_successfully? %}
+            <div class="form-success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22,11.08V12a10,10,0,1,1-5.93-9.14"></path>
+                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+              </svg>
+              <div class="success-content">
+                <h3>¡Mensaje enviado exitosamente!</h3>
+                <p>Gracias por contactarnos. Te responderemos dentro de las próximas 24 horas.</p>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if form.errors %}
+            <div class="form-errors">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              <div class="error-content">
+                <h3>Error al enviar el mensaje</h3>
+                <ul>
+                  {% for error in form.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contact-name" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20,21v-2a4,4,0,0,0-4-4H8a4,4,0,0,0-4,4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Nombre *
+              </label>
+              <input type="text" 
+                     id="contact-name" 
+                     name="contact[name]" 
+                     class="form-input"
+                     required
+                     value="{{ form.name }}"
+                     placeholder="Tu nombre completo">
+            </div>
+            
+            <div class="form-group">
+              <label for="contact-email" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4,4h16c1.1,0 2,0.9 2,2v12c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Email *
+              </label>
+              <input type="email" 
+                     id="contact-email" 
+                     name="contact[email]" 
+                     class="form-input"
+                     required
+                     value="{{ form.email }}"
+                     placeholder="tu@email.com">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contact-phone" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22,16.92v3a2,2,0,0,1-2.18,2,19.79,19.79,0,0,1-8.63-3.07,19.5,19.5,0,0,1-6-6,19.79,19.79,0,0,1-3.07-8.67A2,2,0,0,1,4.11,2h3a2,2,0,0,1,2,1.72,12.84,12.84,0,0,0,.7,2.81,2,2,0,0,1-.45,2.11L8.09,9.91a16,16,0,0,0,6,6l1.27-1.27a2,2,0,0,1,2.11-.45,12.84,12.84,0,0,0,2.81.7A2,2,0,0,1,22,16.92Z"></path>
+                </svg>
+                Teléfono
+              </label>
+              <input type="tel" 
+                     id="contact-phone" 
+                     name="contact[phone]" 
+                     class="form-input"
+                     value="{{ form.phone }}"
+                     placeholder="+51 999 999 999">
+            </div>
+            
+            <div class="form-group">
+              <label for="contact-subject" class="form-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14,2H6A2,2,0,0,0,4,4V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V8Z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                Asunto *
+              </label>
+              <select id="contact-subject" name="contact[subject]" class="form-select" required>
+                <option value="">Selecciona un asunto</option>
+                <option value="consulta-producto">Consulta sobre productos</option>
+                <option value="estado-pedido">Estado de pedido</option>
+                <option value="problema-tecnico">Problema técnico</option>
+                <option value="devoluciones">Devoluciones y cambios</option>
+                <option value="sugerencia">Sugerencia</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contact-message" class="form-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21,11.5a8.38,8.38,0,0,1-.9,3.8,8.5,8.5,0,0,1-7.6,4.7,8.38,8.38,0,0,1-3.8-.9L3,21l1.9-5.7a8.38,8.38,0,0,1-.9-3.8,8.5,8.5,0,0,1,4.7-7.6,8.38,8.38,0,0,1,3.8-.9,8.5,8.5,0,0,1,7.6,4.7,8.38,8.38,0,0,1,.9,3.8z"></path>
+              </svg>
+              Mensaje *
+            </label>
+            <textarea id="contact-message" 
+                      name="contact[body]" 
+                      class="form-textarea"
+                      required
+                      rows="6"
+                      placeholder="Escribe tu mensaje aquí...">{{ form.body }}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="contact[newsletter]" class="checkbox-input" value="true">
+              <span class="checkbox-custom"></span>
+              Quiero recibir ofertas y novedades por email
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-contact">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22,2L11,13"></path>
+              <path d="M22,2L15,22L11,13L2,9L22,2Z"></path>
+            </svg>
+            Enviar mensaje
+          </button>
+        {% endform %}
+      </div>
+    </div>
+
+    <!-- Quick Contact Options -->
+    <div class="quick-contact">
+      <h2>Otras formas de contactarnos</h2>
+      <div class="quick-contact-grid">
+        <a href="https://wa.me/51999999999" class="quick-contact-item whatsapp">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472,14.382c-0.297,-0.149 -1.758,-0.867 -2.03,-0.967c-0.273,-0.099 -0.471,-0.148 -0.67,0.15c-0.197,0.297 -0.767,0.966 -0.94,1.164c-0.173,0.199 -0.347,0.223 -0.644,0.075c-0.297,-0.15 -1.255,-0.463 -2.39,-1.475c-0.883,-0.788 -1.48,-1.761 -1.653,-2.059c-0.173,-0.297 -0.018,-0.458 0.13,-0.606c0.134,-0.133 0.298,-0.347 0.446,-0.52c0.149,-0.174 0.198,-0.298 0.298,-0.497c0.099,-0.198 0.05,-0.371 -0.025,-0.52c-0.075,-0.148 -0.669,-1.611 -0.916,-2.206c-0.242,-0.579 -0.487,-0.5 -0.669,-0.51c-0.173,-0.008 -0.371,-0.01 -0.57,-0.01c-0.198,0 -0.52,0.074 -0.792,0.372c-0.272,0.297 -1.04,1.016 -1.04,2.479c0,1.462 1.065,2.875 1.213,3.074c0.149,0.198 2.096,3.2 5.077,4.487c0.709,0.306 1.262,0.489 1.694,0.625c0.712,0.227 1.36,0.195 1.871,0.118c0.571,-0.085 1.758,-0.719 2.006,-1.413c0.248,-0.694 0.248,-1.289 0.173,-1.413c-0.074,-0.124 -0.272,-0.198 -0.57,-0.347m-5.421,7.403h-0.004c-1.774,0 -3.513,-0.477 -5.055,-1.378l-0.36,-0.214l-3.75,0.982l1.003,-3.663l-0.235,-0.374c-0.99,-1.574 -1.512,-3.393 -1.511,-5.26c0.001,-5.45 4.436,-9.884 9.888,-9.884c2.64,0 5.122,1.03 6.988,2.898c1.866,1.869 2.893,4.352 2.892,6.993c-0.003,5.45 -4.437,9.884 -9.885,9.884m8.413,-18.297c-2.174,-2.178 -5.064,-3.378 -8.14,-3.378c-6.35,0 -11.517,5.168 -11.52,11.515c-0.001,2.028 0.529,4.006 1.537,5.751l-1.632,5.963l6.1,-1.598c1.674,0.913 3.553,1.396 5.486,1.396h0.004c6.348,0 11.517,-5.168 11.52,-11.515c0.002,-3.076 -1.195,-5.969 -3.369,-8.144"/>
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>WhatsApp</h3>
+            <p>Respuesta inmediata</p>
+          </div>
+        </a>
+
+        <a href="tel:+51999999999" class="quick-contact-item phone">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22,16.92v3a2,2,0,0,1-2.18,2,19.79,19.79,0,0,1-8.63-3.07,19.5,19.5,0,0,1-6-6,19.79,19.79,0,0,1-3.07-8.67A2,2,0,0,1,4.11,2h3a2,2,0,0,1,2,1.72,12.84,12.84,0,0,0,.7,2.81,2,2,0,0,1-.45,2.11L8.09,9.91a16,16,0,0,0,6,6l1.27-1.27a2,2,0,0,1,2.11-.45,12.84,12.84,0,0,0,2.81.7A2,2,0,0,1,22,16.92Z"></path>
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Llamada</h3>
+            <p>Atención personalizada</p>
+          </div>
+        </a>
+
+        <a href="mailto:info@recoversups.com" class="quick-contact-item email">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4,4h16c1.1,0 2,0.9 2,2v12c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <div class="quick-content">
+            <h3>Email</h3>
+            <p>Respuesta en 24h</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="map-section">
+      <h2>Encuéntranos</h2>
+      <div class="map-container">
+        <div class="map-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21,10c0,7 -9,13 -9,13s-9,-6 -9,-13a9,9 0,0 1,18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <p>Mapa de ubicación</p>
+          <span>Av. Javier Prado Este 1234, San Isidro, Lima</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.contact-page {
+  background: var(--background-light);
+  color: var(--text-secondary);
+  padding: 60px 0;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 80px;
+  
+  .contact-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .contact-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.contact-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  margin-bottom: 80px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+}
+
+.contact-info {
+  .info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-4px);
+    }
+    
+    .info-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      svg {
+        width: 30px;
+        height: 30px;
+        color: white;
+      }
+    }
+    
+    .info-content {
+      flex: 1;
+      
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+      
+      p {
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin: 0;
+        
+        a {
+          color: var(--primary-color);
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+.contact-form-container {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  
+  > p {
+    color: var(--text-muted);
+    margin-bottom: 30px;
+  }
+}
+
+.contact-form {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--background-gray);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+  
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    
+    .checkbox-input {
+      display: none;
+    }
+    
+    .checkbox-custom {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--background-gray);
+      border-radius: 4px;
+      position: relative;
+      transition: all 0.3s ease;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 8px;
+        height: 12px;
+        border: 2px solid white;
+        border-top: none;
+        border-left: none;
+        transform-origin: bottom;
+        transition: transform 0.3s ease;
+      }
+    }
+    
+    .checkbox-input:checked + .checkbox-custom {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      
+      &::after {
+        transform: translate(-50%, -50%) scale(1) rotate(45deg);
+      }
+    }
+  }
+  
+  .btn-contact {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.form-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: rgba(39, 174, 96, 0.1);
+  border: 2px solid rgba(39, 174, 96, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+    color: var(--success-color);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  
+  .success-content {
+    flex: 1;
+    
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--success-color);
+      margin-bottom: 8px;
+    }
+    
+    p {
+      color: var(--success-color);
+      margin: 0;
+    }
+  }
+}
+
+.form-errors {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 2px solid rgba(231, 76, 60, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+    color: var(--accent-color);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  
+  .error-content {
+    flex: 1;
+    
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 8px;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+      li {
+        color: var(--accent-color);
+        margin-bottom: 4px;
+        
+        &::before {
+          content: '• ';
+        }
+      }
+    }
+  }
+}
+
+.quick-contact {
+  text-align: center;
+  margin-bottom: 80px;
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+  
+  .quick-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .quick-contact-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 40px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+    
+    .quick-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      
+      svg {
+        width: 40px;
+        height: 40px;
+      }
+    }
+    
+    .quick-content {
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      
+      p {
+        color: var(--text-muted);
+        margin: 0;
+      }
+    }
+    
+    &.whatsapp {
+      .quick-icon {
+        background: #25d366;
+        color: white;
+      }
+      
+      .quick-content h3 {
+        color: #25d366;
+      }
+    }
+    
+    &.phone {
+      .quick-icon {
+        background: var(--primary-color);
+        color: white;
+      }
+      
+      .quick-content h3 {
+        color: var(--primary-color);
+      }
+    }
+    
+    &.email {
+      .quick-icon {
+        background: #3498db;
+        color: white;
+      }
+      
+      .quick-content h3 {
+        color: #3498db;
+      }
+    }
+  }
+}
+
+.map-section {
+  text-align: center;
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+  
+  .map-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    
+    .map-placeholder {
+      height: 400px;
+      background: var(--background-gray);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      
+      svg {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 20px;
+      }
+      
+      p {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      
+      span {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-page {
+    padding: 40px 0;
+  }
+  
+  .contact-header {
+    margin-bottom: 60px;
+  }
+  
+  .contact-content {
+    margin-bottom: 60px;
+  }
+  
+  .contact-form-container {
+    padding: 30px 20px;
+  }
+  
+  .quick-contact {
+    margin-bottom: 60px;
+  }
+}
+</style>

@@ -1,0 +1,416 @@
+{% comment %}
+  Blog Page - Recoversups
+  Página principal del blog con artículos relacionados a fitness y nutrición
+{% endcomment %}
+
+<div class="blog-page">
+  <div class="container">
+    <!-- Blog Header -->
+    <div class="blog-header">
+      <div class="blog-hero">
+        <h1 class="blog-title">Blog Recoversups</h1>
+        <p class="blog-subtitle">Consejos de nutrición, rutinas de entrenamiento y todo sobre suplementos deportivos</p>
+      </div>
+      
+      <!-- Blog Navigation -->
+      <div class="blog-nav">
+        <div class="blog-categories">
+          <a href="{{ blog.url }}" class="category-link {% unless current_tags %}active{% endunless %}">
+            Todos los artículos
+          </a>
+          {% for tag in blog.all_tags %}
+            <a href="{{ blog.url }}/tagged/{{ tag | handle }}" 
+               class="category-link {% if current_tags contains tag %}active{% endif %}">
+              {{ tag }}
+            </a>
+          {% endfor %}
+        </div>
+        
+        <div class="blog-search">
+          <form class="search-form" action="{{ blog.url }}" method="get">
+            <div class="search-input-group">
+              <input type="text" 
+                     name="q" 
+                     class="search-input" 
+                     placeholder="Buscar artículos..."
+                     value="{{ search.terms | escape }}"
+                     autocomplete="off">
+              <button type="submit" class="search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Content -->
+    <div class="blog-content">
+      <!-- Featured Article -->
+      {% if blog.articles.size > 0 %}
+        {% assign featured_article = blog.articles.first %}
+        <article class="featured-article">
+          <div class="featured-article-image">
+            <a href="{{ featured_article.url }}">
+              {% if featured_article.image %}
+                <img src="{{ featured_article.image | img_url: '800x400' }}" 
+                     alt="{{ featured_article.title }}" 
+                     loading="eager">
+              {% else %}
+                <div class="article-placeholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21,15 16,10 5,21"></polyline>
+                  </svg>
+                </div>
+              {% endif %}
+            </a>
+            <div class="featured-badge">Artículo Destacado</div>
+          </div>
+          
+          <div class="featured-article-content">
+            <div class="article-meta">
+              <span class="article-date">{{ featured_article.published_at | date: '%d de %B, %Y' }}</span>
+              <span class="article-author">Por {{ featured_article.author }}</span>
+              <span class="article-reading-time">{{ featured_article.content | strip_html | split: ' ' | size | divided_by: 200 | plus: 1 }} min de lectura</span>
+            </div>
+            
+            <h2 class="featured-article-title">
+              <a href="{{ featured_article.url }}">{{ featured_article.title }}</a>
+            </h2>
+            
+            <div class="featured-article-excerpt">
+              {% if featured_article.excerpt != blank %}
+                {{ featured_article.excerpt | strip_html | truncate: 200 }}
+              {% else %}
+                {{ featured_article.content | strip_html | truncate: 200 }}
+              {% endif %}
+            </div>
+            
+            <div class="featured-article-tags">
+              {% for tag in featured_article.tags %}
+                <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="article-tag">
+                  {{ tag }}
+                </a>
+              {% endfor %}
+            </div>
+            
+            <a href="{{ featured_article.url }}" class="btn btn-primary">
+              Leer artículo completo
+            </a>
+          </div>
+        </article>
+      {% endif %}
+
+      <!-- Articles Grid -->
+      <div class="articles-section">
+        <div class="articles-header">
+          <h2>
+            {% if current_tags %}
+              Artículos sobre "{{ current_tags | join: ', ' }}"
+            {% else %}
+              Últimos artículos
+            {% endif %}
+          </h2>
+          <div class="articles-count">
+            {{ blog.articles.size }} artículos encontrados
+          </div>
+        </div>
+
+        {% if blog.articles.size > 1 %}
+          <div class="articles-grid">
+            {% for article in blog.articles offset: 1 %}
+              <article class="article-card">
+                <div class="article-card-image">
+                  <a href="{{ article.url }}">
+                    {% if article.image %}
+                      <img src="{{ article.image | img_url: '400x250' }}" 
+                           alt="{{ article.title }}" 
+                           loading="lazy">
+                    {% else %}
+                      <div class="article-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                          <polyline points="21,15 16,10 5,21"></polyline>
+                        </svg>
+                      </div>
+                    {% endif %}
+                  </a>
+                </div>
+                
+                <div class="article-card-content">
+                  <div class="article-meta">
+                    <span class="article-date">{{ article.published_at | date: '%d/%m/%Y' }}</span>
+                    <span class="article-reading-time">{{ article.content | strip_html | split: ' ' | size | divided_by: 200 | plus: 1 }} min</span>
+                  </div>
+                  
+                  <h3 class="article-card-title">
+                    <a href="{{ article.url }}">{{ article.title }}</a>
+                  </h3>
+                  
+                  <div class="article-card-excerpt">
+                    {% if article.excerpt != blank %}
+                      {{ article.excerpt | strip_html | truncate: 120 }}
+                    {% else %}
+                      {{ article.content | strip_html | truncate: 120 }}
+                    {% endif %}
+                  </div>
+                  
+                  <div class="article-card-footer">
+                    <div class="article-tags">
+                      {% for tag in article.tags limit: 2 %}
+                        <span class="article-tag">{{ tag }}</span>
+                      {% endfor %}
+                    </div>
+                    
+                    <a href="{{ article.url }}" class="read-more">
+                      Leer más
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5,12h14"></path>
+                        <path d="M12,5l7,7 -7,7"></path>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% elsif blog.articles.size == 0 %}
+          <div class="no-articles">
+            <svg class="no-articles-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14,2H6A2,2 0,0 0,4 4V20A2,2 0,0 0,6 22H18A2,2 0,0 0,20 20V8Z"></path>
+              <polyline points="14,2 14,8 20,8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10,9 9,9 8,9"></polyline>
+            </svg>
+            <h3>No hay artículos disponibles</h3>
+            <p>Vuelve pronto para ver nuevo contenido sobre fitness y nutrición</p>
+          </div>
+        {% endif %}
+
+        <!-- Pagination -->
+        {% if paginate.pages > 1 %}
+          <div class="blog-pagination">
+            {% paginate blog.articles by 12 %}
+              <nav class="pagination" aria-label="Navegación de artículos">
+                {% if paginate.previous %}
+                  <a href="{{ paginate.previous.url }}" class="pagination-btn pagination-prev">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                    Anterior
+                  </a>
+                {% endif %}
+
+                <ul class="pagination-list">
+                  {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                      <li>
+                        <a href="{{ part.url }}" class="pagination-link">{{ part.title }}</a>
+                      </li>
+                    {% else %}
+                      <li>
+                        <span class="pagination-current">{{ part.title }}</span>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+
+                {% if paginate.next %}
+                  <a href="{{ paginate.next.url }}" class="pagination-btn pagination-next">
+                    Siguiente
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9,18 15,12 9,6"></polyline>
+                    </svg>
+                  </a>
+                {% endif %}
+              </nav>
+            {% endpaginate %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Blog Sidebar -->
+    <aside class="blog-sidebar">
+      <!-- Newsletter Signup -->
+      <div class="sidebar-widget">
+        <h3 class="widget-title">Suscríbete al Blog</h3>
+        <p class="widget-description">Recibe los últimos artículos sobre fitness y nutrición</p>
+        <form class="newsletter-form" action="/contact" method="post">
+          <input type="hidden" name="contact[tags]" value="newsletter,blog">
+          <div class="newsletter-input-group">
+            <input type="email" 
+                   name="contact[email]" 
+                   class="newsletter-input" 
+                   placeholder="Tu email"
+                   required>
+            <button type="submit" class="newsletter-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22,2L11,13"></path>
+                <path d="M22,2L15,22L11,13L2,9L22,2Z"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Popular Articles -->
+      <div class="sidebar-widget">
+        <h3 class="widget-title">Artículos Populares</h3>
+        <div class="popular-articles">
+          {% for article in blog.articles limit: 5 %}
+            <div class="popular-article">
+              <div class="popular-article-image">
+                <a href="{{ article.url }}">
+                  {% if article.image %}
+                    <img src="{{ article.image | img_url: '80x60' }}" 
+                         alt="{{ article.title }}" 
+                         loading="lazy">
+                  {% else %}
+                    <div class="article-placeholder-small">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                      </svg>
+                    </div>
+                  {% endif %}
+                </a>
+              </div>
+              <div class="popular-article-content">
+                <h4><a href="{{ article.url }}">{{ article.title | truncate: 50 }}</a></h4>
+                <div class="popular-article-meta">
+                  <span class="article-date">{{ article.published_at | date: '%d/%m/%Y' }}</span>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="sidebar-widget">
+        <h3 class="widget-title">Categorías</h3>
+        <div class="category-list">
+          {% for tag in blog.all_tags %}
+            <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="category-item">
+              <span class="category-name">{{ tag }}</span>
+              <span class="category-count">{{ blog.articles | where: 'tags', tag | size }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div class="sidebar-widget">
+        <h3 class="widget-title">Productos Relacionados</h3>
+        <div class="related-products">
+          {% assign related_products = collections.blog-productos.products | limit: 3 %}
+          {% for product in related_products %}
+            <div class="related-product">
+              <div class="related-product-image">
+                <a href="{{ product.url }}">
+                  <img src="{{ product.featured_image | img_url: '100x100' }}" 
+                       alt="{{ product.title }}" 
+                       loading="lazy">
+                </a>
+              </div>
+              <div class="related-product-content">
+                <h4><a href="{{ product.url }}">{{ product.title | truncate: 40 }}</a></h4>
+                <div class="related-product-price">{{ product.price | money }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  initializeBlog();
+});
+
+function initializeBlog() {
+  // Newsletter form submission
+  const newsletterForm = document.querySelector('.newsletter-form');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = this.contact[email].value;
+      const submitBtn = this.querySelector('.newsletter-btn');
+      
+      // Show loading state
+      submitBtn.innerHTML = '<div class="loading-spinner"></div>';
+      submitBtn.disabled = true;
+      
+      // Simulate API call
+      setTimeout(() => {
+        submitBtn.innerHTML = '✓';
+        submitBtn.style.background = '#27AE60';
+        
+        // Show success message
+        showNotification('¡Gracias por suscribirte!', 'success');
+        
+        // Reset form
+        this.reset();
+        
+        // Reset button
+        setTimeout(() => {
+          submitBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22,2L11,13"></path>
+              <path d="M22,2L15,22L11,13L2,9L22,2Z"></path>
+            </svg>
+          `;
+          submitBtn.style.background = '';
+          submitBtn.disabled = false;
+        }, 2000);
+      }, 1000);
+    });
+  }
+  
+  // Smooth scrolling for category links
+  const categoryLinks = document.querySelectorAll('.category-link');
+  categoryLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      // Add loading state
+      this.style.opacity = '0.6';
+      
+      // Remove loading state after navigation
+      setTimeout(() => {
+        this.style.opacity = '1';
+      }, 500);
+    });
+  });
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `blog-notification ${type}`;
+  notification.innerHTML = `
+    <div class="notification-content">
+      <span>${message}</span>
+      <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove();
+    }
+  }, 3000);
+}
+</script>

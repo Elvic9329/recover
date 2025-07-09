@@ -1,0 +1,606 @@
+{% comment %}
+  About Page - Recoversups
+  Página sobre nosotros con información de la empresa
+{% endcomment %}
+
+<div class="page-content about-page">
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="about-hero">
+      <div class="hero-content">
+        <h1 class="hero-title">{{ page.title }}</h1>
+        <p class="hero-subtitle">Tu aliado en el camino hacia una vida más saludable y activa</p>
+      </div>
+      <div class="hero-image">
+        <img src="{{ 'about-hero.jpg' | asset_url }}" alt="Recoversups - Tu tienda de suplementos deportivos" loading="eager">
+      </div>
+    </div>
+
+    <!-- Our Story Section -->
+    <div class="about-section">
+      <div class="section-content">
+        <h2>Nuestra Historia</h2>
+        <div class="story-content">
+          <div class="story-text">
+            <p>En Recoversups, nació de la pasión por el fitness y la nutrición deportiva. Fundada en 2020 en Lima, Perú, nuestra empresa surge de la necesidad de ofrecer suplementos deportivos de alta calidad que realmente marquen la diferencia en el rendimiento y recuperación de atletas y entusiastas del fitness.</p>
+            
+            <p>Nuestro equipo está compuesto por profesionales de la nutrición, entrenadores personales y atletas que entienden las necesidades reales de quienes buscan mejorar su rendimiento físico. Cada producto en nuestro catálogo ha sido cuidadosamente seleccionado y probado para garantizar los mejores resultados.</p>
+            
+            <p>Creemos que la suplementación deportiva no debe ser un lujo, sino una herramienta accesible para todos aquellos que buscan alcanzar sus objetivos fitness. Por eso, trabajamos directamente con los mejores laboratorios para ofrecerte precios competitivos sin comprometer la calidad.</p>
+          </div>
+          <div class="story-image">
+            <img src="{{ 'about-story.jpg' | asset_url }}" alt="Historia de Recoversups" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission & Vision Section -->
+    <div class="about-section mission-vision">
+      <div class="section-content">
+        <div class="mission-vision-grid">
+          <div class="mission-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12,2L2,7v10c0,5.55 3.84,10 9,11 5.16,-1 9,-5.45 9,-11V7l-10,-5z"></path>
+                <polyline points="9,12 12,15 18,9"></polyline>
+              </svg>
+            </div>
+            <h3>Nuestra Misión</h3>
+            <p>Proporcionar suplementos deportivos de la más alta calidad, respaldados por la ciencia y la investigación, para ayudar a nuestros clientes a alcanzar sus objetivos de fitness y bienestar de manera segura y efectiva.</p>
+          </div>
+          
+          <div class="vision-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1,12s4,-8 11,-8 11,8 11,8 -4,8 -11,8 -11,-8 -11,-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <h3>Nuestra Visión</h3>
+            <p>Ser la marca líder en suplementación deportiva en Perú, reconocida por la calidad de nuestros productos, la confianza de nuestros clientes y nuestro compromiso con el desarrollo del deporte y la vida saludable.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Values Section -->
+    <div class="about-section values-section">
+      <div class="section-content">
+        <h2>Nuestros Valores</h2>
+        <div class="values-grid">
+          <div class="value-item">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9,12l2,2 4,-4"></path>
+                <path d="M21,12c0,4.97 -4.03,9 -9,9s-9,-4.03 -9,-9 4.03,-9 9,-9 9,4.03 9,9z"></path>
+              </svg>
+            </div>
+            <h3>Calidad</h3>
+            <p>Trabajamos solo con los mejores laboratorios y marcas reconocidas mundialmente.</p>
+          </div>
+          
+          <div class="value-item">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12,1L3,5v6c0,5.55 3.84,10 9,11 5.16,-1 9,-5.45 9,-11V5l-9,-4z"></path>
+              </svg>
+            </div>
+            <h3>Confianza</h3>
+            <p>Transparencia en cada producto, proceso y comunicación con nuestros clientes.</p>
+          </div>
+          
+          <div class="value-item">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18,8A6,6 0,0 0,6 8c0,7 -3,9 -3,9H21s-3,-2 -3,-9"></path>
+                <path d="M13.73,21a2,2 0,0 1,-3.46 0"></path>
+              </svg>
+            </div>
+            <h3>Innovación</h3>
+            <p>Constantemente buscamos nuevas formas de mejorar y productos innovadores.</p>
+          </div>
+          
+          <div class="value-item">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20,21v-2a4,4 0,0 0,-4 -4H8a4,4 0,0 0,-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <h3>Compromiso</h3>
+            <p>Dedicados al éxito y bienestar de cada uno de nuestros clientes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="about-section team-section">
+      <div class="section-content">
+        <h2>Nuestro Equipo</h2>
+        <p class="team-intro">Conoce a los profesionales que hacen posible Recoversups</p>
+        
+        <div class="team-grid">
+          <div class="team-member">
+            <div class="member-image">
+              <img src="{{ 'team-member-1.jpg' | asset_url }}" alt="Carlos Mendoza - Fundador" loading="lazy">
+            </div>
+            <div class="member-info">
+              <h3>Carlos Mendoza</h3>
+              <p class="member-role">Fundador & CEO</p>
+              <p class="member-description">Nutricionista deportivo con más de 10 años de experiencia en el desarrollo de suplementos.</p>
+            </div>
+          </div>
+          
+          <div class="team-member">
+            <div class="member-image">
+              <img src="{{ 'team-member-2.jpg' | asset_url }}" alt="María López - Directora Técnica" loading="lazy">
+            </div>
+            <div class="member-info">
+              <h3>María López</h3>
+              <p class="member-role">Directora Técnica</p>
+              <p class="member-description">Química farmacéutica especializada en control de calidad y desarrollo de productos.</p>
+            </div>
+          </div>
+          
+          <div class="team-member">
+            <div class="member-image">
+              <img src="{{ 'team-member-3.jpg' | asset_url }}" alt="Jorge Ramírez - Entrenador Experto" loading="lazy">
+            </div>
+            <div class="member-info">
+              <h3>Jorge Ramírez</h3>
+              <p class="member-role">Entrenador Experto</p>
+              <p class="member-description">Entrenador personal certificado y atleta profesional con experiencia en competencias internacionales.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why Choose Us Section -->
+    <div class="about-section why-choose-section">
+      <div class="section-content">
+        <h2>¿Por qué elegirnos?</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3,9l9,-7 9,7v11a2,2 0,0 1,-2 2H5a2,2 0,0 1,-2 -2z"></path>
+                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+              </svg>
+            </div>
+            <h3>Envío Rápido</h3>
+            <p>Entrega en 24-48 horas en Lima y principales ciudades del país.</p>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12,2L2,7v10c0,5.55 3.84,10 9,11 5.16,-1 9,-5.45 9,-11V7l-10,-5z"></path>
+              </svg>
+            </div>
+            <h3>Productos Garantizados</h3>
+            <p>Todos nuestros productos cuentan con garantía de calidad y satisfacción.</p>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21,11.5a8.38,8.38 0,0 1,-.9 3.8,8.5,8.5 0,0 1,-7.6 4.7,8.38,8.38 0,0 1,-3.8 -.9L3,21l1.9,-5.7a8.38,8.38 0,0 1,-.9 -3.8,8.5,8.5 0,0 1,4.7 -7.6,8.38,8.38 0,0 1,3.8 -.9,8.5,8.5 0,0 1,7.6 4.7,8.38,8.38 0,0 1,.9 3.8z"></path>
+              </svg>
+            </div>
+            <h3>Soporte Experto</h3>
+            <p>Nuestro equipo de nutricionistas está disponible para asesorarte.</p>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4,15a1.65,1.65 0,0 0,.33 1.82L20.94,18a2,2 0,0 1,0 2.83L19.77,21.17a2,2 0,0 1,-2.83 0L15.82,20.06a1.65,1.65 0,0 0,-1.82 -.33,1.65,1.65 0,0 0,-1 1.51V22.5A2,2 0,0 1,11 24.5H9A2,2 0,0 1,7 22.5V21.24a1.65,1.65 0,0 0,-1.07 -1.51,1.65,1.65 0,0 0,-1.82 .33L3,21.17A2,2 0,0 1,.17 21.17L0,19.94a2,2 0,0 1,0 -2.83L1.06,15.82a1.65,1.65 0,0 0,.33 -1.82,1.65,1.65 0,0 0,-1.51 -1.07H-.5A2,2 0,0 1,-2.5 11V9A2,2 0,0 1,-.5 7H.76a1.65,1.65 0,0 0,1.51 -1.07,1.65,1.65 0,0 0,-.33 -1.82L.83,3A2,2 0,0 1,.83 .17L2.06,0a2,2 0,0 1,2.83 0L6,1.06a1.65,1.65 0,0 0,1.82 .33A1.65,1.65 0,0 0,8.76 0H10.5A2,2 0,0 1,12.5 2V3.24a1.65,1.65 0,0 0,1.07 1.51,1.65,1.65 0,0 0,1.82 -.33L17.94,3A2,2 0,0 1,20.77 3L21,5.06a2,2 0,0 1,0 2.83L19.94,9a1.65,1.65 0,0 0,-.33 1.82A1.65,1.65 0,0 0,20.76 12H22.5A2,2 0,0 1,24.5 14V16A2,2 0,0 1,22.5 18H21.24a1.65,1.65 0,0 0,-1.51 1.07z"></path>
+              </svg>
+            </div>
+            <h3>Precios Competitivos</h3>
+            <p>Los mejores precios del mercado sin comprometer la calidad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact CTA Section -->
+    <div class="about-section contact-cta">
+      <div class="section-content">
+        <div class="cta-content">
+          <h2>¿Listo para comenzar tu transformación?</h2>
+          <p>Únete a miles de atletas y entusiastas del fitness que confían en Recoversups</p>
+          <div class="cta-buttons">
+            <a href="/collections/all" class="btn btn-primary">Explorar Productos</a>
+            <a href="/pages/contact" class="btn btn-outline">Contáctanos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.about-page {
+  background: var(--background-light);
+  color: var(--text-secondary);
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+}
+
+.about-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  padding: 80px 0;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 60px 0;
+    text-align: center;
+  }
+  
+  .hero-content {
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.2;
+      
+      @media (max-width: 768px) {
+        font-size: 2.5rem;
+      }
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+  }
+  
+  .hero-image {
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.about-section {
+  padding: 80px 0;
+  
+  @media (max-width: 768px) {
+    padding: 60px 0;
+  }
+  
+  .section-content {
+    text-align: center;
+    
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      
+      @media (max-width: 768px) {
+        font-size: 2rem;
+        margin-bottom: 32px;
+      }
+    }
+  }
+}
+
+.story-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  text-align: left;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .story-text {
+    p {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  .story-image {
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+  }
+}
+
+.mission-vision {
+  background: white;
+  border-radius: 16px;
+  padding: 80px 60px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    padding: 60px 30px;
+  }
+}
+
+.mission-vision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .mission-card,
+  .vision-card {
+    .card-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      
+      svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+      }
+    }
+    
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+  }
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  
+  .value-item {
+    padding: 40px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-4px);
+    }
+    
+    .value-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      
+      svg {
+        width: 30px;
+        height: 30px;
+        color: white;
+      }
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+  }
+}
+
+.team-section {
+  background: var(--background-gray);
+  
+  .team-intro {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+  }
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  
+  .team-member {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-4px);
+    }
+    
+    .member-image {
+      aspect-ratio: 1;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    
+    .member-info {
+      padding: 24px;
+      text-align: center;
+      
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+      
+      .member-role {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 12px;
+      }
+      
+      .member-description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  
+  .feature-item {
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      
+      svg {
+        width: 30px;
+        height: 30px;
+        color: white;
+      }
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+  }
+}
+
+.contact-cta {
+  background: var(--primary-color);
+  color: white;
+  border-radius: 16px;
+  
+  .cta-content {
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: white;
+      
+      @media (max-width: 768px) {
+        font-size: 2rem;
+      }
+    }
+    
+    p {
+      font-size: 1.125rem;
+      margin-bottom: 40px;
+      opacity: 0.9;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      
+      @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        padding: 16px 32px;
+        font-size: 1rem;
+        font-weight: 600;
+        
+        &.btn-primary {
+          background: white;
+          color: var(--primary-color);
+          
+          &:hover {
+            background: var(--background-gray);
+          }
+        }
+        
+        &.btn-outline {
+          border: 2px solid white;
+          color: white;
+          
+          &:hover {
+            background: white;
+            color: var(--primary-color);
+          }
+        }
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,724 @@
+{% comment %}
+  FAQ Page - Recoversups
+  Página de preguntas frecuentes
+{% endcomment %}
+
+<div class="page-content faq-page">
+  <div class="container">
+    <!-- FAQ Header -->
+    <div class="faq-header">
+      <h1 class="faq-title">{{ page.title }}</h1>
+      <p class="faq-subtitle">Encuentra respuestas a las preguntas más comunes sobre nuestros productos y servicios</p>
+    </div>
+
+    <!-- FAQ Search -->
+    <div class="faq-search">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <input type="text" id="faq-search" class="search-input" placeholder="Buscar en preguntas frecuentes...">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="faq-categories">
+      <button class="category-btn active" data-category="all">Todas las preguntas</button>
+      <button class="category-btn" data-category="productos">Productos</button>
+      <button class="category-btn" data-category="pedidos">Pedidos</button>
+      <button class="category-btn" data-category="envios">Envíos</button>
+      <button class="category-btn" data-category="pagos">Pagos</button>
+      <button class="category-btn" data-category="cuenta">Mi Cuenta</button>
+    </div>
+
+    <!-- FAQ Content -->
+    <div class="faq-content">
+      <div class="faq-section" data-category="productos">
+        <h2 class="section-title">Productos</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cómo sé qué suplemento es el adecuado para mí?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>El suplemento adecuado depende de tus objetivos específicos. Para ganar masa muscular, recomendamos proteínas y creatina. Para perder peso, quemadores de grasa y L-carnitina. Para mejorar el rendimiento, pre-entrenos y BCAA. Si tienes dudas, nuestro equipo de nutricionistas puede asesorarte gratuitamente.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Los productos son originales y tienen garantía?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Sí, todos nuestros productos son 100% originales e importados directamente de los laboratorios oficiales. Cada producto cuenta con garantía de calidad y satisfacción. Si no estás satisfecho con tu compra, puedes devolverla dentro de los primeros 30 días.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cuál es la fecha de vencimiento de los productos?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Todos nuestros productos tienen fechas de vencimiento con mínimo 12 meses de vigencia desde el momento de la compra. La fecha exacta se encuentra impresa en cada envase. Mantenemos una rotación constante de stock para garantizar la frescura.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Puedo combinar diferentes suplementos?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Sí, muchos suplementos se pueden combinar de manera segura y efectiva. Por ejemplo, proteína con creatina, o BCAA con glutamina. Sin embargo, recomendamos consultar con nuestro equipo de nutricionistas para crear un plan personalizado según tus objetivos y evitar sobredosis.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-section" data-category="pedidos">
+        <h2 class="section-title">Pedidos</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cómo puedo realizar un pedido?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Puedes realizar tu pedido de tres formas: 1) A través de nuestra tienda online agregando productos al carrito, 2) Por WhatsApp al +51 999 999 999, 3) Llamando a nuestro centro de atención al cliente. El proceso es simple y seguro.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cuál es el monto mínimo de compra?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>No tenemos monto mínimo de compra. Sin embargo, pedidos superiores a S/ 150 tienen envío gratis en Lima y Callao. Para provincias, el envío es gratis desde S/ 200.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Puedo cancelar o modificar mi pedido?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Puedes cancelar o modificar tu pedido hasta 2 horas después de haberlo realizado, siempre que aún no haya sido enviado. Contáctanos por WhatsApp o teléfono para hacer cambios. Una vez despachado, no es posible realizar modificaciones.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-section" data-category="envios">
+        <h2 class="section-title">Envíos</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cuánto tiempo demora el envío?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>En Lima y Callao: 24-48 horas laborables. En provincias: 2-5 días laborables dependiendo del destino. Contamos con servicios de entrega express el mismo día en Lima por un costo adicional.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cuánto cuesta el envío?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Lima y Callao: S/ 15 (gratis desde S/ 150). Provincias: S/ 25-35 dependiendo del destino (gratis desde S/ 200). Envío express mismo día en Lima: S/ 25 adicional.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cómo puedo rastrear mi pedido?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Una vez procesado tu pedido, recibirás un código de seguimiento por email y SMS. Puedes rastrear tu pedido en tiempo real a través de nuestra página web o la plataforma de la empresa de transporte.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Entregan en mi distrito?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Realizamos envíos a todo el Perú. En Lima y Callao tenemos cobertura completa. En provincias, llegamos a todas las capitales de departamento y principales ciudades. Consulta la disponibilidad en tu distrito específico.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-section" data-category="pagos">
+        <h2 class="section-title">Pagos</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Qué métodos de pago aceptan?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Aceptamos múltiples formas de pago: tarjetas de crédito y débito (Visa, Mastercard), transferencias bancarias, Yape, Plin, y pago contra entrega (solo en Lima y Callao). Todos los pagos online son 100% seguros.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Es seguro pagar con tarjeta online?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Absolutamente. Utilizamos encriptación SSL de 256 bits y trabajamos con pasarelas de pago certificadas. Nunca almacenamos información de tarjetas en nuestros servidores. Todos los datos son procesados por entidades bancarias autorizadas.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Puedo pagar en cuotas?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Sí, aceptamos pagos en cuotas con tarjetas de crédito. Puedes dividir tu compra en 3, 6, 9 o 12 cuotas sin intereses (según tu banco). Las condiciones específicas dependen de tu entidad financiera.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-section" data-category="cuenta">
+        <h2 class="section-title">Mi Cuenta</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Necesito crear una cuenta para comprar?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>No es obligatorio, pero lo recomendamos. Con una cuenta puedes: seguir tus pedidos, acceder a descuentos exclusivos, guardar direcciones de envío, mantener una lista de deseos y recibir notificaciones de productos favoritos.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cómo puedo cambiar mi contraseña?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Puedes cambiar tu contraseña desde tu cuenta en "Mi Perfil > Seguridad" o usando la opción "Olvidé mi contraseña" en la página de inicio de sesión. Recibirás un enlace por email para crear una nueva contraseña.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>¿Cómo actualizo mi información personal?</h3>
+            <div class="faq-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="faq-answer">
+            <p>Ingresa a "Mi Cuenta > Mi Perfil" donde podrás actualizar tu información personal, agregar o modificar direcciones de envío, cambiar preferencias de comunicación y gestionar tu información de contacto.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div class="faq-support">
+      <div class="support-content">
+        <h2>¿No encontraste tu respuesta?</h2>
+        <p>Nuestro equipo de atención al cliente está listo para ayudarte</p>
+        <div class="support-options">
+          <a href="https://wa.me/51999999999" class="support-btn whatsapp">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472,14.382c-0.297,-0.149 -1.758,-0.867 -2.03,-0.967c-0.273,-0.099 -0.471,-0.148 -0.67,0.15c-0.197,0.297 -0.767,0.966 -0.94,1.164c-0.173,0.199 -0.347,0.223 -0.644,0.075c-0.297,-0.15 -1.255,-0.463 -2.39,-1.475c-0.883,-0.788 -1.48,-1.761 -1.653,-2.059c-0.173,-0.297 -0.018,-0.458 0.13,-0.606c0.134,-0.133 0.298,-0.347 0.446,-0.52c0.149,-0.174 0.198,-0.298 0.298,-0.497c0.099,-0.198 0.05,-0.371 -0.025,-0.52c-0.075,-0.148 -0.669,-1.611 -0.916,-2.206c-0.242,-0.579 -0.487,-0.5 -0.669,-0.51c-0.173,-0.008 -0.371,-0.01 -0.57,-0.01c-0.198,0 -0.52,0.074 -0.792,0.372c-0.272,0.297 -1.04,1.016 -1.04,2.479c0,1.462 1.065,2.875 1.213,3.074c0.149,0.198 2.096,3.2 5.077,4.487c0.709,0.306 1.262,0.489 1.694,0.625c0.712,0.227 1.36,0.195 1.871,0.118c0.571,-0.085 1.758,-0.719 2.006,-1.413c0.248,-0.694 0.248,-1.289 0.173,-1.413c-0.074,-0.124 -0.272,-0.198 -0.57,-0.347m-5.421,7.403h-0.004c-1.774,0 -3.513,-0.477 -5.055,-1.378l-0.36,-0.214l-3.75,0.982l1.003,-3.663l-0.235,-0.374c-0.99,-1.574 -1.512,-3.393 -1.511,-5.26c0.001,-5.45 4.436,-9.884 9.888,-9.884c2.64,0 5.122,1.03 6.988,2.898c1.866,1.869 2.893,4.352 2.892,6.993c-0.003,5.45 -4.437,9.884 -9.885,9.884m8.413,-18.297c-2.174,-2.178 -5.064,-3.378 -8.14,-3.378c-6.35,0 -11.517,5.168 -11.52,11.515c-0.001,2.028 0.529,4.006 1.537,5.751l-1.632,5.963l6.1,-1.598c1.674,0.913 3.553,1.396 5.486,1.396h0.004c6.348,0 11.517,-5.168 11.52,-11.515c0.002,-3.076 -1.195,-5.969 -3.369,-8.144"/>
+            </svg>
+            WhatsApp
+          </a>
+          <a href="tel:+51999999999" class="support-btn phone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22,16.92v3a2,2,0,0,1-2.18,2,19.79,19.79,0,0,1-8.63-3.07,19.5,19.5,0,0,1-6-6,19.79,19.79,0,0,1-3.07-8.67A2,2,0,0,1,4.11,2h3a2,2,0,0,1,2,1.72,12.84,12.84,0,0,0,.7,2.81,2,2,0,0,1-.45,2.11L8.09,9.91a16,16,0,0,0,6,6l1.27-1.27a2,2,0,0,1,2.11-.45,12.84,12.84,0,0,0,2.81.7A2,2,0,0,1,22,16.92Z"></path>
+            </svg>
+            Llamar
+          </a>
+          <a href="mailto:info@recoversups.com" class="support-btn email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4,4h16c1.1,0 2,0.9 2,2v12c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            Email
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  initializeFAQ();
+});
+
+function initializeFAQ() {
+  // FAQ toggle functionality
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    const answer = item.querySelector('.faq-answer');
+    
+    question.addEventListener('click', function() {
+      const isActive = item.classList.contains('active');
+      
+      // Close all other items
+      faqItems.forEach(otherItem => {
+        if (otherItem !== item) {
+          otherItem.classList.remove('active');
+        }
+      });
+      
+      // Toggle current item
+      item.classList.toggle('active', !isActive);
+    });
+  });
+  
+  // Category filtering
+  const categoryButtons = document.querySelectorAll('.category-btn');
+  const faqSections = document.querySelectorAll('.faq-section');
+  
+  categoryButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const category = this.dataset.category;
+      
+      // Update active button
+      categoryButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Show/hide sections
+      faqSections.forEach(section => {
+        if (category === 'all' || section.dataset.category === category) {
+          section.style.display = 'block';
+        } else {
+          section.style.display = 'none';
+        }
+      });
+    });
+  });
+  
+  // Search functionality
+  const searchInput = document.getElementById('faq-search');
+  searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question h3').textContent.toLowerCase();
+      const answer = item.querySelector('.faq-answer p').textContent.toLowerCase();
+      
+      if (question.includes(query) || answer.includes(query)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+    
+    // Show all sections when searching
+    if (query) {
+      faqSections.forEach(section => {
+        section.style.display = 'block';
+      });
+    }
+  });
+}
+</script>
+
+<style>
+.faq-page {
+  background: var(--background-light);
+  color: var(--text-secondary);
+  padding: 60px 0;
+  
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+}
+
+.faq-header {
+  text-align: center;
+  margin-bottom: 60px;
+  
+  .faq-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .faq-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.faq-search {
+  margin-bottom: 40px;
+  
+  .search-container {
+    max-width: 500px;
+    margin: 0 auto;
+    
+    .search-input-wrapper {
+      position: relative;
+      
+      .search-input {
+        width: 100%;
+        padding: 16px 50px 16px 20px;
+        border: 2px solid var(--background-gray);
+        border-radius: 50px;
+        font-size: 16px;
+        background: white;
+        transition: border-color 0.3s ease;
+        
+        &:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+        
+        &::placeholder {
+          color: var(--text-muted);
+        }
+      }
+      
+      .search-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+.faq-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 60px;
+  
+  .category-btn {
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid var(--background-gray);
+    border-radius: 50px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    &.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+    }
+  }
+}
+
+.faq-content {
+  .faq-section {
+    margin-bottom: 60px;
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--primary-color);
+    }
+  }
+  
+  .faq-item {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    
+    &.active {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      
+      .faq-question .faq-toggle svg {
+        transform: rotate(180deg);
+      }
+      
+      .faq-answer {
+        max-height: 500px;
+        padding: 0 24px 24px;
+      }
+    }
+    
+    .faq-question {
+      padding: 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background: var(--background-gray);
+      }
+      
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin: 0;
+        flex: 1;
+      }
+      
+      .faq-toggle {
+        margin-left: 20px;
+        
+        svg {
+          width: 20px;
+          height: 20px;
+          color: var(--primary-color);
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+    
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 24px;
+      transition: all 0.3s ease;
+      
+      p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text-muted);
+        margin: 0;
+      }
+    }
+  }
+}
+
+.faq-support {
+  background: var(--primary-color);
+  color: white;
+  border-radius: 16px;
+  padding: 60px 40px;
+  text-align: center;
+  margin-top: 80px;
+  
+  .support-content {
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: white;
+    }
+    
+    p {
+      font-size: 1.125rem;
+      margin-bottom: 40px;
+      opacity: 0.9;
+    }
+    
+    .support-options {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      
+      .support-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 24px;
+        background: white;
+        color: var(--primary-color);
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: var(--background-gray);
+          transform: translateY(-2px);
+        }
+        
+        &.whatsapp {
+          background: #25d366;
+          color: white;
+          
+          &:hover {
+            background: #20b659;
+          }
+        }
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .faq-page {
+    padding: 40px 0;
+  }
+  
+  .faq-header {
+    margin-bottom: 40px;
+  }
+  
+  .faq-categories {
+    gap: 8px;
+    margin-bottom: 40px;
+    
+    .category-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }
+  
+  .faq-content {
+    .faq-section {
+      margin-bottom: 40px;
+      
+      .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+    }
+    
+    .faq-item {
+      .faq-question {
+        padding: 20px;
+        
+        h3 {
+          font-size: 1rem;
+        }
+      }
+      
+      &.active .faq-answer {
+        padding: 0 20px 20px;
+      }
+    }
+  }
+  
+  .faq-support {
+    padding: 40px 20px;
+    margin-top: 60px;
+    
+    .support-content {
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      .support-options {
+        flex-direction: column;
+        align-items: center;
+        
+        .support-btn {
+          width: 200px;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}
+</style>
