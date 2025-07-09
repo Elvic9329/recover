@@ -1,0 +1,679 @@
+{% comment %}
+  Cart Page - Recoversups
+  Página de carrito con funcionalidad completa
+  Sistema de cupones, envío y validaciones
+{% endcomment %}
+
+<div class="cart-page">
+  <div class="container">
+    <!-- Cart Header -->
+    <div class="cart-header">
+      <h1 class="cart-title">
+        {% if cart.item_count > 0 %}
+          Carrito de Compras ({{ cart.item_count }})
+        {% else %}
+          Carrito de Compras
+        {% endif %}
+      </h1>
+      
+      {% if cart.item_count > 0 %}
+        <div class="cart-actions-header">
+          <button class="btn btn-link" onclick="clearCart()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path d="m19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+            </svg>
+            Vaciar carrito
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if cart.item_count > 0 %}
+      <div class="cart-content">
+        <!-- Cart Items -->
+        <div class="cart-items-section">
+          <form class="cart-form" action="{{ routes.cart_url }}" method="post" novalidate>
+            <div class="cart-items-header">
+              <span class="header-product">Producto</span>
+              <span class="header-price">Precio</span>
+              <span class="header-quantity">Cantidad</span>
+              <span class="header-total">Total</span>
+              <span class="header-remove"></span>
+            </div>
+
+            <div class="cart-items" id="cart-items">
+              {% for item in cart.items %}
+                <div class="cart-item" data-variant-id="{{ item.variant.id }}" data-key="{{ item.key }}">
+                  <!-- Product Info -->
+                  <div class="item-product">
+                    <div class="item-image">
+                      <a href="{{ item.url }}">
+                        <img src="{{ item.image | img_url: '150x150' }}" 
+                             alt="{{ item.title }}" 
+                             loading="lazy">
+                      </a>
+                    </div>
+                    
+                    <div class="item-details">
+                      <h3 class="item-title">
+                        <a href="{{ item.url }}">{{ item.product.title }}</a>
+                      </h3>
+                      
+                      {% unless item.product.has_only_default_variant %}
+                        <div class="item-variants">
+                          {% for option in item.options_with_values %}
+                            <span class="variant-option">
+                              <strong>{{ option.name }}:</strong> {{ option.value }}
+                            </span>
+                          {% endfor %}
+                        </div>
+                      {% endunless %}
+                      
+                      <div class="item-sku">
+                        {% if item.sku != blank %}
+                          <span class="sku-label">SKU:</span> {{ item.sku }}
+                        {% endif %}
+                      </div>
+                      
+                      <!-- Stock Status -->
+                      <div class="item-stock">
+                        {% if item.variant.available %}
+                          <span class="stock-available">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            En stock
+                          </span>
+                        {% else %}
+                          <span class="stock-unavailable">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <line x1="15" y1="9" x2="9" y2="15"></line>
+                              <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Sin stock
+                          </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="item-price">
+                    {% if item.original_price != item.final_price %}
+                      <span class="price-compare">{{ item.original_price | money }}</span>
+                      <span class="price-current">{{ item.final_price | money }}</span>
+                    {% else %}
+                      <span class="price-current">{{ item.final_price | money }}</span>
+                    {% endif %}
+                    
+                    {% if item.variant.compare_at_price > item.variant.price %}
+                      <span class="price-discount">
+                        -{{ item.variant.compare_at_price | minus: item.variant.price | times: 100 | divided_by: item.variant.compare_at_price }}%
+                      </span>
+                    {% endif %}
+                  </div>
+
+                  <!-- Quantity -->
+                  <div class="item-quantity">
+                    <div class="quantity-controls">
+                      <button type="button" 
+                              class="quantity-btn quantity-decrease"
+                              onclick="updateQuantity('{{ item.key }}', {{ item.quantity | minus: 1 }})"
+                              {% if item.quantity <= 1 %}disabled{% endif %}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                      
+                      <input type="number" 
+                             class="quantity-input" 
+                             name="updates[{{ item.key }}]"
+                             value="{{ item.quantity }}" 
+                             min="1" 
+                             max="{{ item.variant.inventory_quantity }}"
+                             data-key="{{ item.key }}"
+                             onchange="updateQuantity('{{ item.key }}', this.value)">
+                      
+                      <button type="button" 
+                              class="quantity-btn quantity-increase"
+                              onclick="updateQuantity('{{ item.key }}', {{ item.quantity | plus: 1 }})"
+                              {% if item.variant.inventory_policy == 'deny' and item.quantity >= item.variant.inventory_quantity %}disabled{% endif %}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {% if item.variant.inventory_policy == 'deny' %}
+                      <div class="quantity-limit">
+                        Máximo: {{ item.variant.inventory_quantity }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Line Total -->
+                  <div class="item-total">
+                    <span class="line-total">{{ item.final_line_price | money }}</span>
+                    {% if item.line_price != item.final_line_price %}
+                      <span class="line-total-compare">{{ item.original_line_price | money }}</span>
+                    {% endif %}
+                  </div>
+
+                  <!-- Remove Button -->
+                  <div class="item-remove">
+                    <button type="button" 
+                            class="remove-btn"
+                            onclick="removeItem('{{ item.key }}')"
+                            aria-label="Eliminar {{ item.title }}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="m19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- Cart Notes -->
+            <div class="cart-notes">
+              <label for="cart-note" class="cart-note-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14,2H6A2,2 0,0 0,4 4V20A2,2 0,0 0,6 22H18A2,2 0,0 0,20 20V8Z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                Nota especial para el pedido
+              </label>
+              <textarea id="cart-note" 
+                        name="note" 
+                        class="cart-note-input" 
+                        placeholder="Instrucciones especiales, comentarios sobre alérgenos, etc."
+                        rows="3">{{ cart.note }}</textarea>
+            </div>
+          </form>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+          <div class="summary-card">
+            <h3 class="summary-title">Resumen del Pedido</h3>
+            
+            <!-- Subtotal -->
+            <div class="summary-line">
+              <span class="summary-label">Subtotal ({{ cart.item_count }} artículos)</span>
+              <span class="summary-value">{{ cart.total_price | money }}</span>
+            </div>
+
+            <!-- Discounts -->
+            {% if cart.cart_level_discount_applications.size > 0 %}
+              <div class="summary-discounts">
+                {% for discount in cart.cart_level_discount_applications %}
+                  <div class="summary-line summary-discount">
+                    <span class="summary-label">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84,4.61a5.5,5.5 0,0 0,-7.78 0L12,5.67 10.94,4.61a5.5,5.5 0,0 0,-7.78 7.78l1.06,1.06L12,21.23l7.78,-7.78 1.06,-1.06a5.5,5.5 0,0 0,0 -7.78z"></path>
+                      </svg>
+                      {{ discount.title }}
+                    </span>
+                    <span class="summary-value discount-value">-{{ discount.total_allocated_amount | money }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <!-- Coupon Code -->
+            <div class="coupon-section">
+              <form class="coupon-form" action="{{ routes.cart_url }}" method="post">
+                <div class="coupon-input-group">
+                  <input type="text" 
+                         name="discount" 
+                         class="coupon-input" 
+                         placeholder="Código de descuento"
+                         value="{{ cart.discount_code }}">
+                  <button type="submit" class="coupon-btn">
+                    Aplicar
+                  </button>
+                </div>
+              </form>
+              
+              {% if cart.discount_code %}
+                <div class="active-coupon">
+                  <span class="coupon-code">{{ cart.discount_code }}</span>
+                  <a href="{{ routes.cart_url }}?discount=" class="remove-coupon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Shipping Calculator -->
+            <div class="shipping-section">
+              <h4 class="shipping-title">Calcular Envío</h4>
+              <form class="shipping-form" onsubmit="return false;">
+                <div class="shipping-inputs">
+                  <select class="shipping-country" required>
+                    <option value="">Seleccionar país</option>
+                    <option value="PE" selected>Perú</option>
+                  </select>
+                  
+                  <select class="shipping-province" required>
+                    <option value="">Seleccionar región</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Arequipa">Arequipa</option>
+                    <option value="Cusco">Cusco</option>
+                    <option value="Trujillo">Trujillo</option>
+                    <option value="Piura">Piura</option>
+                  </select>
+                  
+                  <input type="text" 
+                         class="shipping-zip" 
+                         placeholder="Código postal"
+                         maxlength="5">
+                </div>
+                
+                <button type="button" class="shipping-calculate-btn" onclick="calculateShipping()">
+                  Calcular envío
+                </button>
+              </form>
+              
+              <div class="shipping-results" id="shipping-results" style="display: none;"></div>
+            </div>
+
+            <!-- Total -->
+            <div class="summary-total">
+              <div class="total-line">
+                <span class="total-label">Total</span>
+                <span class="total-value">{{ cart.total_price | money }}</span>
+              </div>
+              <div class="total-currency">PEN (Soles Peruanos)</div>
+            </div>
+
+            <!-- Checkout Buttons -->
+            <div class="checkout-actions">
+              <button type="button" class="btn btn-primary btn-checkout" onclick="proceedToCheckout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="9" cy="9" r="2"></circle>
+                  <path d="M21,15.5l-3-3L15,15.5"></path>
+                </svg>
+                Proceder al Pago
+              </button>
+              
+              <div class="express-checkout">
+                <div class="express-divider">
+                  <span>o</span>
+                </div>
+                
+                <div class="express-buttons">
+                  <!-- Shop Pay -->
+                  <button class="btn btn-express shop-pay-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"></path>
+                    </svg>
+                    Shop Pay
+                  </button>
+                  
+                  <!-- PayPal -->
+                  <button class="btn btn-express paypal-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7.076,21.337H2.47a.641.641,0,0,1-.633-.74L4.944,2.79A.77.77,0,0,1,5.7,2.16h6.137c2.791,0,5.016.803,6.422,2.319a7.52,7.52,0,0,1,.345,6.830c-.018.04-.035.082-.055.123a6.856,6.856,0,0,1-5.392,4.726H8.149a.872.872,0,0,0-.86.73L7.076,21.337ZM19.7,7.434a8.99,8.99,0,0,1-4.652,7.685h4.652V7.434Z"></path>
+                    </svg>
+                    PayPal
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="checkout-trust">
+              <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7,11V7a5,5 0,0 1,10 0v4"></path>
+                </svg>
+                <span>Pago 100% Seguro</span>
+              </div>
+              
+              <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21,16V8a2,2 0,0 0,-1,-1.73l-7,-4a2,2 0,0 0,-2 0l-7,4A2,2 0,0 0,3 8v8a2,2 0,0 0,1 1.73l7,4a2,2 0,0 0,2 0l7,-4A2,2 0,0 0,21 16z"></path>
+                  <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                <span>Envío Gratis > S/100</span>
+              </div>
+              
+              <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3,12a9,9 0,1 0,9 -9"></path>
+                  <path d="M3,12h9l-2,-2"></path>
+                  <path d="M3,12h9l-2,2"></path>
+                </svg>
+                <span>Devolución 30 días</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Continue Shopping -->
+      <div class="continue-shopping">
+        <a href="/collections/all" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15,18 9,12 15,6"></polyline>
+          </svg>
+          Continuar Comprando
+        </a>
+      </div>
+
+    {% else %}
+      <!-- Empty Cart -->
+      <div class="cart-empty">
+        <div class="empty-content">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1,1h4l2.68,13.39a2,2 0,0 0,2 1.61H19.4a2,2 0,0 0,2 -1.61L23,6H6"></path>
+          </svg>
+          
+          <h2>Tu carrito está vacío</h2>
+          <p>Agrega productos increíbles a tu carrito</p>
+          
+          <div class="empty-actions">
+            <a href="/collections/all" class="btn btn-primary">
+              Explorar Productos
+            </a>
+            <a href="/collections/proteinas" class="btn btn-secondary">
+              Ver Proteínas
+            </a>
+          </div>
+          
+          <!-- Recently Viewed -->
+          <div class="recently-viewed">
+            <h3>Productos que viste recientemente</h3>
+            <div class="recently-viewed-grid" id="recently-viewed-products">
+              <!-- Products will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Cart JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize cart functionality
+  initializeCart();
+  
+  // Load recently viewed products if cart is empty
+  if ({{ cart.item_count }} === 0) {
+    loadRecentlyViewed();
+  }
+});
+
+function initializeCart() {
+  // Auto-save cart notes
+  const cartNote = document.getElementById('cart-note');
+  if (cartNote) {
+    cartNote.addEventListener('blur', function() {
+      updateCartNote(this.value);
+    });
+  }
+  
+  // Initialize quantity inputs
+  const quantityInputs = document.querySelectorAll('.quantity-input');
+  quantityInputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      updateQuantity(this.dataset.key, this.value);
+    });
+  });
+}
+
+// Update quantity
+function updateQuantity(key, quantity) {
+  showCartLoading();
+  
+  fetch('/cart/change.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+      id: key,
+      quantity: parseInt(quantity)
+    })
+  })
+  .then(response => response.json())
+  .then(cart => {
+    if (cart.item_count === 0) {
+      window.location.reload();
+    } else {
+      updateCartDisplay(cart);
+    }
+  })
+  .catch(error => {
+    console.error('Error updating quantity:', error);
+    showCartError('Error al actualizar la cantidad');
+  })
+  .finally(() => {
+    hideCartLoading();
+  });
+}
+
+// Remove item
+function removeItem(key) {
+  if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+    showCartLoading();
+    
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        id: key,
+        quantity: 0
+      })
+    })
+    .then(response => response.json())
+    .then(cart => {
+      if (cart.item_count === 0) {
+        window.location.reload();
+      } else {
+        updateCartDisplay(cart);
+      }
+    })
+    .catch(error => {
+      console.error('Error removing item:', error);
+      showCartError('Error al eliminar el producto');
+    })
+    .finally(() => {
+      hideCartLoading();
+    });
+  }
+}
+
+// Clear cart
+function clearCart() {
+  if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+    showCartLoading();
+    
+    fetch('/cart/clear.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(() => {
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error('Error clearing cart:', error);
+      showCartError('Error al vaciar el carrito');
+    })
+    .finally(() => {
+      hideCartLoading();
+    });
+  }
+}
+
+// Update cart note
+function updateCartNote(note) {
+  fetch('/cart/update.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+      note: note
+    })
+  })
+  .catch(error => {
+    console.error('Error updating cart note:', error);
+  });
+}
+
+// Calculate shipping
+function calculateShipping() {
+  const country = document.querySelector('.shipping-country').value;
+  const province = document.querySelector('.shipping-province').value;
+  const zip = document.querySelector('.shipping-zip').value;
+  
+  if (!country || !province) {
+    alert('Por favor, selecciona país y región');
+    return;
+  }
+  
+  // Simulate shipping calculation
+  const shippingResults = document.getElementById('shipping-results');
+  shippingResults.innerHTML = `
+    <div class="shipping-option">
+      <div class="shipping-method">
+        <span class="method-name">Envío Estándar</span>
+        <span class="method-time">2-3 días hábiles</span>
+      </div>
+      <div class="shipping-price">
+        ${province === 'Lima' ? 'Gratis' : 'S/ 15.00'}
+      </div>
+    </div>
+    <div class="shipping-option">
+      <div class="shipping-method">
+        <span class="method-name">Envío Express</span>
+        <span class="method-time">1-2 días hábiles</span>
+      </div>
+      <div class="shipping-price">S/ 25.00</div>
+    </div>
+  `;
+  shippingResults.style.display = 'block';
+}
+
+// Proceed to checkout
+function proceedToCheckout() {
+  showCartLoading();
+  window.location.href = '/checkout';
+}
+
+// Cart display updates
+function updateCartDisplay(cart) {
+  // Update cart count in header
+  const cartCounts = document.querySelectorAll('.cart-count');
+  cartCounts.forEach(count => {
+    count.textContent = cart.item_count;
+  });
+  
+  // Update cart totals
+  const totalElements = document.querySelectorAll('.total-value');
+  totalElements.forEach(total => {
+    total.textContent = formatMoney(cart.total_price);
+  });
+  
+  // Update item counts
+  const itemCounts = document.querySelectorAll('.item-count');
+  itemCounts.forEach(count => {
+    count.textContent = cart.item_count;
+  });
+}
+
+// Loading states
+function showCartLoading() {
+  const cartItems = document.getElementById('cart-items');
+  if (cartItems) {
+    cartItems.classList.add('loading');
+  }
+}
+
+function hideCartLoading() {
+  const cartItems = document.getElementById('cart-items');
+  if (cartItems) {
+    cartItems.classList.remove('loading');
+  }
+}
+
+// Error handling
+function showCartError(message) {
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'cart-error';
+  errorDiv.textContent = message;
+  document.body.appendChild(errorDiv);
+  
+  setTimeout(() => {
+    errorDiv.remove();
+  }, 5000);
+}
+
+// Format money
+function formatMoney(cents) {
+  const amount = (cents / 100).toFixed(2);
+  return `S/ ${amount}`;
+}
+
+// Recently viewed products
+function loadRecentlyViewed() {
+  const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+  const container = document.getElementById('recently-viewed-products');
+  
+  if (recentlyViewed.length === 0 || !container) return;
+  
+  // Fetch product data for recently viewed items
+  const productPromises = recentlyViewed.slice(0, 4).map(productId => {
+    return fetch(`/products/${productId}.js`)
+      .then(response => response.json())
+      .catch(() => null);
+  });
+  
+  Promise.all(productPromises).then(products => {
+    const validProducts = products.filter(p => p !== null);
+    
+    if (validProducts.length > 0) {
+      container.innerHTML = validProducts.map(product => `
+        <div class="recently-viewed-item">
+          <a href="/products/${product.handle}">
+            <img src="${product.featured_image}" alt="${product.title}" loading="lazy">
+            <h4>${product.title}</h4>
+            <span class="price">${formatMoney(product.price)}</span>
+          </a>
+        </div>
+      `).join('');
+    } else {
+      container.parentElement.style.display = 'none';
+    }
+  });
+}
+</script>
