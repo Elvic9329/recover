@@ -1,0 +1,499 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Recoversups",
+    "theme_version": "1.0.0",
+    "theme_author": "Recoversups Team",
+    "theme_documentation_url": "https://help.recoversups.com/themes",
+    "theme_support_url": "https://support.recoversups.com"
+  },
+  {
+    "name": "Colores",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Colores principales"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Color primario",
+        "default": "#B62921",
+        "info": "Color principal del tema (rojo Recoversups)"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Color secundario",
+        "default": "#2C3E50",
+        "info": "Color secundario para textos y elementos"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Color de acento",
+        "default": "#E74C3C",
+        "info": "Color para alertas y elementos destacados"
+      },
+      {
+        "type": "color",
+        "id": "color_warning",
+        "label": "Color de advertencia",
+        "default": "#F39C12",
+        "info": "Color para botones secundarios y advertencias"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Color de éxito",
+        "default": "#27AE60",
+        "info": "Color para mensajes de éxito"
+      },
+      {
+        "type": "header",
+        "content": "Colores de fondo"
+      },
+      {
+        "type": "color",
+        "id": "color_background_light",
+        "label": "Fondo claro",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_background_dark",
+        "label": "Fondo oscuro",
+        "default": "#1a1a1a"
+      },
+      {
+        "type": "color",
+        "id": "color_background_gray",
+        "label": "Fondo gris",
+        "default": "#f8f9fa"
+      },
+      {
+        "type": "header",
+        "content": "Colores de texto"
+      },
+      {
+        "type": "color",
+        "id": "color_text_primary",
+        "label": "Texto principal",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_text_secondary",
+        "label": "Texto secundario",
+        "default": "#333333"
+      },
+      {
+        "type": "color",
+        "id": "color_text_muted",
+        "label": "Texto suave",
+        "default": "#6c757d"
+      }
+    ]
+  },
+  {
+    "name": "Tipografía",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Fuentes"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "default": "assistant_n4",
+        "label": "Fuente para encabezados",
+        "info": "Fuente utilizada para títulos y encabezados"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "min": 100,
+        "max": 150,
+        "step": 5,
+        "unit": "%",
+        "label": "Escala de encabezados",
+        "default": 120
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "assistant_n4",
+        "label": "Fuente para texto",
+        "info": "Fuente utilizada para párrafos y texto general"
+      },
+      {
+        "type": "range",
+        "id": "body_scale",
+        "min": 90,
+        "max": 120,
+        "step": 5,
+        "unit": "%",
+        "label": "Escala del texto",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Espaciado"
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Espaciado entre secciones",
+        "default": 60
+      },
+      {
+        "type": "range",
+        "id": "spacing_elements",
+        "min": 0,
+        "max": 50,
+        "step": 2,
+        "unit": "px",
+        "label": "Espaciado entre elementos",
+        "default": 20
+      },
+      {
+        "type": "header",
+        "content": "Contenedor"
+      },
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1000,
+        "max": 1600,
+        "step": 10,
+        "unit": "px",
+        "label": "Ancho máximo de página",
+        "default": 1200
+      },
+      {
+        "type": "range",
+        "id": "container_padding",
+        "min": 10,
+        "max": 50,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding del contenedor",
+        "default": 20
+      }
+    ]
+  },
+  {
+    "name": "Botones",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Estilo de botones"
+      },
+      {
+        "type": "range",
+        "id": "buttons_border_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Radio de bordes",
+        "default": 8
+      },
+      {
+        "type": "range",
+        "id": "buttons_border_width",
+        "min": 0,
+        "max": 5,
+        "step": 1,
+        "unit": "px",
+        "label": "Grosor del borde",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "buttons_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "label": "Opacidad de sombra",
+        "default": 20
+      },
+      {
+        "type": "checkbox",
+        "id": "buttons_hover_effects",
+        "label": "Efectos al pasar el cursor",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Productos",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Tarjetas de producto"
+      },
+      {
+        "type": "select",
+        "id": "product_card_style",
+        "label": "Estilo de tarjeta",
+        "options": [
+          {
+            "value": "standard",
+            "label": "Estándar"
+          },
+          {
+            "value": "minimal",
+            "label": "Minimalista"
+          },
+          {
+            "value": "featured",
+            "label": "Destacado"
+          }
+        ],
+        "default": "standard"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_vendor",
+        "label": "Mostrar marca",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_rating",
+        "label": "Mostrar valoraciones",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_hover_effects",
+        "label": "Efectos al pasar el cursor",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Imágenes de producto"
+      },
+      {
+        "type": "select",
+        "id": "product_image_ratio",
+        "label": "Proporción de imagen",
+        "options": [
+          {
+            "value": "adapt",
+            "label": "Adaptarse a imagen"
+          },
+          {
+            "value": "portrait",
+            "label": "Retrato (3:4)"
+          },
+          {
+            "value": "square",
+            "label": "Cuadrado (1:1)"
+          }
+        ],
+        "default": "square"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_image_zoom",
+        "label": "Habilitar zoom",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Performance",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Optimización"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_lazy_loading",
+        "label": "Carga diferida de imágenes",
+        "default": true,
+        "info": "Mejora el tiempo de carga inicial"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_webp",
+        "label": "Formato WebP para imágenes",
+        "default": true,
+        "info": "Reduce el tamaño de las imágenes"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_critical_css",
+        "label": "CSS crítico inline",
+        "default": true,
+        "info": "Mejora el tiempo de renderizado"
+      },
+      {
+        "type": "range",
+        "id": "image_quality",
+        "min": 60,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "label": "Calidad de imagen",
+        "default": 85
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Redes sociales"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook_link",
+        "label": "Facebook",
+        "info": "https://facebook.com/recoversups"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram_link",
+        "label": "Instagram",
+        "info": "https://instagram.com/recoversups"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok_link",
+        "label": "TikTok",
+        "info": "https://tiktok.com/@recoversups"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube_link",
+        "label": "YouTube",
+        "info": "https://youtube.com/recoversups"
+      },
+      {
+        "type": "url",
+        "id": "social_whatsapp_link",
+        "label": "WhatsApp",
+        "info": "https://wa.me/51999999999"
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Se recomienda una imagen de 32x32 píxeles"
+      }
+    ]
+  },
+  {
+    "name": "Analytics",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Google Analytics"
+      },
+      {
+        "type": "text",
+        "id": "google_analytics_id",
+        "label": "ID de Google Analytics",
+        "info": "Ejemplo: G-XXXXXXXXXX"
+      },
+      {
+        "type": "header",
+        "content": "Facebook Pixel"
+      },
+      {
+        "type": "text",
+        "id": "facebook_pixel_id",
+        "label": "ID de Facebook Pixel",
+        "info": "Ejemplo: 123456789012345"
+      },
+      {
+        "type": "header",
+        "content": "Otras métricas"
+      },
+      {
+        "type": "text",
+        "id": "hotjar_id",
+        "label": "ID de Hotjar (opcional)"
+      },
+      {
+        "type": "text",
+        "id": "google_tag_manager_id",
+        "label": "ID de Google Tag Manager (opcional)",
+        "info": "Ejemplo: GTM-XXXXXXX"
+      }
+    ]
+  },
+  {
+    "name": "Configuración avanzada",
+    "settings": [
+      {
+        "type": "header",
+        "content": "JavaScript"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_animations",
+        "label": "Habilitar animaciones",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_smooth_scrolling",
+        "label": "Desplazamiento suave",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Accesibilidad"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_high_contrast",
+        "label": "Modo alto contraste",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "reduce_motion",
+        "label": "Reducir animaciones (accesibilidad)",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Código personalizado"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_css",
+        "label": "CSS personalizado",
+        "info": "Se agregará al final del CSS del tema"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_js",
+        "label": "JavaScript personalizado",
+        "info": "Se ejecutará al cargar la página"
+      }
+    ]
+  }
+]

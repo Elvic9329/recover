@@ -1,0 +1,848 @@
+{% comment %}
+  Unified Image Optimizer Snippet - Recoversups
+  Sistema unificado de optimización de imágenes con WebP, lazy loading, responsive y galería
+  
+  Parámetros:
+  - image: imagen de Shopify (requerido)
+  - alt: texto alternativo (opcional)
+  - loading: "lazy" o "eager" (default: "lazy")
+  - sizes: tamaños responsive (default: "(max-width: 768px) 100vw, 50vw")
+  - class: clases CSS adicionales
+  - aspect_ratio: ratio de aspecto (opcional, ej: "1/1", "16/9")
+  - enable_zoom: habilitar zoom modal (default: false)
+  - show_gallery: mostrar galería de miniaturas (default: false)
+  - product: objeto producto (requerido para galería y badges)
+  - max_width: ancho máximo en pixels (default: 1200)
+  - quality: calidad de compresión (default: 85)
+{% endcomment %}
+
+{% assign image_loading = loading | default: 'lazy' %}
+{% assign image_class = class | default: '' %}
+{% assign image_alt = alt | default: image.alt | default: '' %}
+{% assign image_sizes = sizes | default: '(max-width: 768px) 100vw, 50vw' %}
+{% assign enable_zoom = enable_zoom | default: false %}
+{% assign show_gallery = show_gallery | default: false %}
+{% assign max_width = max_width | default: 1200 %}
+{% assign quality = quality | default: 85 %}
+
+{% if image %}
+  <div class="image-optimizer {{ image_class }}" 
+       {% if product %}data-product-id="{{ product.id }}"{% endif %}
+       {% if show_gallery %}data-gallery="true"{% endif %}
+       {% if enable_zoom %}data-zoom="true"{% endif %}>
+    
+    <!-- Imagen principal optimizada -->
+    <picture class="image-optimized">
+      <!-- WebP sources para navegadores compatibles -->
+      <source 
+        type="image/webp"
+        srcset="{% if max_width >= 400 %}{{ image | img_url: '400x400' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 400w,{% endif %}
+                {% if max_width >= 600 %}{{ image | img_url: '600x600' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 600w,{% endif %}
+                {% if max_width >= 800 %}{{ image | img_url: '800x800' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 800w,{% endif %}
+                {% if max_width >= 1200 %}{{ image | img_url: '1200x1200' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 1200w,{% endif %}
+                {% if max_width >= 1600 %}{{ image | img_url: '1600x1600' | replace: '.jpg', '.webp' | replace: '.png', '.webp' }} 1600w{% endif %}"
+        sizes="{{ image_sizes }}">
+      
+      <!-- Fallback JPEG/PNG -->
+      <source 
+        type="image/jpeg"
+        srcset="{% if max_width >= 400 %}{{ image | img_url: '400x400' }} 400w,{% endif %}
+                {% if max_width >= 600 %}{{ image | img_url: '600x600' }} 600w,{% endif %}
+                {% if max_width >= 800 %}{{ image | img_url: '800x800' }} 800w,{% endif %}
+                {% if max_width >= 1200 %}{{ image | img_url: '1200x1200' }} 1200w,{% endif %}
+                {% if max_width >= 1600 %}{{ image | img_url: '1600x1600' }} 1600w{% endif %}"
+        sizes="{{ image_sizes }}">
+      
+      <!-- Imagen principal -->
+      <img 
+        src="{{ image | img_url: '800x800' }}"
+        alt="{{ image_alt | escape }}"
+        loading="{{ image_loading }}"
+        decoding="async"
+        {% if aspect_ratio %}style="aspect-ratio: {{ aspect_ratio }};"{% endif %}
+        class="main-image {% if enable_zoom %}zoomable{% endif %}"
+        {% if image.width and image.height %}
+          width="{{ image.width }}"
+          height="{{ image.height }}"
+        {% endif %}
+        {% if enable_zoom %}
+          data-zoom-url="{{ image | img_url: '1600x1600' }}"
+        {% endif %}>
+    </picture>
+    
+    <!-- Badges de producto (solo si se proporciona producto) -->
+    {% if product %}
+      <div class="image-badges">
+        {% if product.compare_at_price > product.price %}
+          <span class="badge discount-badge">
+            {% assign discount = product.compare_at_price | minus: product.price %}
+            {% assign discount_percentage = discount | times: 100 | divided_by: product.compare_at_price %}
+            -{{ discount_percentage | round }}%
+          </span>
+        {% endif %}
+        
+        {% if product.tags contains 'nuevo' %}
+          <span class="badge new-badge">Nuevo</span>
+        {% endif %}
+        
+        {% if product.available == false %}
+          <span class="badge sold-out-badge">Agotado</span>
+        {% endif %}
+        
+        {% if product.tags contains 'bestseller' %}
+          <span class="badge bestseller-badge">Bestseller</span>
+        {% endif %}
+      </div>
+    {% endif %}
+    
+    <!-- Galería de imágenes (solo para productos con múltiples imágenes) -->
+    {% if show_gallery and product and product.images.size > 1 %}
+      <div class="image-gallery">
+        {% for product_image in product.images limit: 6 %}
+          <button class="gallery-thumb {% if forloop.first %}active{% endif %}"
+                  data-image-index="{{ forloop.index0 }}"
+                  data-image-url="{{ product_image | img_url: '800x800' }}"
+                  {% if enable_zoom %}data-zoom-url="{{ product_image | img_url: '1600x1600' }}"{% endif %}
+                  aria-label="Ver imagen {{ forloop.index }} de {{ product.title }}">
+            {% render 'image-optimizer',
+               image: product_image,
+               loading: 'lazy',
+               sizes: '80x80',
+               class: 'thumb-image',
+               aspect_ratio: '1/1',
+               alt: product_image.alt | default: product.title %}
+          </button>
+        {% endfor %}
+        
+        {% if product.images.size > 6 %}
+          <button class="gallery-more" data-product-id="{{ product.id }}">
+            +{{ product.images.size | minus: 6 }}
+          </button>
+        {% endif %}
+      </div>
+    {% endif %}
+    
+    <!-- Loading state -->
+    <div class="image-loading" style="display: none;">
+      <div class="loading-spinner"></div>
+    </div>
+  </div>
+  
+  <!-- Zoom modal (solo si zoom está habilitado) -->
+  {% if enable_zoom %}
+    <div class="zoom-modal" id="zoom-modal-{{ product.id | default: 'default' }}" style="display: none;">
+      <div class="zoom-overlay"></div>
+      <div class="zoom-content">
+        <button class="zoom-close" aria-label="Cerrar zoom">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <img class="zoom-image" src="" alt="" loading="lazy">
+        
+        {% if show_gallery and product.images.size > 1 %}
+          <div class="zoom-navigation">
+            <button class="zoom-prev" aria-label="Imagen anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15,18 9,12 15,6"></polyline>
+              </svg>
+            </button>
+            <button class="zoom-next" aria-label="Siguiente imagen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div class="zoom-counter">
+            <span class="current">1</span> / <span class="total">{{ product.images.size }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  
+{% else %}
+  <!-- Placeholder cuando no hay imagen -->
+  <div class="image-placeholder {{ image_class }}" 
+       {% if aspect_ratio %}style="aspect-ratio: {{ aspect_ratio }};"{% endif %}
+       role="img" 
+       aria-label="{{ image_alt | default: 'Imagen no disponible' | escape }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+      <polyline points="21,15 16,10 5,21"></polyline>
+    </svg>
+    <span>{{ image_alt | default: 'Sin imagen' }}</span>
+  </div>
+{% endif %}
+
+<style>
+/* Contenedor principal */
+.image-optimizer {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    .image-badges {
+      opacity: 1;
+    }
+    
+    .main-image {
+      transform: scale(1.02);
+    }
+    
+    .image-gallery {
+      opacity: 1;
+    }
+  }
+}
+
+/* Imagen optimizada */
+.image-optimized {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  
+  .main-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: all 0.3s ease;
+    
+    &.zoomable {
+      cursor: zoom-in;
+    }
+    
+    &.loading {
+      opacity: 0;
+    }
+    
+    &.loaded {
+      opacity: 1;
+    }
+  }
+}
+
+/* Badges de producto */
+.image-badges {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  
+  .badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    min-width: 60px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .discount-badge {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+  }
+  
+  .new-badge {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+  }
+  
+  .sold-out-badge {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+  }
+  
+  .bestseller-badge {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+  }
+}
+
+/* Galería de miniaturas */
+.image-gallery {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  
+  .gallery-thumb {
+    width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: none;
+    padding: 0;
+    
+    &:hover,
+    &.active {
+      border-color: var(--primary-color, #B62921);
+      transform: scale(1.1);
+    }
+    
+    .thumb-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  .gallery-more {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color, #B62921);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: var(--primary-dark, #962019);
+      transform: scale(1.1);
+    }
+  }
+}
+
+/* Placeholder de imagen */
+.image-placeholder {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  border: 2px dashed #dee2e6;
+  border-radius: 12px;
+  min-height: 200px;
+  aspect-ratio: 1 / 1;
+  
+  svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+  
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+/* Loading state */
+.image-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(248, 249, 250, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color, #B62921);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Shimmer effect para carga */
+.image-optimized.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Modal de zoom */
+.zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  &.show {
+    opacity: 1;
+  }
+  
+  .zoom-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: zoom-out;
+  }
+  
+  .zoom-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .zoom-close {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      transition: all 0.3s ease;
+      z-index: 10;
+      
+      &:hover {
+        background: #f0f0f0;
+        transform: scale(1.1);
+      }
+      
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    
+    .zoom-image {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      cursor: zoom-out;
+    }
+    
+    .zoom-navigation {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      pointer-events: none;
+      
+      .zoom-prev,
+      .zoom-next {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        transition: all 0.3s ease;
+        pointer-events: auto;
+        
+        &:hover {
+          background: white;
+          transform: scale(1.1);
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+    
+    .zoom-counter {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .image-gallery {
+    display: none;
+  }
+  
+  .image-optimizer {
+    border-radius: 8px;
+  }
+  
+  .zoom-modal .zoom-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    
+    .zoom-close {
+      top: -40px;
+      width: 36px;
+      height: 36px;
+    }
+    
+    .zoom-navigation {
+      .zoom-prev,
+      .zoom-next {
+        width: 44px;
+        height: 44px;
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
+/* Optimización para Core Web Vitals */
+.main-image {
+  /* Prevenir layout shift */
+  width: 100%;
+  height: auto;
+  
+  /* Optimizar rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  
+  /* Optimizar memoria */
+  will-change: transform;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .image-optimizer,
+  .main-image,
+  .gallery-thumb,
+  .zoom-modal {
+    transition: none;
+    animation: none;
+  }
+  
+  .main-image:hover {
+    transform: none;
+  }
+}
+</style>
+
+<script>
+// Sistema unificado de optimización de imágenes
+(function() {
+  'use strict';
+  
+  // Namespace para evitar conflictos
+  if (!window.RecoverSups) {
+    window.RecoverSups = {};
+  }
+  
+  window.RecoverSups.ImageOptimizer = {
+    init: function() {
+      this.setupLazyLoading();
+      this.setupGallery();
+      this.setupZoom();
+      this.optimizeImages();
+    },
+    
+    setupLazyLoading: function() {
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              this.loadImage(img);
+              imageObserver.unobserve(img);
+            }
+          });
+        }, {
+          rootMargin: '50px 0px',
+          threshold: 0.01
+        });
+        
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+          imageObserver.observe(img);
+        });
+      } else {
+        // Fallback para navegadores antiguos
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+          this.loadImage(img);
+        });
+      }
+    },
+    
+    loadImage: function(img) {
+      const container = img.closest('.image-optimizer');
+      const loading = container?.querySelector('.image-loading');
+      
+      if (loading) loading.style.display = 'flex';
+      
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+        if (loading) loading.style.display = 'none';
+      });
+      
+      img.addEventListener('error', () => {
+        if (loading) loading.style.display = 'none';
+        this.handleImageError(img);
+      });
+    },
+    
+    handleImageError: function(img) {
+      const container = img.closest('.image-optimizer');
+      if (container) {
+        container.innerHTML = `
+          <div class="image-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21,15 16,10 5,21"></polyline>
+            </svg>
+            <span>Error al cargar imagen</span>
+          </div>
+        `;
+      }
+    },
+    
+    setupGallery: function() {
+      document.querySelectorAll('.image-optimizer[data-gallery="true"]').forEach(container => {
+        const thumbs = container.querySelectorAll('.gallery-thumb');
+        const mainImage = container.querySelector('.main-image');
+        
+        thumbs.forEach(thumb => {
+          thumb.addEventListener('click', () => {
+            this.switchGalleryImage(thumb, mainImage, thumbs);
+          });
+        });
+      });
+    },
+    
+    switchGalleryImage: function(clickedThumb, mainImage, allThumbs) {
+      const imageUrl = clickedThumb.dataset.imageUrl;
+      const zoomUrl = clickedThumb.dataset.zoomUrl;
+      
+      // Actualizar imagen principal
+      mainImage.src = imageUrl;
+      if (zoomUrl) mainImage.dataset.zoomUrl = zoomUrl;
+      
+      // Actualizar estado activo
+      allThumbs.forEach(thumb => thumb.classList.remove('active'));
+      clickedThumb.classList.add('active');
+    },
+    
+    setupZoom: function() {
+      document.querySelectorAll('.main-image.zoomable').forEach(img => {
+        img.addEventListener('click', () => {
+          this.openZoom(img);
+        });
+      });
+      
+      // Cerrar zoom
+      document.querySelectorAll('.zoom-overlay, .zoom-close').forEach(element => {
+        element.addEventListener('click', (e) => {
+          if (e.target === element) {
+            this.closeZoom(element.closest('.zoom-modal'));
+          }
+        });
+      });
+      
+      // Navegación en zoom
+      document.querySelectorAll('.zoom-prev').forEach(btn => {
+        btn.addEventListener('click', () => this.navigateZoom('prev'));
+      });
+      
+      document.querySelectorAll('.zoom-next').forEach(btn => {
+        btn.addEventListener('click', () => this.navigateZoom('next'));
+      });
+      
+      // Cerrar con ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const openModal = document.querySelector('.zoom-modal[style*="flex"]');
+          if (openModal) this.closeZoom(openModal);
+        }
+      });
+    },
+    
+    openZoom: function(img) {
+      const container = img.closest('.image-optimizer');
+      const productId = container?.dataset.productId || 'default';
+      const modal = document.getElementById(`zoom-modal-${productId}`);
+      
+      if (modal) {
+        const zoomImage = modal.querySelector('.zoom-image');
+        const zoomUrl = img.dataset.zoomUrl || img.src;
+        
+        zoomImage.src = zoomUrl;
+        zoomImage.alt = img.alt;
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        setTimeout(() => modal.classList.add('show'), 10);
+        
+        this.updateZoomCounter(modal, container);
+      }
+    },
+    
+    closeZoom: function(modal) {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }, 300);
+    },
+    
+    navigateZoom: function(direction) {
+      // Implementar navegación entre imágenes en el zoom
+      const modal = document.querySelector('.zoom-modal.show');
+      if (!modal) return;
+      
+      const container = document.querySelector(`[data-product-id="${modal.id.replace('zoom-modal-', '')}"]`);
+      const thumbs = container?.querySelectorAll('.gallery-thumb');
+      
+      if (thumbs && thumbs.length > 1) {
+        const activeThumb = container.querySelector('.gallery-thumb.active');
+        const currentIndex = Array.from(thumbs).indexOf(activeThumb);
+        let newIndex;
+        
+        if (direction === 'next') {
+          newIndex = (currentIndex + 1) % thumbs.length;
+        } else {
+          newIndex = currentIndex === 0 ? thumbs.length - 1 : currentIndex - 1;
+        }
+        
+        thumbs[newIndex].click();
+        this.updateZoomCounter(modal, container, newIndex + 1);
+      }
+    },
+    
+    updateZoomCounter: function(modal, container, currentIndex = null) {
+      const counter = modal.querySelector('.zoom-counter');
+      if (counter && container) {
+        const thumbs = container.querySelectorAll('.gallery-thumb');
+        const current = currentIndex || Array.from(thumbs).findIndex(thumb => thumb.classList.contains('active')) + 1;
+        
+        counter.querySelector('.current').textContent = current;
+        counter.querySelector('.total').textContent = thumbs.length;
+      }
+    },
+    
+    optimizeImages: function() {
+      // Precargar imágenes críticas
+      document.querySelectorAll('img[loading="eager"]').forEach(img => {
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+        }
+      });
+      
+      // Optimizar imágenes en viewport
+      this.optimizeViewportImages();
+    },
+    
+    optimizeViewportImages: function() {
+      const images = document.querySelectorAll('.main-image');
+      
+      images.forEach(img => {
+        if (this.isInViewport(img)) {
+          img.loading = 'eager';
+          img.decoding = 'sync';
+        }
+      });
+    },
+    
+    isInViewport: function(element) {
+      const rect = element.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
+    }
+  };
+  
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    window.RecoverSups.ImageOptimizer.init();
+  });
+  
+  // Optimizar en scroll (throttled)
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      window.RecoverSups.ImageOptimizer.optimizeViewportImages();
+    }, 100);
+  });
+  
+})();
+</script>

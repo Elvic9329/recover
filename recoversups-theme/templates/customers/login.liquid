@@ -3,6 +3,8 @@
   Página de inicio de sesión con diseño moderno
 {% endcomment %}
 
+{{ 'auth-forms.scss' | asset_url | stylesheet_tag }}
+
 <div class="auth-page">
   <div class="container">
     <div class="auth-container">
@@ -26,7 +28,7 @@
 
         <!-- Login Form -->
         <div class="auth-form-panel active" id="login-panel">
-          {% form 'customer_login', novalidate: 'novalidate' %}
+          {% form 'customer_login', novalidate: 'novalidate', id: 'login-form' %}
             <div class="form-errors">
               {% if form.errors %}
                 <div class="error-message">
@@ -140,7 +142,7 @@
 
         <!-- Register Form -->
         <div class="auth-form-panel" id="register-panel">
-          {% form 'create_customer', novalidate: 'novalidate' %}
+          {% form 'create_customer', novalidate: 'novalidate', id: 'register-form' %}
             <div class="form-errors">
               {% if form.errors %}
                 <div class="error-message">
@@ -526,3 +528,7 @@ function registerWithFacebook() {
   console.log('Register with Facebook - to be implemented');
 }
 </script>
+
+{% comment %} Include form validation for login and register forms {% endcomment %}
+{% render 'form-validation', validation_type: 'login', form_id: 'login-form' %}
+{% render 'form-validation', validation_type: 'register', form_id: 'register-form', include_password_strength: true %}

@@ -9,44 +9,20 @@
     <div class="product-layout">
       <!-- Columna Izquierda: Galería de Imágenes (60%) -->
       <div class="product-gallery">
-        <div class="gallery-container">
-          <div class="product-gallery__thumbnails">
-            {% for image in product.images %}
-              <button class="thumbnail {% if forloop.first %}active{% endif %}" 
-                      data-image="{{ image | img_url: '800x800' }}"
-                      data-index="{{ forloop.index0 }}">
-                <img src="{{ image | img_url: '100x100' }}" 
-                     alt="{{ image.alt | default: product.title }}"
-                     loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
-              </button>
-            {% endfor %}
-          </div>
-          
-          <div class="product-gallery__main">
-            <div class="main-image">
-              <img id="main-product-image" 
-                   src="{{ product.featured_image | img_url: '800x800' }}" 
-                   alt="{{ product.title }}"
-                   loading="eager">
-              
-              {% if product.images.size > 1 %}
-                <button class="nav-arrow nav-arrow--prev" aria-label="Imagen anterior">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15,18 9,12 15,6"></polyline>
-                  </svg>
-                </button>
-                <button class="nav-arrow nav-arrow--next" aria-label="Imagen siguiente">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9,18 15,12 9,6"></polyline>
-                  </svg>
-                </button>
-              {% endif %}
-            </div>
-          </div>
-          
-          <div class="product-gallery__info">
-            <p class="size-reference">Altura: 180 cm (5'11") | Usando talla M</p>
-          </div>
+        {% render 'image-optimizer',
+           image: product.featured_image,
+           product: product,
+           loading: 'eager',
+           sizes: '(max-width: 768px) 100vw, 60vw',
+           class: 'product-main-gallery',
+           aspect_ratio: '1/1',
+           enable_zoom: true,
+           show_gallery: true,
+           max_width: 1600,
+           alt: product.title %}
+           
+        <div class="product-gallery__info">
+          <p class="size-reference">Altura: 180 cm (5'11") | Usando talla M</p>
         </div>
       </div>
       

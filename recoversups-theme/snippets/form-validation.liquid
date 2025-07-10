@@ -1,0 +1,576 @@
+{% comment %}
+  Form Validation Snippet - Recoversups
+  Sistema de validación unificado para formularios
+  
+  Parámetros:
+  - validation_type: Tipo de validación ('login', 'register', 'contact', 'password_reset', 'newsletter')
+  - form_id: ID único del formulario
+  - include_password_strength: Incluir indicador de fuerza de contraseña (default: false)
+  - include_password_match: Incluir validación de coincidencia de contraseña (default: false)
+  - custom_rules: Reglas de validación personalizadas (JSON)
+{% endcomment %}
+
+{% assign validation_type = validation_type | default: 'default' %}
+{% assign form_id = form_id | default: 'form' %}
+{% assign include_password_strength = include_password_strength | default: false %}
+{% assign include_password_match = include_password_match | default: false %}
+
+<script>
+(function() {
+  'use strict';
+  
+  // Crear namespace para validación si no existe
+  if (!window.RecoverSups) {
+    window.RecoverSups = {};
+  }
+  
+  if (!window.RecoverSups.FormValidation) {
+    window.RecoverSups.FormValidation = {};
+  }
+  
+  // Configuración de validación
+  const validationConfig = {
+    email: {
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Por favor ingresa un email válido'
+    },
+    password: {
+      minLength: 8,
+      patterns: {
+        uppercase: /[A-Z]/,
+        lowercase: /[a-z]/,
+        number: /[0-9]/,
+        special: /[^A-Za-z0-9]/
+      },
+      messages: {
+        length: 'Mínimo 8 caracteres',
+        uppercase: 'Una letra mayúscula',
+        lowercase: 'Una letra minúscula',
+        number: 'Un número',
+        special: 'Un carácter especial'
+      }
+    },
+    phone: {
+      pattern: /^(\+51|51)?[9]\d{8}$/,
+      message: 'Formato válido: +51 999 999 999'
+    },
+    required: {
+      message: 'Este campo es obligatorio'
+    }
+  };
+  
+  // Clase principal de validación
+  class FormValidator {
+    constructor(formId, options = {}) {
+      this.formId = formId;
+      this.form = document.getElementById(formId) || document.querySelector(`form[data-form="${formId}"]`);
+      this.options = {
+        validationType: '{{ validation_type }}',
+        includePasswordStrength: {{ include_password_strength }},
+        includePasswordMatch: {{ include_password_match }},
+        realTimeValidation: true,
+        showErrorMessages: true,
+        ...options
+      };
+      
+      this.errors = {};
+      this.isValid = false;
+      
+      if (this.form) {
+        this.init();
+      }
+    }
+    
+    init() {
+      this.setupEventListeners();
+      this.setupPasswordFeatures();
+      this.setupSubmitHandler();
+    }
+    
+    setupEventListeners() {
+      // Validación en tiempo real
+      if (this.options.realTimeValidation) {
+        const inputs = this.form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          input.addEventListener('blur', () => this.validateField(input));
+          input.addEventListener('input', () => this.clearFieldError(input));
+        });
+      }
+      
+      // Validación de email específica
+      const emailInputs = this.form.querySelectorAll('input[type="email"]');
+      emailInputs.forEach(input => {
+        input.addEventListener('blur', () => this.validateEmail(input));
+      });
+      
+      // Validación de teléfono específica
+      const phoneInputs = this.form.querySelectorAll('input[type="tel"]');
+      phoneInputs.forEach(input => {
+        input.addEventListener('blur', () => this.validatePhone(input));
+      });
+    }
+    
+    setupPasswordFeatures() {
+      const passwordInputs = this.form.querySelectorAll('input[type="password"]');
+      
+      passwordInputs.forEach(input => {
+        // Validación de fuerza de contraseña
+        if (this.options.includePasswordStrength && input.name.includes('password') && !input.name.includes('confirmation')) {
+          input.addEventListener('input', () => this.updatePasswordStrength(input));
+        }
+        
+        // Validación de coincidencia de contraseña
+        if (this.options.includePasswordMatch && input.name.includes('confirmation')) {
+          input.addEventListener('input', () => this.checkPasswordMatch());
+        }
+      });
+    }
+    
+    setupSubmitHandler() {
+      this.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        if (this.validateForm()) {
+          this.handleSubmit(e);
+        }
+      });
+    }
+    
+    validateField(field) {
+      const value = field.value.trim();
+      const fieldName = field.name;
+      const fieldType = field.type;
+      let isValid = true;
+      let errorMessage = '';
+      
+      // Validar campos requeridos
+      if (field.required && !value) {
+        isValid = false;
+        errorMessage = validationConfig.required.message;
+      }
+      
+      // Validaciones específicas por tipo
+      if (isValid && value) {
+        switch (fieldType) {
+          case 'email':
+            if (!this.validateEmail(field)) {
+              isValid = false;
+              errorMessage = validationConfig.email.message;
+            }
+            break;
+          case 'password':
+            if (!this.validatePassword(field)) {
+              isValid = false;
+              errorMessage = 'La contraseña no cumple con los requisitos';
+            }
+            break;
+          case 'tel':
+            if (!this.validatePhone(field)) {
+              isValid = false;
+              errorMessage = validationConfig.phone.message;
+            }
+            break;
+        }
+      }
+      
+      // Validaciones personalizadas por tipo de formulario
+      if (isValid && this.options.validationType === 'contact') {
+        if (fieldName === 'contact[subject]' && !value) {
+          isValid = false;
+          errorMessage = 'Por favor selecciona un asunto';
+        }
+      }
+      
+      this.updateFieldValidation(field, isValid, errorMessage);
+      return isValid;
+    }
+    
+    validateEmail(input) {
+      const email = input.value.trim();
+      return validationConfig.email.pattern.test(email);
+    }
+    
+    validatePassword(input) {
+      const password = input.value;
+      const config = validationConfig.password;
+      
+      if (password.length < config.minLength) return false;
+      
+      const requirements = {
+        uppercase: config.patterns.uppercase.test(password),
+        lowercase: config.patterns.lowercase.test(password),
+        number: config.patterns.number.test(password),
+        special: config.patterns.special.test(password)
+      };
+      
+      return Object.values(requirements).every(Boolean);
+    }
+    
+    validatePhone(input) {
+      const phone = input.value.trim();
+      if (!phone) return true; // Opcional
+      return validationConfig.phone.pattern.test(phone);
+    }
+    
+    updatePasswordStrength(input) {
+      const password = input.value;
+      const strengthIndicator = document.getElementById('password-strength') || 
+                                document.querySelector(`[data-strength-for="${input.id}"]`);
+      
+      if (!strengthIndicator) return;
+      
+      const config = validationConfig.password;
+      const requirements = {
+        length: password.length >= config.minLength,
+        uppercase: config.patterns.uppercase.test(password),
+        lowercase: config.patterns.lowercase.test(password),
+        number: config.patterns.number.test(password),
+        special: config.patterns.special.test(password)
+      };
+      
+      const validCount = Object.values(requirements).filter(Boolean).length;
+      let strengthText = '';
+      let strengthClass = '';
+      
+      if (validCount === 0) {
+        strengthText = '';
+        strengthClass = '';
+      } else if (validCount <= 2) {
+        strengthText = 'Débil';
+        strengthClass = 'weak';
+      } else if (validCount <= 3) {
+        strengthText = 'Regular';
+        strengthClass = 'medium';
+      } else if (validCount <= 4) {
+        strengthText = 'Buena';
+        strengthClass = 'good';
+      } else {
+        strengthText = 'Muy fuerte';
+        strengthClass = 'strong';
+      }
+      
+      strengthIndicator.innerHTML = strengthText ? `
+        <div class="strength-indicator ${strengthClass}">
+          <div class="strength-bar">
+            <div class="strength-fill" style="width: ${(validCount / 5) * 100}%"></div>
+          </div>
+          <span class="strength-text">${strengthText}</span>
+        </div>
+      ` : '';
+      
+      // Actualizar lista de requisitos si existe
+      const requirementsList = document.querySelectorAll('[data-requirement]');
+      requirementsList.forEach(item => {
+        const requirement = item.dataset.requirement;
+        if (requirements.hasOwnProperty(requirement)) {
+          item.classList.toggle('valid', requirements[requirement]);
+        }
+      });
+    }
+    
+    checkPasswordMatch() {
+      const passwordInput = this.form.querySelector('input[name*="password"]:not([name*="confirmation"])');
+      const confirmInput = this.form.querySelector('input[name*="confirmation"]');
+      const matchIndicator = document.getElementById('password-match') || 
+                            document.querySelector('[data-match-indicator]');
+      
+      if (!passwordInput || !confirmInput || !matchIndicator) return;
+      
+      const password = passwordInput.value;
+      const confirm = confirmInput.value;
+      
+      if (!confirm) {
+        matchIndicator.innerHTML = '';
+        return;
+      }
+      
+      const matches = password === confirm;
+      matchIndicator.innerHTML = matches ? 
+        '<div class="password-match-success">✓ Las contraseñas coinciden</div>' :
+        '<div class="password-match-error">✗ Las contraseñas no coinciden</div>';
+      
+      return matches;
+    }
+    
+    updateFieldValidation(field, isValid, errorMessage) {
+      const fieldContainer = field.closest('.form-group') || field.parentElement;
+      const existingError = fieldContainer.querySelector('.field-error');
+      
+      // Remover error anterior
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      // Actualizar estado visual
+      field.classList.toggle('error', !isValid);
+      field.classList.toggle('valid', isValid);
+      
+      // Mostrar mensaje de error
+      if (!isValid && this.options.showErrorMessages && errorMessage) {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.textContent = errorMessage;
+        fieldContainer.appendChild(errorElement);
+      }
+      
+      // Actualizar registro de errores
+      if (isValid) {
+        delete this.errors[field.name];
+      } else {
+        this.errors[field.name] = errorMessage;
+      }
+    }
+    
+    clearFieldError(field) {
+      const fieldContainer = field.closest('.form-group') || field.parentElement;
+      const existingError = fieldContainer.querySelector('.field-error');
+      
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      field.classList.remove('error');
+      delete this.errors[field.name];
+    }
+    
+    validateForm() {
+      const inputs = this.form.querySelectorAll('input, select, textarea');
+      this.errors = {};
+      
+      inputs.forEach(input => {
+        this.validateField(input);
+      });
+      
+      // Validación adicional para coincidencia de contraseña
+      if (this.options.includePasswordMatch) {
+        const passwordsMatch = this.checkPasswordMatch();
+        if (passwordsMatch === false) {
+          this.errors['password_match'] = 'Las contraseñas no coinciden';
+        }
+      }
+      
+      this.isValid = Object.keys(this.errors).length === 0;
+      return this.isValid;
+    }
+    
+    handleSubmit(e) {
+      const form = e.target;
+      const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+      
+      if (submitBtn) {
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        
+        if (btnText && btnLoading) {
+          btnText.style.display = 'none';
+          btnLoading.style.display = 'inline-block';
+        }
+        
+        submitBtn.disabled = true;
+      }
+      
+      // Proceder con el envío del formulario
+      form.submit();
+    }
+    
+    // Métodos públicos
+    getErrors() {
+      return this.errors;
+    }
+    
+    isFormValid() {
+      return this.isValid;
+    }
+    
+    validateFormManually() {
+      return this.validateForm();
+    }
+  }
+  
+  // Función para inicializar validación
+  window.RecoverSups.FormValidation.init = function(formId, options = {}) {
+    return new FormValidator(formId, options);
+  };
+  
+  // Auto-inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    const formId = '{{ form_id }}';
+    const validationType = '{{ validation_type }}';
+    
+    if (formId && formId !== 'form') {
+      window.RecoverSups.FormValidation.init(formId, {
+        validationType: validationType,
+        includePasswordStrength: {{ include_password_strength }},
+        includePasswordMatch: {{ include_password_match }}
+      });
+    }
+  });
+  
+})();
+</script>
+
+<style>
+/* Estilos para validación de formularios */
+.form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+  border-color: var(--accent-color, #e74c3c);
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+.form-input.valid,
+.form-select.valid,
+.form-textarea.valid {
+  border-color: var(--success-color, #27ae60);
+  box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2);
+}
+
+.field-error {
+  color: var(--accent-color, #e74c3c);
+  font-size: 0.875rem;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-error::before {
+  content: '⚠';
+  font-size: 0.75rem;
+}
+
+/* Indicador de fuerza de contraseña */
+.password-strength {
+  margin-top: 8px;
+}
+
+.strength-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--background-gray, #f5f5f5);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+.strength-indicator.weak .strength-fill {
+  background: #e74c3c;
+}
+
+.strength-indicator.medium .strength-fill {
+  background: #f39c12;
+}
+
+.strength-indicator.good .strength-fill {
+  background: #f1c40f;
+}
+
+.strength-indicator.strong .strength-fill {
+  background: #27ae60;
+}
+
+.strength-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.strength-indicator.weak .strength-text {
+  color: #e74c3c;
+}
+
+.strength-indicator.medium .strength-text {
+  color: #f39c12;
+}
+
+.strength-indicator.good .strength-text {
+  color: #f1c40f;
+}
+
+.strength-indicator.strong .strength-text {
+  color: #27ae60;
+}
+
+/* Indicador de coincidencia de contraseña */
+.password-match {
+  margin-top: 8px;
+}
+
+.password-match-success {
+  color: var(--success-color, #27ae60);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.password-match-error {
+  color: var(--accent-color, #e74c3c);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Lista de requisitos de contraseña */
+.requirements-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.requirements-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.875rem;
+  color: var(--text-muted, #666);
+  transition: color 0.3s ease;
+}
+
+.requirements-list li::before {
+  content: '○';
+  color: var(--background-gray, #ccc);
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.requirements-list li.valid {
+  color: var(--success-color, #27ae60);
+}
+
+.requirements-list li.valid::before {
+  content: '✓';
+  color: var(--success-color, #27ae60);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .strength-indicator {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .strength-text {
+    min-width: auto;
+  }
+}
+</style>
