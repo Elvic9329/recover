@@ -308,10 +308,11 @@
       },
       
       loadNonCriticalScripts: function() {
+        // Scripts no críticos se cargan solo si existen
         const nonCriticalScripts = [
-          '/assets/analytics.js',
-          '/assets/social-sharing.js',
-          '/assets/reviews.js'
+          // '/assets/analytics.js', // Comentado - no existe
+          // '/assets/social-sharing.js', // Comentado - no existe  
+          // '/assets/reviews.js' // Comentado - no existe
         ];
         
         nonCriticalScripts.forEach(src => {
@@ -387,9 +388,10 @@
       processHeavyTasks: function() {
         // Procesar tareas pesadas de forma asíncrona
         const tasks = [
-          () => this.initializeAnalytics(),
-          () => this.initializeSocialSharing(),
-          () => this.initializeReviews()
+          // Solo ejecutar tareas que existen
+          () => console.log('Analytics initialization skipped - module not found'),
+          () => console.log('Social sharing initialization skipped - module not found'),
+          () => console.log('Reviews initialization skipped - module not found')
         ];
         
         tasks.forEach((task, index) => {
@@ -463,15 +465,15 @@
   
 })(window, document);
 
-// Service Worker para caching (opcional)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registered: ', registration);
-      })
-      .catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
-}
+// Service Worker deshabilitado hasta que se implemente
+// if ('serviceWorker' in navigator) {
+//   window.addEventListener('load', () => {
+//     navigator.serviceWorker.register('/sw.js')
+//       .then(registration => {
+//         console.log('SW registered: ', registration);
+//       })
+//       .catch(registrationError => {
+//         console.log('SW registration failed: ', registrationError);
+//       });
+//   });
+// }
