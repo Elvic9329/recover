@@ -79,6 +79,7 @@
         
         <!-- Formulario de Compra -->
         <form class="product-form" action="/cart/add" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
           <!-- Selector de Color -->
           {% unless product.has_only_default_variant %}
             {% for option in product.options_with_values %}
@@ -261,6 +262,61 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Variant selection
+  const variantInputs = document.querySelectorAll('input[name^="options"]');
+  const hiddenVariantId = document.querySelector('input[name="id"]');
+  
+  variantInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      updateVariant();
+    });
+  });
+  
+  function updateVariant() {
+    const selectedOptions = {};
+    variantInputs.forEach(input => {
+      if (input.checked) {
+        const optionName = input.name.replace('options[', '').replace(']', '');
+        selectedOptions[optionName] = input.value;
+      }
+    });
+    
+    // Find matching variant
+    const variants = {{ product.variants | json }};
+    const selectedVariant = variants.find(variant => {
+      return Object.keys(selectedOptions).every(optionName => {
+        const optionIndex = {{ product.options | map: 'name' | json }}.indexOf(optionName);
+        return variant.options[optionIndex] === selectedOptions[optionName];
+      });
+    });
+    
+    if (selectedVariant) {
+      hiddenVariantId.value = selectedVariant.id;
+      
+      // Update price
+      const priceElement = document.querySelector('.price-current');
+      if (priceElement) {
+        priceElement.textContent = new Intl.NumberFormat('es-PE', {
+          style: 'currency',
+          currency: 'PEN'
+        }).format(selectedVariant.price / 100);
+      }
+      
+      // Update availability
+      const addToCartBtn = document.querySelector('.btn-add-to-cart');
+      if (selectedVariant.available) {
+        addToCartBtn.disabled = false;
+        addToCartBtn.querySelector('.btn-text').textContent = 'AGREGAR AL CARRITO';
+      } else {
+        addToCartBtn.disabled = true;
+        addToCartBtn.querySelector('.btn-text').textContent = 'AGOTADO';
+      }
+    }
+  }
+  
+  // Initialize variant
+  updateVariant();
+
   // Form submission
   const productForm = document.querySelector('.product-form');
   const addToCartBtn = document.querySelector('.btn-add-to-cart');

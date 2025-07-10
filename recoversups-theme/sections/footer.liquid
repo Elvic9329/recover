@@ -11,19 +11,32 @@
         <h3 class="newsletter-title">{{ section.settings.newsletter_title | default: 'Suscríbete a nuestro newsletter' }}</h3>
         <p class="newsletter-description">{{ section.settings.newsletter_description | default: 'Recibe ofertas exclusivas y consejos fitness' }}</p>
         
-        <form action="{{ routes.root_url }}contact#contact_form" method="post" class="newsletter-form">
+        <form action="{{ routes.root_url }}contact#contact_form" 
+              method="post" 
+              class="newsletter-form"
+              id="footer-newsletter-form">
           <input type="hidden" name="form_type" value="customer">
           <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="contact[tags]" value="newsletter">
           <div class="newsletter-input-group">
             <input type="email" 
                    name="contact[email]" 
                    placeholder="Tu email" 
                    class="newsletter-input"
-                   required>
+                   required
+                   aria-label="Email para newsletter">
             <button type="submit" class="newsletter-submit">
-              Suscribirse
+              <span class="btn-text">Suscribirse</span>
+              <span class="btn-loading" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M16 12l-4-4-4 4"/>
+                  <path d="M12 16V8"/>
+                </svg>
+              </span>
             </button>
           </div>
+          <div class="newsletter-message" role="alert" aria-live="polite"></div>
         </form>
       </div>
 
@@ -290,6 +303,44 @@
     opacity: 0.6;
   }
 
+  /* Newsletter validation styles */
+  .newsletter-message {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    display: none;
+  }
+
+  .newsletter-message.success {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+    display: block;
+  }
+
+  .newsletter-message.error {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    display: block;
+  }
+
+  .btn-loading {
+    display: none;
+  }
+
+  .btn-loading svg {
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .footer-content {
@@ -319,6 +370,89 @@
     }
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const footerForm = document.getElementById('footer-newsletter-form');
+  if (footerForm) {
+    initializeNewsletterForm(footerForm);
+  }
+});
+
+function initializeNewsletterForm(form) {
+  const messageDiv = form.querySelector('.newsletter-message');
+  const submitButton = form.querySelector('.newsletter-submit');
+  const btnText = submitButton.querySelector('.btn-text');
+  const btnLoading = submitButton.querySelector('.btn-loading');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const emailInput = form.querySelector('input[type="email"]');
+    const email = emailInput.value.trim();
+    
+    // Validate email
+    if (!email || !isValidEmail(email)) {
+      showMessage(messageDiv, 'Por favor ingresa un email válido', 'error');
+      return;
+    }
+    
+    // Show loading state
+    submitButton.disabled = true;
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline-block';
+    messageDiv.className = 'newsletter-message';
+    messageDiv.style.display = 'none';
+    
+    // Submit form
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        showMessage(messageDiv, '¡Gracias por suscribirte! Pronto recibirás nuestras novedades.', 'success');
+        form.reset();
+      } else {
+        throw new Error('Error en la suscripción');
+      }
+    })
+    .catch(error => {
+      showMessage(messageDiv, 'Hubo un error. Por favor, intenta nuevamente.', 'error');
+      console.error('Newsletter subscription error:', error);
+    })
+    .finally(() => {
+      // Reset button state
+      submitButton.disabled = false;
+      btnText.style.display = 'inline-block';
+      btnLoading.style.display = 'none';
+    });
+  });
+}
+
+function showMessage(messageDiv, text, type) {
+  messageDiv.textContent = text;
+  messageDiv.className = `newsletter-message ${type}`;
+  messageDiv.style.display = 'block';
+  
+  // Auto-hide success messages after 5 seconds
+  if (type === 'success') {
+    setTimeout(() => {
+      messageDiv.style.display = 'none';
+    }, 5000);
+  }
+}
+
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+</script>
+
+<!-- Form validation for footer newsletter -->
+{% render 'form-validation', validation_type: 'newsletter', form_id: 'footer-newsletter-form' %}
 
 {% schema %}
 {
